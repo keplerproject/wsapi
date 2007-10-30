@@ -6,7 +6,7 @@
 ** the Lua file in a protected environment just to redirect the error
 ** messages to stdout and stderr.
 **
-** $Id: launcher.c,v 1.1 2007/10/30 23:44:45 mascarenhas Exp $
+** $Id: launcher.c,v 1.1.1.1 2007/10/30 23:44:45 mascarenhas Exp $
 */
 
 #include <string.h>

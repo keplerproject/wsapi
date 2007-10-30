@@ -1,7 +1,7 @@
 ---------------------------------------------------------------------
 -- Main Lua script.
 -- This script should be run by the executable.
--- $Id: sapi.lua,v 1.1 2007/10/30 23:44:46 mascarenhas Exp $
+-- $Id: sapi.lua,v 1.1.1.1 2007/10/30 23:44:46 mascarenhas Exp $
 ---------------------------------------------------------------------
 
 -- Kepler bootstrap
