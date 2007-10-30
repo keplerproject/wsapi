@@ -1,0 +1,36 @@
+# $Id: Makefile.win,v 1.1 2007/10/30 23:44:45 mascarenhas Exp $
+
+LUA_INCLUDE= c:\lua5.1\include
+LUA_LIB= c:\lua5.1\bin\lua5.1.lib
+FCGI_INCLUDE= "C:\Documents and Settings\Fabio Mascarenhas\fcgi-2.4.0\include"
+FCGI_LIB= "C:\Documents and Settings\Fabio Mascarenhas\fcgi-2.4.0\libfcgi\Release\libfcgi.lib"
+
+LUA_DIR= c:\usr\local\share\lua\5.1
+LUA_LIBDIR= c:\usr\local\lib\lua\5.1
+
+.c.obj:
+        $(CC) /c /Fo$@ /I$(LUA_INCLUDE) /I$(FCGI_INCLUDE) $<
+
+src\launcher-fcgi-win\lua-fcgi.exe: src\launcher-fcgi-win\lua-fcgi.obj
+	link /out:src\launcher-fcgi-win\lua-fcgi.exe src\launcher-fcgi-win\lua-fcgi.obj $(LUA_LIB)
+
+src\launcher\launcher.exe: src\launcher\launcher.obj
+	link /out:src\launcher\launcher.exe src\launcher\launcher.obj $(LUA_LIB)
+
+src\fastcgi\lfcgi.dll: src\fastcgi\lfcgi.obj
+	link /dll /out:src\fastcgi\lfcgi.dll /def:src\fastcgi\lfcgi.def src\fastcgi\lfcgi.obj $(LUA_LIB) $(FCGI_LIB) 
+
+all: src\fastcgi\lfcgi.dll src\launcher\launcher.exe src\launcher-fcgi-win\lua-fcgi.exe
+
+install:
+	IF NOT EXIST $(LUA_DIR)\wsapi mkdir $(LUA_DIR)\wsapi
+	copy src\wsapi\*.lua $(LUA_DIR)\wsapi
+	copy src\fastcgi\lfcgi.dll $(LUA_LIBDIR)\
+
+clean:
+	del src\fastcgi\lfcgi.obj
+	del src\fastcgi\lfcgi.dll
+	del src\launcher\launcher.obj
+	del src\launcher\launcher.exe
+	del src\launcher-fcgi-win\lua-fcgi.exe
+	del src\launcher-fcgi-win\lua-fcgi.obj

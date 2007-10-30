@@ -1,0 +1,12 @@
+This is a proof of concept for the Kepler Web Server API (WSAPI).
+
+Installation:
+
+Make sure your Lua interpreter is called lua51 and it is in
+your path, then do:
+
+configure
+make all
+make install
+
+You may have to do the last step as root.
