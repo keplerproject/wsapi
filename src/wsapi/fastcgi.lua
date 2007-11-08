@@ -45,6 +45,14 @@ function run(app_run)
 
       if wsapi_env.PATH_INFO == "" then wsapi_env.PATH_INFO = "/" end
 
+--      if wsapi_env.PATH_TRANSLATED == "" and
+--        wsapi_env.SCRIPT_NAME == "" and
+--         wsapi_env.SCRIPT_FILENAME ~= "" then 
+--        wsapi_env.PATH_TRANSLATED = wsapi_env.SCRIPT_FILENAME
+--        wsapi_env.SCRIPT_NAME = string.match(wsapi_env.SCRIPT_FILENAME,
+--          "^" .. wsapi_env.DOCUMENT_ROOT .. "(.+)$")
+--      end
+
       local ok, status, headers, res_iter = pcall(app_run, wsapi_env)
       if ok then
 	 lfcgi.stdout:write("Status: " .. status .. "\r\n")

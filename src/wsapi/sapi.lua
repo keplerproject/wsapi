@@ -1,7 +1,7 @@
 ---------------------------------------------------------------------
 -- Main Lua script.
 -- This script should be run by the executable.
--- $Id: sapi.lua,v 1.1 2007/10/30 23:44:46 mascarenhas Exp $
+-- $Id: sapi.lua,v 1.2 2007/11/08 18:10:52 mascarenhas Exp $
 ---------------------------------------------------------------------
 
 -- Kepler bootstrap
@@ -16,7 +16,6 @@ require"wsapi.response"
 wsapi.sapi = {}
 
 function wsapi.sapi.run(wsapi_env)
-  wsapi_env.SCRIPT_NAME = wsapi_env.PATH_INFO
   local res = wsapi.response.new()
 
   SAPI = {
@@ -53,3 +52,6 @@ function wsapi.sapi.run(wsapi_env)
   res.status = tonumber(cgilua.main() or 200)
   return res:finish()
 end
+
+return wsapi.sapi
+
