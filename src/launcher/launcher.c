@@ -6,7 +6,7 @@
 ** the Lua file in a protected environment just to redirect the error
 ** messages to stdout and stderr.
 **
-** $Id: launcher.c,v 1.1 2007/10/30 23:44:45 mascarenhas Exp $
+** $Id: launcher.c,v 1.2 2007/12/05 22:49:22 mascarenhas Exp $
 */
 
 #include <string.h>
@@ -34,8 +34,10 @@ static int report (lua_State *L) {
 static int runlua (lua_State *L, char *name) {
 	int err_func;
 	
-	lua_pushliteral(L, "_TRACEBACK");
+	lua_pushliteral(L, "debug");
 	lua_rawget(L, LUA_GLOBALSINDEX);  /* get traceback function */
+        lua_pushliteral(L, "traceback");
+        lua_gettable(L, -2);
 	err_func = lua_gettop (L);
 	return (luaL_loadfile (L, name)) || (lua_pcall (L, 0, 0, err_func));
 }
