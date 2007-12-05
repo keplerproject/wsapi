@@ -59,7 +59,9 @@ function run(app_run)
        res = res_iter()
      end
    else
-     io.stderr:write(status)
+     io.stderr:write(tostring(status))
+     io.stdout:write("Status: 500 Internal Server Error\r\n")
+     io.stdout:write("Content-type: text/plain\r\n\r\n")
+     io.stdout:write(tostring(status))
    end
 end
-
