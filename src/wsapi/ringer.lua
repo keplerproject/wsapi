@@ -1,7 +1,8 @@
 -- Rings application for WSAPI
 
 processes = processes or {}
-pid = pid or 1
+
+local processes = processes
 
 module("wsapi.ringer", package.seeall)
 
@@ -64,11 +65,8 @@ local init = [==[
 
 init = string.gsub(init, "arg%((%d+)%)", arg)
 
-print(init)
-
 function run(wsapi_env)
-  local current_pid = pid
-  pid = pid + 1
+  local current_pid = 1
   processes[current_pid] = { env = wsapi_env, headers = {} }
   local new_state = rings.new()
   assert(new_state:dostring(init, current_pid, RINGER_APP, RINGER_BOOTSTRAP))
