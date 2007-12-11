@@ -92,8 +92,8 @@ SCRIPT_NAME: /cgi-bin/hello.cgi</p>
 For Windows and CGI you will also need a driver script as above, create it and
 name it *hello.cgi* (here the name is very important).
 Feel free to ommit the "#!" line, it does nothing on Windows. Now copy both the driver script
-and *cgi.exe* to a URL-accessible path that has execute permissions, then rename
-*cgi.exe* to *hello.exe*. You should now have both *hello.exe* and *hello.cgi*
+and *launcher.exe* to a URL-accessible path that has execute permissions, then rename
+*launcher.exe* to *hello.exe*. You should now have both *hello.exe* and *hello.cgi*
 in this path. Go to the web browser and point to *hello.exe*. You should see something like this: 
 
 <pre>
