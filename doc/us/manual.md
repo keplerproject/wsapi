@@ -11,8 +11,7 @@ This last step will probably need root privileges.
 ### Windows
 
 To build the Windows binaries you will need the Lua 5.1 interpreter and a version
-of Visual C++ 2005 (the freely available Express edition works fine). You will
-also need the development files for [libfcgi](http://www.fastcgi.com). Edit *Makefile.win*
+of Visual C++ 2005 (the freely available Express edition works fine). Edit *Makefile.win*
 according to the instructions there, then run *nmake -f Makefile.win* and finally
 *nmake -f Makefile.win install*.
 
@@ -45,7 +44,7 @@ application is the following:
     end
 </pre>
 
-We hope the code is self-explanatory.
+If you did previous development for the web then the code should be self-explanatory.
 
 ## Running the application
 
@@ -149,5 +148,6 @@ which provides URI encoding/decoding.
 These facilities make it easier to write applications, but still are very basic.
 So there are also frameworks built on top of this foundation. Currently we offer
 [Orbit](http://kepler-tmp.dreamhosters.com/en/Orbit), which lets you easily build
-database-backed applications in the MVC style, and we'll soon offer SAPI, for
+database-backed applications in the MVC style, and SAPI, for
 running [CGILua](http://www.keplerproject.org/cgilua/) scripts and Lua pages.
+

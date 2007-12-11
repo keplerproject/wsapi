@@ -1,15 +1,8 @@
 ---------------------------------------------------------------------
 -- Main Lua script.
 -- This script should be run by the executable.
--- $Id: sapi.lua,v 1.2 2007/11/08 18:10:52 mascarenhas Exp $
+-- $Id: sapi.lua,v 1.3 2007/12/11 18:26:36 mascarenhas Exp $
 ---------------------------------------------------------------------
-
--- Kepler bootstrap
-local bootstrap, err = loadfile("kepler_init.lua") or loadfile(os.getenv("KEPLER_INIT") or "") or loadfile([[/etc/kepler/1.1/kepler_init.lua]])
-
-if bootstrap then
-  bootstrap()
-end
 
 require"wsapi.response" 
 
