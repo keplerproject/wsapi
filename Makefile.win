@@ -1,10 +1,10 @@
-# $Id: Makefile.win,v 1.2 2007/12/11 18:43:10 mascarenhas Exp $
+# $Id: Makefile.win,v 1.3 2007/12/11 21:34:56 carregal Exp $
 
 LUA_INCLUDE= c:\lua5.1\include
-LUA_LIB= c:\lua5.1\bin\lua5.1.lib
+LUA_LIB= c:\lua5.1\lua5.1.lib
 
-LUA_DIR= c:\usr\local\share\lua\5.1
-LUA_LIBDIR= c:\usr\local\lib\lua\5.1
+LUA_DIR= c:\lua5.1
+LUA_LIBDIR= c:\lua5.1
 
 .c.obj:
         $(CC) /c /Fo$@ /I$(LUA_INCLUDE) /I$(FCGI_INCLUDE) $<
