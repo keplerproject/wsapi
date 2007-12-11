@@ -36,8 +36,17 @@ local init = [==[
     __newindex = function (tab, k, v)
       remotedostring(id_string .. '.env[arg(1)] = arg(2)', k, v)
     end })
-  _, package.path = remotedostring("return package.path")
-  _, package.cpath = remotedostring("return package.cpath")
+  if arg(3) then
+    local bootstrap, err = loadfile(arg(3))
+    if bootstrap then
+      bootstrap()
+    else
+      error("could not load " .. arg(3) .. ": " .. err)
+    end
+  else
+    _, package.path = remotedostring("return package.path")
+    _, package.cpath = remotedostring("return package.cpath")
+  end
   local app = require(arg(2))
   local status, headers, res = app.run(wsapi_env)
   remotedostring(id_string .. ".status = arg(1)", status)
@@ -62,7 +71,7 @@ function run(wsapi_env)
   pid = pid + 1
   processes[current_pid] = { env = wsapi_env, headers = {} }
   local new_state = rings.new()
-  assert(new_state:dostring(init, current_pid, RINGER_APP))
+  assert(new_state:dostring(init, current_pid, RINGER_APP, RINGER_BOOTSTRAP))
   local res = coroutine.wrap(function ()
       local status, s 
       status, s = new_state:dostring("return main_coro()")
