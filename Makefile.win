@@ -1,4 +1,4 @@
-# $Id: Makefile.win,v 1.3 2007/12/11 21:34:56 carregal Exp $
+# $Id: Makefile.win,v 1.4 2007/12/11 21:40:37 carregal Exp $
 
 LUA_INCLUDE= c:\lua5.1\include
 LUA_LIB= c:\lua5.1\lua5.1.lib
@@ -21,3 +21,4 @@ install:
 clean:
 	del src\launcher\launcher.obj
 	del src\launcher\launcher.exe
+	del src\launcher\launcher.exe.manifest
