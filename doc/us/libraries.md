@@ -34,7 +34,7 @@ object, optionally setting an initial status code, header table and body content
 
 **res[*name*]** - same as **res.headers[*name*]**, unless *name* is a field in res
 
-**res[*name*] = *value* ** - same as **res.headers[*name*] = *value* **, unless *name* is
+**res[*name*]** **=** **value** - same as **res.headers[*name*] = value**, unless *name* is
 a field in res
 
 **res:write(*s*)** - adds *s* to the body if it is a string, if it is a table

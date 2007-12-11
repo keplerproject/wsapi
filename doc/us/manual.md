@@ -30,19 +30,19 @@ a tuple with the status code, headers and an output iterator. A very simple
 application is the following:
 
 <pre>
-function hello(wsapi_env)
-  local headers = { ["Content-type"] = "text/html" }
+    function hello(wsapi_env)
+      local headers = { ["Content-type"] = "text/html" }
 
-  local function hello_text()
-    coroutine.yield("&lt;html&gt;&lt;body&gt;")
-    coroutine.yield("&lt;p&gt;Hello Wsapi!&lt;/p&gt;")
-    coroutine.yield("&lt;p&gt;PATH_INFO: " .. wsapi_env.PATH_INFO .. "&lt;/p&gt;")
-    coroutine.yield("&lt;p&gt;SCRIPT_NAME: " .. wsapi_env.SCRIPT_NAME .. "&lt;/p&gt;")
-    coroutine.yield("&lt;/body&gt;&lt;/html&gt;")
-  end
+      local function hello_text()
+        coroutine.yield("&lt;html&gt;&lt;body&gt;")
+        coroutine.yield("&lt;p&gt;Hello Wsapi!&lt;/p&gt;")
+        coroutine.yield("&lt;p&gt;PATH_INFO: " .. wsapi_env.PATH_INFO .. "&lt;/p&gt;")
+        coroutine.yield("&lt;p&gt;SCRIPT_NAME: " .. wsapi_env.SCRIPT_NAME .. "&lt;/p&gt;")
+        coroutine.yield("&lt;/body&gt;&lt;/html&gt;")
+      end
 
-  return 200, headers, coroutine.wrap(hello_text)
-end
+      return 200, headers, coroutine.wrap(hello_text)
+    end
 </pre>
 
 We hope the code is self-explanatory.
@@ -59,21 +59,21 @@ You will need a driver script for your application if you want to run it with CG
 FastCGI. The driver script is very similar for both connectors. For CGI it can be this one:
 
 <pre>
-#!/usr/bin/env lua
-require "wsapi.cgi"
-require "hello"
+    #!/usr/bin/env lua
+    require "wsapi.cgi"
+    require "hello"
 
-cgi.run(hello)
+    cgi.run(hello)
 </pre>
 
 For FastCGI:
 
 <pre>
-#!/usr/bin/env lua
-require "wsapi.fastcgi"
-require "hello"
+    #!/usr/bin/env lua
+    require "wsapi.fastcgi"
+    require "hello"
 
-fastcgi.run(hello)
+    fastcgi.run(hello)
 </pre>
 
 Change *lua* to the name or your Lua interpreter executable. Now name the file appropriately
@@ -83,9 +83,9 @@ Apache it will usually be a cgi-bin directory, such as /usr/lib/cgi-bin). Now go
 browser and point to the file. You should see something like this:
 
 <pre>
-<p>Hello Wsapi!</p>
-<p>PATH_INFO: /</p>
-<p>SCRIPT_NAME: /cgi-bin/hello.cgi</p>
+<p>Hello Wsapi!<br>
+PATH_INFO: /<br>
+SCRIPT_NAME: /cgi-bin/hello.cgi</p>
 </pre>
 
 ### Windows CGI
@@ -98,9 +98,9 @@ and *cgi.exe* to a URL-accessible path that has execute permissions, then rename
 in this path. Go to the web browser and point to *hello.exe*. You should see something like this: 
 
 <pre>
-<p>Hello Wsapi!</p>
-<p>PATH_INFO: /</p>
-<p>SCRIPT_NAME: /cgi-bin/hello.exe</p>
+<p>Hello Wsapi!<br>
+PATH_INFO: /<br>
+SCRIPT_NAME: /cgi-bin/hello.exe</p>
 </pre>
 
 ## Writing WSAPI connectors
