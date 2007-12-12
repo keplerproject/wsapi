@@ -22,7 +22,7 @@ local function set_cgivars (req, diskpath, path_info_pat, script_name_pat)
       REQUEST_METHOD = req.cmd_mth,
       DOCUMENT_ROOT = req.diskpath,
       PATH_INFO = string.match(req.parsed_url.path, path_info_pat) or "",
-      PATH_TRANSLATED = (req.diskpath or "") .. (string.match(req.parsed_url.path, path_info_pat) or ""),
+      PATH_TRANSLATED = (req.diskpath or "") .. (string.match(req.parsed_url.path, script_name_pat) or ""),
       SCRIPT_NAME = string.match(req.parsed_url.path, script_name_pat),
       QUERY_STRING = req.parsed_url.query or "",
       REMOTE_ADDR = string.gsub (req.rawskt:getpeername (), ":%d*$", ""),

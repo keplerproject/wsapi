@@ -39,7 +39,7 @@ local init = [==[
     end })
   if arg(3) then
     local bootstrap, err
-    if string.match(arg(3), "%w%.lua$" then
+    if string.match(arg(3), "%w%.lua$") then
       bootstrap, err = loadfile(arg(3))
     else
       bootstrap, err = loadstring(arg(3))
