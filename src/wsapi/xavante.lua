@@ -68,7 +68,7 @@ local function wsapihandler (req, res, wsapi_run, app_prefix)
    wsapi_env.error = error
 
    local function set_status(status)
-      res.statusline = "HTTP/1.1 " .. tostring(status) .. "\n"
+      res.statusline = "HTTP/1.1 " .. tostring(status) 
    end
 
    local function send_headers(headers)

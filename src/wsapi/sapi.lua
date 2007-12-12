@@ -1,7 +1,7 @@
 ---------------------------------------------------------------------
 -- Main Lua script.
 -- This script should be run by the executable.
--- $Id: sapi.lua,v 1.3 2007/12/11 18:26:36 mascarenhas Exp $
+-- $Id: sapi.lua,v 1.4 2007/12/12 15:46:44 mascarenhas Exp $
 ---------------------------------------------------------------------
 
 require"wsapi.response" 
@@ -24,7 +24,7 @@ function wsapi.sapi.run(wsapi_env)
     },
     Response = {
 	contenttype = function (header)
-  	  res["Content-type"] = header
+  	  res["Content-Type"] = header
 	end,  
 	errorlog = function (msg, errlevel)
 	  wsapi_env.error:write (msg)
