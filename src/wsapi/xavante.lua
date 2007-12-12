@@ -6,8 +6,6 @@
 --
 -----------------------------------------------------------------------------
 
-requests = requests or {}
-
 module (..., package.seeall)
 
 -------------------------------------------------------------------------------
@@ -22,14 +20,12 @@ local function set_cgivars (req, diskpath, path_info_pat, script_name_pat)
       SERVER_PROTOCOL = "HTTP/1.1",
       SERVER_PORT = req.parsed_url.port,
       REQUEST_METHOD = req.cmd_mth,
-      PATH_INFO = string.match(req.parsed_url.path, path_info_pat),
-      PATH_TRANSLATED = "",
+      DOCUMENT_ROOT = req.diskpath,
+      PATH_INFO = string.match(req.parsed_url.path, path_info_pat) or "",
+      PATH_TRANSLATED = (req.diskpath or "") .. (string.match(req.parsed_url.path, path_info_pat) or ""),
       SCRIPT_NAME = string.match(req.parsed_url.path, script_name_pat),
       QUERY_STRING = req.parsed_url.query or "",
-      REMOTE_HOST = "",
       REMOTE_ADDR = string.gsub (req.rawskt:getpeername (), ":%d*$", ""),
-      AUTH_TYPE = "",
-      REMOTE_USER = "",
       CONTENT_TYPE = req.headers ["content-type"],
       CONTENT_LENGTH = req.headers ["content-length"],
    }
@@ -40,8 +36,6 @@ local function set_cgivars (req, diskpath, path_info_pat, script_name_pat)
 end
 
 local function wsapihandler (req, res, wsapi_run, app_prefix)
-   requests[tostring(req)] = { req = req, res = res }	
-
    local path_info_pat = "^" .. app_prefix .. "(.*)"
    local script_name_pat = "^(" .. app_prefix .. ")"
 

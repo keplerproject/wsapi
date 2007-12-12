@@ -38,7 +38,12 @@ local init = [==[
       remotedostring(id_string .. '.env[arg(1)] = arg(2)', k, v)
     end })
   if arg(3) then
-    local bootstrap, err = loadfile(arg(3))
+    local bootstrap, err
+    if string.match(arg(3), "%w%.lua$" then
+      bootstrap, err = loadfile(arg(3))
+    else
+      bootstrap, err = loadstring(arg(3))
+    end
     if bootstrap then
       bootstrap()
     else
