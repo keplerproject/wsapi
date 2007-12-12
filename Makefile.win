@@ -1,9 +1,9 @@
-# $Id: Makefile.win,v 1.6 2007/12/11 22:08:33 carregal Exp $
+# $Id: Makefile.win,v 1.7 2007/12/12 17:18:35 carregal Exp $
 
 LUA_INCLUDE= c:\lua5.1\include
 LUA_LIB= c:\lua5.1\lua5.1.lib
 
-LUA_DIR= c:\lua5.1
+LUA_DIR= c:\lua5.1\lua
 LUA_LIBDIR= c:\lua5.1
 
 .c.obj:
