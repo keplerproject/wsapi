@@ -22,8 +22,7 @@ local init = [==[
   }
   wsapi_env.input = {
     read = function (self, n)
-      local _, s = remotedostring("return " .. id_string .. ".env.input:read(arg(1))", n)
-      return s
+      return coroutine.yield("RECEIVE", n)
     end
   }
   setmetatable(wsapi_env, { 
@@ -53,16 +52,19 @@ local init = [==[
     _, package.path = remotedostring("return package.path")
     _, package.cpath = remotedostring("return package.cpath")
   end
+  require"coxpcall"
+  pcall = copcall
+  xpcall = coxpcall
   local app = require(arg(2))
-  local status, headers, res = app.run(wsapi_env)
-  remotedostring(id_string .. ".status = arg(1)", status)
-  for k, v in pairs(headers) do
-    remotedostring(id_string .. ".headers[arg(1)] = arg(2)", k, v)
-  end
   main_coro = coroutine.wrap(function ()
+      local status, headers, res = app.run(wsapi_env)
+      remotedostring(id_string .. ".status = arg(1)", status)
+      for k, v in pairs(headers) do
+        remotedostring(id_string .. ".headers[arg(1)] = arg(2)", k, v)
+      end
       local s = res()
       while s do
-        coroutine.yield(s)
+        coroutine.yield("SEND", s)
         s = res()
       end
     end)
@@ -75,14 +77,17 @@ function run(wsapi_env)
   processes[current_pid] = { env = wsapi_env, headers = {} }
   local new_state = rings.new()
   assert(new_state:dostring(init, current_pid, RINGER_APP, RINGER_BOOTSTRAP))
-  local res = coroutine.wrap(function ()
-      local status, s 
-      status, s = new_state:dostring("return main_coro()")
-      while status and s do
-        coroutine.yield(s)
-        status, s = new_state:dostring("return main_coro()")
+  local res = function ()
+      local status, flag, s = new_state:dostring("return main_coro()")
+      while status and flag and s do
+        if flag == "RECEIVE" then
+          status, flag, s = new_state:dostring("return main_coro(...)",
+            wsapi_env.input:read(s))
+        else
+          return s
+        end
       end
       if not status then error(s) end
-    end)
+    end
   return processes[current_pid].status, processes[current_pid].headers, res 
 end
