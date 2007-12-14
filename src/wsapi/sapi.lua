@@ -1,32 +1,12 @@
 ---------------------------------------------------------------------
 -- Main Lua script.
 -- This script should be run by the executable.
--- $Id: sapi.lua,v 1.6 2007/12/14 14:35:54 carregal Exp $
+-- $Id: sapi.lua,v 1.7 2007/12/14 18:00:09 mascarenhas Exp $
 ---------------------------------------------------------------------
 
 require"wsapi.response" 
 
 wsapi.sapi = {}
-
-local function sapi_error(msg)
-  local first_err = [[
-    <html>
-      <head><title>CGILua Error</title></head>
-      <body><p>There was an error in your application. The
-      error message is:</p>
-      <pre>
-  ]]
-  local last_err = [[
-      </pre>
-      </body>
-    </html>
-  ]]
-  return coroutine.wrap(function ()
-    coroutine.yield(first_err)
-    coroutine.yield(tostring(msg))
-    coroutine.yield(last_err)
-  end)
-end
 
 function wsapi.sapi.run(wsapi_env)
   local res = wsapi.response.new()
@@ -62,12 +42,8 @@ function wsapi.sapi.run(wsapi_env)
     },
   }
   require"cgilua"
-  local ok, err = cgilua.main()
-  if not ok then
-    return 200, { ["Content-Type"] = "text-html" }, sapi_error(err)
-  else
-    return res:finish()
-  end
+  cgilua.main()
+  return res:finish()
 end
 
 return wsapi.sapi
