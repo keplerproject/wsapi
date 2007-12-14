@@ -60,7 +60,7 @@ local function delete_cookie(self, name)
 end
 
 function new(status, headers, body)
-  status = status or "200 Ok"
+  status = status or 200
   headers = headers or {}
   if not headers["Content-Type"] then
     headers["Content-Type"] = "text/html"
