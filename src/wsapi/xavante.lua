@@ -77,11 +77,13 @@ local function wsapihandler (req, res, wsapi_run, app_prefix)
 	    res.headers[h] = v
 	 elseif type(v) == "string" then
 	    res:add_header(h, v)
-	 else
+	 elseif type(v) == "table" then
 	    for _, v in ipairs(v) do
-	       res:add_header(h, v)
+	       res:add_header(h, tostring(v))
 	    end
-	 end
+	 else
+            res:add_header(h, tostring(v))
+         end
       end
    end
 

@@ -48,7 +48,7 @@ function run(app_run)
          io.stdout:write(h .. ": " .. tostring(v) .. "\r\n") 
        else
          for _, v in ipairs(v) do
-           io.stdout:write(h .. ": " .. v .. "\r\n")
+           io.stdout:write(h .. ": " .. tostring(v) .. "\r\n")
          end
        end 
      end

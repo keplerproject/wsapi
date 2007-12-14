@@ -61,7 +61,7 @@ function run(app_run)
 	       lfcgi.stdout:write(h .. ": " .. tostring(v) .. "\r\n") 
             else
 	       for _, v in ipairs(v) do
-		  lfcgi.stdout:write(h .. ": " .. v .. "\r\n")
+		  lfcgi.stdout:write(h .. ": " .. tostring(v) .. "\r\n")
 	       end
             end 
 	 end
