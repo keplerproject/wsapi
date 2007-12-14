@@ -1,14 +1,14 @@
 ---------------------------------------------------------------------
 -- Main Lua script.
 -- This script should be run by the executable.
--- $Id: sapi.lua,v 1.5 2007/12/14 13:23:10 mascarenhas Exp $
+-- $Id: sapi.lua,v 1.6 2007/12/14 14:35:54 carregal Exp $
 ---------------------------------------------------------------------
 
 require"wsapi.response" 
 
 wsapi.sapi = {}
 
-local sapi_error(msg)
+local function sapi_error(msg)
   local first_err = [[
     <html>
       <head><title>CGILua Error</title></head>
