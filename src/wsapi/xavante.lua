@@ -93,16 +93,10 @@ local function wsapihandler (req, res, wsapi_run, app_prefix)
       end
    end
 
-   local ok, status, headers, res_iter =
-      pcall(wsapi_run, wsapi_env)
-   if ok then
-      set_status(status)
-      send_headers(headers)
-      send_content(res_iter)
-   else
-      print(status)			     
-   end			     
-
+   local status, headers, res_iter = wsapi_run(wsapi_env)
+   set_status(status)
+   send_headers(headers)
+   send_content(res_iter)
 end
 
 -------------------------------------------------------------------------------
