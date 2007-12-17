@@ -2,6 +2,11 @@ local util = require"wsapi.util"
 
 module("wsapi.request", package.seeall)
 
+local function split_filename(path)
+  local name_patt = "[/\\]?([^/\\]+)$"
+  return (string.match(path, name_patt))
+end
+
 local function insert_field (tab, name, value)
   if not tab[name] then
     tab[name] = value
@@ -56,7 +61,7 @@ local function get_field_names(headers)
   for attr, val in string.gmatch(disp_header, ';%s*([^%s=]+)="(.-)"') do
     attrs[attr] = val
   end
-  return attrs.name, attrs.filename
+  return attrs.name, split_filename(attrs.filename)
 end
 
 local function read_field_contents(input, boundary, pos)
