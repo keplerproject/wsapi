@@ -73,7 +73,7 @@ function run(wsapi_env)
   assert(new_state:dostring(init, RINGER_APP, RINGER_BOOTSTRAP))
   local ok, flag, s, v = new_state:dostring("return main_coro()")
   repeat
-    if not ok then error(s) end
+    if not ok then error(flag) end
     if flag == "RECEIVE" then
       ok, flag, s, v = new_state:dostring("return main_coro(...)",
         wsapi_env.input:read(s))
