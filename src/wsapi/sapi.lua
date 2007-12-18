@@ -1,7 +1,7 @@
 ---------------------------------------------------------------------
 -- Main Lua script.
 -- This script should be run by the executable.
--- $Id: sapi.lua,v 1.7 2007/12/14 18:00:09 mascarenhas Exp $
+-- $Id: sapi.lua,v 1.8 2007/12/18 15:08:12 carregal Exp $
 ---------------------------------------------------------------------
 
 require"wsapi.response" 
@@ -34,7 +34,7 @@ function wsapi.sapi.run(wsapi_env)
 	end,
 	redirect = function (url)
 	  res.status = 302
-	  res.header["Location"] = url
+	  res.headers["Location"] = url
         end,
 	write = function (...)
 	  res:write({...})
