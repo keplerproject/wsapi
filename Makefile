@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.4 2007/12/20 16:11:42 mascarenhas Exp $
+# $Id: Makefile,v 1.5 2007/12/20 16:17:01 mascarenhas Exp $
 
 include config
 
@@ -12,7 +12,7 @@ config:
 fastcgi: src/fastcgi/lfcgi.so
 
 src/fastcgi/lfcgi.so: src/fastcgi/lfcgi.o src/fastcgi/lfcgi.h
-	$(CC) $(CFLAGS) -shared -o src/fastcgi/lfcgi.so src/fastcgi/lfcgi.o -lfcgi 
+	$(CC) $(CFLAGS) $(LIB_OPTION) -o src/fastcgi/lfcgi.so src/fastcgi/lfcgi.o -lfcgi 
 
 install:
 	mkdir -p $(LUA_DIR)/wsapi

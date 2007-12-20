@@ -29,9 +29,13 @@ build = {
      BIN_DIR = "$(BINDIR)"
    },
    platforms = {
-     linux = {
+     unix = {
        build_pass = false,
        build_target = "all",
+       build_variables = {
+         LIB_OPTION = "$(LIBFLAG)",
+         CFLAGS = "$(CFLAGS) -I$(LUA_INCDIR)",
+       },
        install_target = "install-rocks-all",
        install_variables = {
          LUA_LIBDIR = "$(LIBDIR)"
