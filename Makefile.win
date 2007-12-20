@@ -1,4 +1,4 @@
-# $Id: Makefile.win,v 1.9 2007/12/20 16:11:42 mascarenhas Exp $
+# $Id: Makefile.win,v 1.10 2007/12/20 18:20:54 mascarenhas Exp $
 
 LUA_INCLUDE= c:\lua5.1\include
 LUA_LIB= c:\lua5.1\lua5.1.lib
@@ -19,16 +19,16 @@ install:
 	copy src\wsapi\*.lua $(LUA_DIR)\wsapi
 
 install-rocks:
-	IF NOT EXIST $(PREFIX)\lua mkdir $(PREFIX)\lua
-	IF NOT EXIST $(PREFIX)\lua\wsapi mkdir $(PREFIX)\lua\wsapi
-	copy src\wsapi\*.lua $(PREFIX)\lua\wsapi
-	IF NOT EXIST $(PREFIX)\bin mkdir $(PREFIX)\bin
-	copy src\launcher\launcher.exe $(PREFIX)\bin
-	IF NOT EXIST $(PREFIX)\samples mkdir $(PREFIX)\samples
-	copy samples\* $(PREFIX)\samples
-	IF NOT EXIST $(PREFIX)\doc mkdir $(PREFIX)\doc
-	IF NOT EXIST $(PREFIX)\doc\us mkdir $(PREFIX)\doc\us
-	copy doc\us\* $(PREFIX)\doc\us
+	IF NOT EXIST "$(PREFIX)\lua" mkdir "$(PREFIX)\lua"
+	IF NOT EXIST "$(PREFIX)\lua\wsapi" mkdir "$(PREFIX)\lua\wsapi"
+	copy src\wsapi\*.lua "$(PREFIX)\lua\wsapi"
+	IF NOT EXIST "$(PREFIX)\bin" "mkdir $(PREFIX)\bin"
+	copy src\launcher\launcher.exe "$(PREFIX)\bin"
+	IF NOT EXIST "$(PREFIX)\samples" mkdir "$(PREFIX)\samples"
+	copy samples\* "$(PREFIX)\samples"
+	IF NOT EXIST "$(PREFIX)\doc" mkdir "$(PREFIX)\doc"
+	IF NOT EXIST "$(PREFIX)\doc\us" mkdir "$(PREFIX)\doc\us"
+	copy doc\us\* "$(PREFIX)\doc\us"
 
 clean:
 	del src\launcher\launcher.obj
