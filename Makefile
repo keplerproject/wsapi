@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.2 2007/12/11 18:42:08 mascarenhas Exp $
+# $Id: Makefile,v 1.3 2007/12/20 15:57:43 mascarenhas Exp $
 
 include config
 
@@ -14,7 +14,17 @@ src/fastcgi/lfcgi.so: src/fastcgi/lfcgi.o src/fastcgi/lfcgi.h
 install:
 	mkdir -p $(LUA_DIR)/wsapi
 	cp src/wsapi/*.lua $(LUA_DIR)/wsapi
+
+install-fcgi: install
 	cp src/fastcgi/lfcgi.so $(LUA_LIBDIR)/
+
+install-rocks: install
+	mkdir -p $(PREFIX)/samples
+	cp -r samples/* $(PREFIX)/samples
+	mkdir -p $(PREFIX)/doc
+	cp -r doc/* $(PREFIX)/doc
+
+install-rocks-all: install-fcgi install-rocks
 
 clean:
 	rm src/fastcgi/lfcgi.o src/fastcgi/lfcgi.so

@@ -1,4 +1,4 @@
-# $Id: Makefile.win,v 1.7 2007/12/12 17:18:35 carregal Exp $
+# $Id: Makefile.win,v 1.8 2007/12/20 15:57:43 mascarenhas Exp $
 
 LUA_INCLUDE= c:\lua5.1\include
 LUA_LIB= c:\lua5.1\lua5.1.lib
@@ -7,7 +7,7 @@ LUA_DIR= c:\lua5.1\lua
 LUA_LIBDIR= c:\lua5.1
 
 .c.obj:
-        $(CC) /MD /c /Fo$@ /I$(LUA_INCLUDE) $<
+        $(CC) /c /MD /Fo$@ /I$(LUA_INCLUDE) $<
 
 src\launcher\launcher.exe: src\launcher\launcher.obj
 	link /out:src\launcher\launcher.exe src\launcher\launcher.obj $(LUA_LIB)
