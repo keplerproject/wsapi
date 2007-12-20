@@ -13,6 +13,16 @@ description = {
 
 dependencies = { }
 
+external_dependencies = {
+  platforms = {
+    unix = {
+      FASTCGI = {
+        header = "fcgi_stdio.h"
+      }
+    }
+  }
+}
+
 source = {
   url = "cvs://:pserver:anonymous@cvs.luaforge.net:/cvsroot/wsapi",
   cvs_tag = "HEAD"
@@ -33,8 +43,8 @@ build = {
        build_pass = true,
        build_target = "all",
        build_variables = {
-         LIB_OPTION = "$(LIBFLAG)",
-         CFLAGS = "$(CFLAGS) -I$(LUA_INCDIR)",
+         LIB_OPTION = "$(LIBFLAG) -L$(FASTCGI_LIBDIR)",
+         CFLAGS = "$(CFLAGS) -I$(LUA_INCDIR) -I$(FASTCGI_INCDIR)",
        },
        install_target = "install-rocks-all",
        install_variables = {
@@ -42,9 +52,12 @@ build = {
        }
      },
      win32 = {
-       type = "command",
-       build_command = "nmake /f Makefile.win",
-       install_command = "nmake /f Makefile.win PREFIX=$(PREFIX) install-rocks"
+       build_pass = true,
+       build_target = "all",
+       build_variables = {
+         LUA_INCLUDE = "$(LUA_INCDIR)",
+	 LUA_LIB = "$(LUA_LIBDIR)\lua5.1.lib"
+       }
      }
    }
 }

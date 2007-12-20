@@ -1,3 +1,4 @@
+
 /*
 ** Simple Lua interpreter.
 ** This program is used to run a Lua file with the same name but the
@@ -6,7 +7,7 @@
 ** the Lua file in a protected environment just to redirect the error
 ** messages to stdout and stderr.
 **
-** $Id: launcher.c,v 1.2 2007/12/05 22:49:22 mascarenhas Exp $
+** $Id: launcher.c,v 1.3 2007/12/20 18:14:48 mascarenhas Exp $
 */
 
 #include <string.h>
