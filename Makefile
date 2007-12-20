@@ -1,10 +1,13 @@
-# $Id: Makefile,v 1.3 2007/12/20 15:57:43 mascarenhas Exp $
+# $Id: Makefile,v 1.4 2007/12/20 16:11:42 mascarenhas Exp $
 
 include config
 
 all: fastcgi
 
 cgi:
+
+config:
+	touch config
 
 fastcgi: src/fastcgi/lfcgi.so
 

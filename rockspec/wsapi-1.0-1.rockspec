@@ -36,6 +36,11 @@ build = {
        install_variables = {
          LUA_LIBDIR = "$(LIBDIR)"
        }
+     },
+     win32 = {
+       type = "command",
+       build_command = "nmake /f Makefile.win",
+       install_command = "nmake /f Makefile.win PREFIX=$(PREFIX) install-rocks"
      }
    }
 }
