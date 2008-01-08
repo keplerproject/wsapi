@@ -46,7 +46,7 @@ local init = [==[
     _, package.path = remotedostring("return package.path")
     _, package.cpath = remotedostring("return package.cpath")
   end
-  require"coxpcall"
+  require"wsapi.coxpcall"
   pcall = copcall
   xpcall = coxpcall
   local app = require(arg(1))
