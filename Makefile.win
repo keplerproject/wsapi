@@ -1,4 +1,4 @@
-# $Id: Makefile.win,v 1.11 2007/12/23 16:18:33 mascarenhas Exp $
+# $Id: Makefile.win,v 1.12 2008/01/08 18:07:12 mascarenhas Exp $
 
 LUA_INCLUDE= c:\lua5.1\include
 LUA_LIB= c:\lua5.1\lua5.1.lib
@@ -13,6 +13,8 @@ src\launcher\launcher.exe: src\launcher\launcher.obj
 	link /out:src\launcher\launcher.exe src\launcher\launcher.obj $(LUA_LIB)
 
 all: src\launcher\launcher.exe
+
+cgi: src\launcher\launcher.exe
 
 install:
 	IF NOT EXIST $(LUA_DIR)\wsapi mkdir $(LUA_DIR)\wsapi
