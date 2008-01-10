@@ -1,6 +1,5 @@
 #!/usr/bin/lua
 
-require "luarocks.require"
 require "lfs"
 require "wsapi.cgi"
 
@@ -32,14 +31,10 @@ local function require_file(filename)
     path, file = splitpath(filename)
   end
   lfs.chdir(path)
-  local size, err = lfs.attributes(file, "size")
-  if not size then error({ type = 404, message = err }) end
   local modname = splitext(file)
   if not package.loaded[modname] then
     local loader, err = loadfile(file)
-    if loader == nil then
-      error("unable to load file " .. file .. ", error: " .. err)
-    end
+    if not loader then error({ type = 404, message = err }) end
     package.loaded[modname] = true
     local res = loader(modname)
     if res ~= nil then
