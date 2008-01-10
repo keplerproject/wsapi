@@ -1,6 +1,6 @@
 #!/usr/bin/lua
 
-require "luarocks.require"
+pcall(require,"luarocks.require")
 require "lfs"
 require "wsapi.fastcgi"
 
