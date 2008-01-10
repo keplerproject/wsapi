@@ -1,4 +1,5 @@
-module("hello")
+
+module("hello", package.seeall)
 
 function run(wsapi_env)
   local headers = { ["Content-type"] = "text/html" }
