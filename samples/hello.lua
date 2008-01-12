@@ -1,3 +1,4 @@
+#!/usr/bin/env wsapi
 
 module("hello", package.seeall)
 
