@@ -76,7 +76,6 @@ function run(wsapi_env)
     data.status = 500
     data.headers = {}
     data.env = wsapi_env
-    assert(state:dostring(init, RINGER_APP, RINGER_BOOTSTRAP))
   else
     data = { status = 500, headers = {}, env = wsapi_env }
     setmetatable(data, { __index = _G })
