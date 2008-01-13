@@ -81,7 +81,7 @@ function run(wsapi_env)
     setmetatable(data, { __index = _G })
     state = rings.new(data)
     RINGER_STATE, RINGER_DATA = state, data
-    assert(state:dostring(init, RINGER_APP, RINGER_BOOTSTRAP)))
+    assert(state:dostring(init, RINGER_APP, RINGER_BOOTSTRAP))
   end
   local ok, flag, s, v = state:dostring([[
       main_coro = coroutine.wrap(main_func)
