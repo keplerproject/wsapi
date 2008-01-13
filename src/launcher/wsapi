@@ -4,7 +4,7 @@ pcall(require, "luarocks.require")
 require "lfs"
 require "wsapi.cgi"
 
-local filename = (...)
+local arg_filename = (...)
 
 local function splitpath(filename)
   local path, file = string.match(filename, "^(.*/)([^/]*)$")
@@ -22,27 +22,19 @@ local function splitext(filename)
   return modname, ext
 end
 
-local function require_file(filename)
+local function find_file(filename)
   local mode, err = lfs.attributes(filename, "mode")
   if not mode then error({ type = 404, message = err }) end
-  local path, file
+  local path, file, modname
   if mode == "directory" then
-    path, file = filename, "init.lua"
+    path, modname = splitpath(filename)
+    path = path .. "/" .. modname
+    file = modname .. ".lua"
   else
     path, file = splitpath(filename)
+    modname = splitext(file)
   end
-  lfs.chdir(path)
-  local modname = splitext(file)
-  if not package.loaded[modname] then
-    local loader, err = loadfile(file)
-    if not loader then error({ type = 404, message = err }) end
-    package.loaded[modname] = true
-    local res = loader(modname)
-    if res ~= nil then
-      package.loaded[modname] = res
-    end
-  end
-  return package.loaded[modname]
+  return path, file, modname
 end
 
 function send404(message)
@@ -54,7 +46,9 @@ function send404(message)
         <body>
         <p>The specified resource could not be found on the server.
         The full error message follows:</p>
-        <p>%s</p>
+<pre>
+%s
+</pre>
         </body>
         </html>
       ]], tostring(message)))
@@ -72,7 +66,9 @@ function send500(message)
         <body>
         <p>There was an error in the specified application.
         The full error message follows:</p>
-        <p>%s</p>
+<pre>
+%s
+</pre>
         </body>
         </html>
       ]], tostring(message)))
@@ -90,13 +86,15 @@ local function get_runner(mod)
 end
 
 local function app_loader(wsapi_env)
-  local filename = wsapi_env.PATH_TRANSLATED
+  local filename = arg_filename or wsapi_env.PATH_TRANSLATED
   if filename == "" then filename = wsapi_env.SCRIPT_FILENAME end
   if filename == "" then
     return send500("The server didn't provide a filename")(wsapi_env)
   end
-  local ok, mod = pcall(require_file, filename)
-  if mod then
+  local path, file, modname = find_file(filename)
+  lfs.chdir(path)
+  local ok, mod = pcall(require, modname)
+  if ok then
     return get_runner(mod)(wsapi_env)
   else
     if type(mod) == "table" then
@@ -107,17 +105,5 @@ local function app_loader(wsapi_env)
   end
 end 
 
-if filename then
-  local ok, mod = pcall(require_file, filename)
-  if ok then
-    wsapi.cgi.run(get_runner(mod))
-  else
-    if type(mod) == "table" then
-      wsapi.cgi.run(send404(mod.message))
-    else
-      wsapi.cgi.run(send500(mod))
-    end
-  end
-else
-  wsapi.cgi.run(app_loader)
-end
+wsapi.cgi.run(app_loader)
+

@@ -5,7 +5,7 @@ require "lfs"
 require "wsapi.fastcgi"
 require "wsapi.ringer"
 
-local filename = (...)
+local arg_filename = (...)
 
 local function splitpath(filename)
   local path, file = string.match(filename, "^(.*/)([^/]*)$")
@@ -26,33 +26,18 @@ end
 local function find_file(filename)
   local mode, err = lfs.attributes(filename, "mode")
   if not mode then error({ type = 404, message = err }) end
-  local path, file
+  local path, file, modname
   if mode == "directory" then
-    path, file = filename, "init.lua"
+    path, modname = splitpath(filename)
+    path = path .. "/" .. modname
+    file = modname .. ".lua"
   else
     path, file = splitpath(filename)
+    modname = splitext(file)
   end
-  lfs.chdir(path)
-  local size, err = lfs.attributes(file, "size")
-  if not size then error({ type = 404, message = err }) end
-  local modname = splitext(file)
-  return path, file, modname
-end
-
-local function require_file(filename)
-  local path, file, modname = find_file(filename)
-  if not package.loaded[modname] then
-    local loader, err = loadfile(file)
-    if loader == nil then
-      error("unable to load file " .. file .. ", error: " .. err)
-    end
-    package.loaded[modname] = true
-    local res = loader(modname)
-    if res ~= nil then
-      package.loaded[modname] = res
-    end
-  end
-  return package.loaded[modname]
+  local mtime, err = lfs.attributes(path .. "/" .. file, "modification")
+  if not mtime then error({ type = 404, message = err }) end
+  return path, file, modname, mtime
 end
 
 function send404(message)
@@ -64,7 +49,9 @@ function send404(message)
         <body>
         <p>The specified resource could not be found on the server.
         The full error message follows:</p>
-        <p>%s</p>
+<pre>
+%s
+</pre>
         </body>
         </html>
       ]], tostring(message)))
@@ -82,7 +69,9 @@ function send500(message)
         <body>
         <p>There was an error in the specified application.
         The full error message follows:</p>
-        <p>%s</p>
+<pre>
+%s
+</pre>
         </body>
         </html>
       ]], tostring(message)))
@@ -91,30 +80,37 @@ function send500(message)
   end
 end
 
-local function get_runner(mod)
-  if type(mod) == "table" then
-    return mod.run
-  else
-    return mod
-  end
-end
-
 local app_states = {}
 
+setmetatable(app_states, { __mode = "v" })
+
 local function app_loader(wsapi_env)
-  local filename = wsapi_env.SCRIPT_FILENAME
+  local filename = arg_filename or wsapi_env.SCRIPT_FILENAME
   if filename == "" then filename = wsapi_env.PATH_TRANSLATED end
   if filename == "" then
     return send500("The server didn't provide a filename")(wsapi_env)
   end
-  local path, file, modname = find_file(filename)
+  local ok, path, file, modname, mtime = pcall(find_file, filename)
+  if not ok then
+    if type(path) == table then
+        return send404(path.message)(wsapi_env)
+    else
+        return send500(path)(wsapi_env)
+    end
+  end
   local app_state = app_states[filename]
-  if app_state then
+  if app_state and (app_state.mtime == mtime) then
     wsapi.ringer.RINGER_STATE = app_state.state
     wsapi.ringer.RINGER_DATA = app_state.data
-    return wsapi.ringer.run(wsapi_env)
+    local ok, status, headers, res = pcall(wsapi.ringer.run, wsapi_env)
+    if not ok then
+      return send500(status)(wsapi_env)
+    else
+      return status, headers, res
+    end
   else
     wsapi.ringer.RINGER_STATE = nil
+    wsapi.ringer.RINGER_DATA = nil
     wsapi.ringer.RINGER_APP = modname
     wsapi.ringer.RINGER_BOOTSTRAP = [[
       pcall(require, "luarocks.require")
@@ -123,24 +119,16 @@ local function app_loader(wsapi_env)
       require"lfs"
       lfs.chdir(]] .. string.format("%q", path) .. [[)
     ]]
-    local status, headers, res = wsapi.ringer.run(wsapi_env)
-    app_states[filename] = { state = wsapi.ringer.RINGER_STATE,
-      data = wsapi.ringer.RINGER_DATA }
-    return status, headers, res
+    local ok, status, headers, res = pcall(wsapi.ringer.run, wsapi_env)
+    if not ok then
+      return send500(status)(wsapi_env)
+    else
+      app_states[filename] = { state = wsapi.ringer.RINGER_STATE,
+        data = wsapi.ringer.RINGER_DATA, mtime = mtime }
+      return status, headers, res
+    end
   end
 end 
 
-if filename then
-  local ok, mod = pcall(require_file, filename)
-  if ok then
-    wsapi.fastcgi.run(get_runner(mod))
-  else
-    if type(mod) == "table" then
-      wsapi.fastcgi.run(send404(mod.message))
-    else
-      wsapi.fastcgi.run(send500(mod))
-    end
-  end
-else
-  wsapi.fastcgi.run(app_loader)
-end
+wsapi.fastcgi.run(app_loader)
+
