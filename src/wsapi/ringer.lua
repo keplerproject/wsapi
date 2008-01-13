@@ -9,27 +9,6 @@ local function arg(n)
 end
 
 local init = [==[
-  local wsapi_env = {}
-  wsapi_env.error = {
-    write = function (self, err)
-      remotedostring("env.error:write(arg(1))", err)
-    end
-  }
-  wsapi_env.input = {
-    read = function (self, n)
-      return coroutine.yield("RECEIVE", n)
-    end
-  }
-  setmetatable(wsapi_env, { 
-    __index = function (tab, k)
-      local  _, v = remotedostring("return env[arg(1)]", k)
-      rawset(tab, k, v)
-      return v
-    end,
-    __newindex = function (tab, k, v)
-      remotedostring("env[arg(1)] = arg(2)", k, v)
-      rawset(tab, k, v)
-    end })
   if arg(2) then
     local bootstrap, err
     if string.match(arg(2), "%w%.lua$") then
@@ -50,32 +29,69 @@ local init = [==[
   pcall = copcall
   xpcall = coxpcall
   local app = require(arg(1))
-  main_coro = coroutine.wrap(function ()
-      local status, headers, res = app.run(wsapi_env)
-      remotedostring("status = arg(1)", status)
-      for k, v in pairs(headers) do
-        remotedostring("headers[arg(1)] = arg(2)", k, v)
-      end
-      local s = res()
-      while s do
-        coroutine.yield("SEND", s)
-        s = res()
-      end
-    end)
+  if type(app) == "table" then
+    app = app.run
+  end
+  local wsapi_error = {
+       write = function (self, err)
+         remotedostring("env.error:write(arg(1))", err)
+       end
+  }
+  local wsapi_input =  {
+       read = function (self, n)
+         return coroutine.yield("RECEIVE", n)
+       end
+  }
+  local wsapi_meta = { 
+       __index = function (tab, k)
+         local  _, v = remotedostring("return env[arg(1)]", k)
+         rawset(tab, k, v)
+         return v
+    end 
+  }
+  main_func = function ()
+     local wsapi_env = {}
+     wsapi_env.error = wsapi_error
+     wsapi_env.input = wsapi_input
+     setmetatable(wsapi_env, wsapi_meta)
+     local status, headers, res = app(wsapi_env)
+     remotedostring("status = arg(1)", status)
+     for k, v in pairs(headers) do
+       remotedostring("headers[arg(1)] = arg(2)", k, v)
+     end
+     local s = res()
+     while s do
+       coroutine.yield("SEND", s)
+       s = res()
+     end
+  end
 ]==]
 
 init = string.gsub(init, "arg%((%d+)%)", arg)
 
 function run(wsapi_env)
-  local data = { status = 500, headers = {}, env = wsapi_env }
-  setmetatable(data, { __index = _G })
-  local new_state = rings.new(data)
-  assert(new_state:dostring(init, RINGER_APP, RINGER_BOOTSTRAP))
-  local ok, flag, s, v = new_state:dostring("return main_coro()")
+  local state, data
+  if RINGER_STATE then
+    state, data = RINGER_STATE, RINGER_DATA
+    data.status = 500
+    data.headers = {}
+    data.env = wsapi_env
+    assert(state:dostring(init, RINGER_APP, RINGER_BOOTSTRAP))
+  else
+    data = { status = 500, headers = {}, env = wsapi_env }
+    setmetatable(data, { __index = _G })
+    state = rings.new(data)
+    RINGER_STATE, RINGER_DATA = state, data
+    assert(state:dostring(init, RINGER_APP, RINGER_BOOTSTRAP))
+  end
+  local ok, flag, s, v = state:dostring([[
+      main_coro = coroutine.wrap(main_func)
+      return main_coro()
+  ]])
   repeat
     if not ok then error(flag) end
     if flag == "RECEIVE" then
-      ok, flag, s, v = new_state:dostring("return main_coro(...)",
+      ok, flag, s, v = state:dostring("return main_coro(...)",
         wsapi_env.input:read(s))
     elseif flag == "SEND" then
       break
@@ -89,10 +105,10 @@ function run(wsapi_env)
         s = nil
         return res
       end
-      local ok, flag, s, v = new_state:dostring("return main_coro()")
+      local ok, flag, s, v = state:dostring("return main_coro()")
       while ok and flag and s do
         if flag == "RECEIVE" then
-          ok, flag, s, v = new_state:dostring("return main_coro(...)",
+          ok, flag, s, v = state:dostring("return main_coro(...)",
             wsapi_env.input:read(s))
         elseif flag == "SEND" then
           return s

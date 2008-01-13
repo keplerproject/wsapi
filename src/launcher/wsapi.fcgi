@@ -3,6 +3,7 @@
 pcall(require,"luarocks.require")
 require "lfs"
 require "wsapi.fastcgi"
+require "wsapi.ringer"
 
 local filename = (...)
 
@@ -22,7 +23,7 @@ local function splitext(filename)
   return modname, ext
 end
 
-local function require_file(filename)
+local function find_file(filename)
   local mode, err = lfs.attributes(filename, "mode")
   if not mode then error({ type = 404, message = err }) end
   local path, file
@@ -35,6 +36,11 @@ local function require_file(filename)
   local size, err = lfs.attributes(file, "size")
   if not size then error({ type = 404, message = err }) end
   local modname = splitext(file)
+  return path, file, modname
+end
+
+local function require_file(filename)
+  local path, file, modname = find_file(filename)
   if not package.loaded[modname] then
     local loader, err = loadfile(file)
     if loader == nil then
@@ -93,21 +99,34 @@ local function get_runner(mod)
   end
 end
 
+local app_states = {}
+
 local function app_loader(wsapi_env)
   local filename = wsapi_env.SCRIPT_FILENAME
   if filename == "" then filename = wsapi_env.PATH_TRANSLATED end
   if filename == "" then
     return send500("The server didn't provide a filename")(wsapi_env)
   end
-  local ok, mod = pcall(require_file, filename)
-  if mod then
-    return get_runner(mod)(wsapi_env)
+  local path, file, modname = find_file(filename)
+  local app_state = app_states[filename]
+  if app_state then
+    wsapi.ringer.RINGER_STATE = app_state.state
+    wsapi.ringer.RINGER_DATA = app_state.data
+    return wsapi.ringer.run(wsapi_env)
   else
-    if type(mod) == "table" then
-      return send404(mod.message)(wsapi_env)
-    else
-      return send500(mod)(wsapi_env)
-    end
+    wsapi.ringer.RINGER_STATE = nil
+    wsapi.ringer.RINGER_APP = modname
+    wsapi.ringer.RINGER_BOOTSTRAP = [[
+      pcall(require, "luarocks.require")
+      _, package.path = remotedostring("return package.path")
+      _, package.cpath = remotedostring("return package.cpath")
+      require"lfs"
+      lfs.chdir(]] .. string.format("%q", path) .. [[)
+    ]]
+    local status, headers, res = wsapi.ringer.run(wsapi_env)
+    app_states[filename] = { state = wsapi.ringer.RINGER_STATE,
+      data = wsapi.ringer.RINGER_DATA }
+    return status, headers, res
   end
 end 
 

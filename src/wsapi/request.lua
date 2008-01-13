@@ -131,7 +131,7 @@ function new(wsapi_env)
     path_info = wsapi_env.PATH_INFO, query_string = wsapi_env.QUERY_STRING,
     script_name = wsapi_env.SCRIPT_NAME }
   parse_qs(wsapi_env.QUERY_STRING, req.GET)
-  if wsapi_env.input.size > 0 then parse_post_data(wsapi_env, req.POST) end
+  parse_post_data(wsapi_env, req.POST)
   req.params = {}
   setmetatable(req.params, { __index = function (tab, name)
 					 local var = req.GET[name] or
