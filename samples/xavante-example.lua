@@ -8,7 +8,7 @@ require "wsapi.xavante"
 -- Here you require your WSAPI/Orbit application
 require"wsapi.ringer"
 
-RINGER_APP = "wsapi.sapi"
+local RINGER_APP = "wsapi.sapi"
 
 -- Define here where Xavante HTTP documents scripts are located
 local webDir = "/var/www"
@@ -17,7 +17,7 @@ local simplerules = {
 
     { -- WSAPI application will be mounted under /app
       match = { "%.lp/", "%.lp$", "%.lua$", "%.lua/" },
-      with = wsapi.xavante.makeHandler(wsapi.ringer.run)
+      with = wsapi.xavante.makeHandler(wsapi.ringer.new(RINGER_APP))
     },
     
     { -- filehandler 

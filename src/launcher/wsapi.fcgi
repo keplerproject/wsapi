@@ -100,31 +100,27 @@ local function app_loader(wsapi_env)
   end
   local app_state = app_states[filename]
   if app_state and (app_state.mtime == mtime) then
-    wsapi.ringer.RINGER_STATE = app_state.state
-    wsapi.ringer.RINGER_DATA = app_state.data
-    local ok, status, headers, res = pcall(wsapi.ringer.run, wsapi_env)
+    local ringer = app_state.state
+    local ok, status, headers, res = pcall(ringer, wsapi_env)
     if not ok then
       return send500(status)(wsapi_env)
     else
       return status, headers, res
     end
   else
-    wsapi.ringer.RINGER_STATE = nil
-    wsapi.ringer.RINGER_DATA = nil
-    wsapi.ringer.RINGER_APP = modname
-    wsapi.ringer.RINGER_BOOTSTRAP = [[
+    local bootstrap = [[
       pcall(require, "luarocks.require")
       _, package.path = remotedostring("return package.path")
       _, package.cpath = remotedostring("return package.cpath")
       require"lfs"
       lfs.chdir(]] .. string.format("%q", path) .. [[)
     ]]
-    local ok, status, headers, res = pcall(wsapi.ringer.run, wsapi_env)
+    local ringer = wsapi.ringer.new(modname, bootstrap)
+    local ok, status, headers, res = pcall(ringer, wsapi_env)
     if not ok then
       return send500(status)(wsapi_env)
     else
-      app_states[filename] = { state = wsapi.ringer.RINGER_STATE,
-        data = wsapi.ringer.RINGER_DATA, mtime = mtime }
+      app_states[filename] = { state = ringer, mtime = mtime }
       return status, headers, res
     end
   end
