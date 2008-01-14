@@ -61,7 +61,7 @@ local function get_field_names(headers)
   for attr, val in string.gmatch(disp_header, ';%s*([^%s=]+)="(.-)"') do
     attrs[attr] = val
   end
-  return attrs.name, split_filename(attrs.filename)
+  return attrs.name, filename and split_filename(attrs.filename)
 end
 
 local function read_field_contents(input, boundary, pos)
@@ -119,7 +119,7 @@ local function parse_post_data(wsapi_env, tab)
   if string.find(input_type, "x%-www%-form%-urlencoded") then
     parse_qs(wsapi_env.input:read(), tab)
   elseif string.find(input_type, "multipart/form%-data") then
-    parse_multipart_data(wsapi_env.input, input_type, tab)
+    parse_multipart_data(wsapi_env.input:read(), input_type, tab)
   else
     tab.post_data = wsapi_env.input:read()
   end  

@@ -57,7 +57,14 @@ local init = [==[
      local status, headers, res = app(wsapi_env)
      remotedostring("status = arg(1)", status)
      for k, v in pairs(headers) do
-       remotedostring("headers[arg(1)] = arg(2)", k, v)
+       if type(v) == "table" then
+         remotedostring("headers[arg(1)] = {}", k)
+         for _, val in ipairs(v) do
+           remotedostring("table.insert(headers[arg(1)], arg(2))", k, val)
+         end
+       else
+         remotedostring("headers[arg(1)] = arg(2)", k, v)
+       end
      end
      local s = res()
      while s do
