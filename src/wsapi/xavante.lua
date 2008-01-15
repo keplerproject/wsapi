@@ -23,7 +23,7 @@ local function set_cgivars (req, diskpath, path_info_pat, script_name_pat)
       DOCUMENT_ROOT = req.diskpath,
       PATH_INFO = string.match(req.parsed_url.path, path_info_pat) or "",
       PATH_TRANSLATED = (req.diskpath or "") .. (string.match(req.parsed_url.path, script_name_pat) or ""),
-      SCRIPT_NAME = string.match(req.parsed_url.path, script_name_pat),
+      SCRIPT_NAME = script_name_pat,
       QUERY_STRING = req.parsed_url.query or "",
       REMOTE_ADDR = string.gsub (req.rawskt:getpeername (), ":%d*$", ""),
       CONTENT_TYPE = req.headers ["content-type"],
@@ -37,7 +37,7 @@ end
 
 local function wsapihandler (req, res, wsapi_run, app_prefix)
    local path_info_pat = "^" .. app_prefix .. "(.*)"
-   local script_name_pat = "^(" .. app_prefix .. ")"
+   local script_name_pat = app_prefix
 
    set_cgivars(req, nil, path_info_pat, script_name_pat)
 
