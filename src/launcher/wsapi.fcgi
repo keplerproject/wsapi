@@ -84,7 +84,10 @@ local app_states = {}
 
 setmetatable(app_states, { __mode = "v" })
 
+local start_path = lfs.currentdir()
+
 local function app_loader(wsapi_env)
+  lfs.chdir(start_path)
   local filename = arg_filename or wsapi_env.SCRIPT_FILENAME
   if filename == "" then filename = wsapi_env.PATH_TRANSLATED end
   if filename == "" then
@@ -98,6 +101,7 @@ local function app_loader(wsapi_env)
         return send500(path)(wsapi_env)
     end
   end
+  lfs.chdir(path)
   local app_state = app_states[filename]
   if app_state and (app_state.mtime == mtime) then
     local ringer = app_state.state
@@ -112,8 +116,6 @@ local function app_loader(wsapi_env)
       pcall(require, "luarocks.require")
       _, package.path = remotedostring("return package.path")
       _, package.cpath = remotedostring("return package.cpath")
-      require"lfs"
-      lfs.chdir(]] .. string.format("%q", path) .. [[)
     ]]
     local ringer = wsapi.ringer.new(modname, bootstrap)
     local ok, status, headers, res = pcall(ringer, wsapi_env)
