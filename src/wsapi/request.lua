@@ -27,10 +27,10 @@ local function parse_qs(qs, tab)
     for key, val in string.gmatch(qs, "([^&=]+)=([^&=]*)&?") do
       insert_field(tab, url_decode(key), url_decode(val))
     end
-    return tab
-  else
+  elseif qs then
     error("WSAPI Request error: invalid query string")
   end
+  return tab
 end
 
 local function get_boundary(content_type)
