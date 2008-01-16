@@ -8,17 +8,18 @@ require "wsapi.ringer"
 local arg_filename = (...)
 
 local function splitpath(filename)
-  local path, file = string.match(filename, "^(.*/)([^/]*)$")
+  local path, file = string.match(filename, "^(.*[/\\])([^/\\]*)$")
   if not path then path, file = "", filename end
-  local start_path = string.sub(path, 1, 1)
-  if not (start_path == "/" or start_path == ".") then
+  local start_path, colon = string.sub(path, 1, 1), string.sub(path, 2, 2)
+  if not (start_path == "/" or start_path == "." or colon == ":" or
+      start_path == "\\") then
     path = "./" .. path
   end
   return path, file
 end
 
 local function splitext(filename)
-  local modname, ext = string.match(filename, "^(.+)(%.[^%.]+)$")
+  local modname, ext = string.match(filename, "^(.+)%.([^%.]+)$")
   if not modname then modname, ext = filename, "" end
   return modname, ext
 end
@@ -26,18 +27,19 @@ end
 local function find_file(filename)
   local mode, err = lfs.attributes(filename, "mode")
   if not mode then error({ type = 404, message = err }) end
-  local path, file, modname
+  local path, file, modname, ext
   if mode == "directory" then
     path, modname = splitpath(filename)
     path = path .. "/" .. modname
     file = modname .. ".lua"
+    ext = "lua"
   else
     path, file = splitpath(filename)
-    modname = splitext(file)
+    modname, ext = splitext(file)
   end
   local mtime, err = lfs.attributes(path .. "/" .. file, "modification")
   if not mtime then error({ type = 404, message = err }) end
-  return path, file, modname, mtime
+  return path, file, modname, mtime, ext
 end
 
 function send404(message)
@@ -93,7 +95,7 @@ local function app_loader(wsapi_env)
   if filename == "" then
     return send500("The server didn't provide a filename")(wsapi_env)
   end
-  local ok, path, file, modname, mtime = pcall(find_file, filename)
+  local ok, path, file, modname, mtime, ext = pcall(find_file, filename)
   if not ok then
     if type(path) == table then
         return send404(path.message)(wsapi_env)
@@ -102,6 +104,11 @@ local function app_loader(wsapi_env)
     end
   end
   lfs.chdir(path)
+  if wsapi_env.PATH_INFO:match(modname .. "%." .. ext) then
+    wsapi_env.PATH_INFO = 
+      wsapi_env.PATH_INFO:match(modname .. "%." .. ext .. "(.*)$")
+    if wsapi_env.PATH_INFO == "" then wsapi_env.PATH_INFO = "/" end    
+  end
   local app_state = app_states[filename]
   if app_state and (app_state.mtime == mtime) then
     local ringer = app_state.state
