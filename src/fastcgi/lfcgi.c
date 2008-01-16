@@ -1,7 +1,7 @@
 /*
 ** FastCGI Input/Output library.
 **
-** $Id: lfcgi.c,v 1.1 2007/10/30 23:44:45 mascarenhas Exp $
+** $Id: lfcgi.c,v 1.2 2008/01/16 21:41:36 mascarenhas Exp $
 */
 
 
@@ -45,6 +45,9 @@
 #if _POSIX_C_SOURCE >= 2
 #define USE_POPEN	1
 #endif
+#endif
+#ifdef _WIN32
+#define USE_POPEN       
 #endif
 #endif
 
