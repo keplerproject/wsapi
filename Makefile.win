@@ -1,4 +1,4 @@
-# $Id: Makefile.win,v 1.13 2008/01/16 19:47:57 mascarenhas Exp $
+# $Id: Makefile.win,v 1.14 2008/01/16 21:01:16 mascarenhas Exp $
 
 LUA_INCLUDE= c:\lua5.1\include
 LUA_LIB= c:\lua5.1\lua5.1.lib
@@ -7,7 +7,7 @@ LUA_DIR= c:\lua5.1\lua
 LUA_LIBDIR= c:\lua5.1
 
 .c.obj:
-        $(CC) /c /Fo$@ /I$(LUA_INCLUDE) $<
+        $(CC) /c /Fo$@ $(CFLAGS) /I$(LUA_INCLUDE) $<
 
 src\launcher\launcher.exe: src\launcher\launcher.obj
 	link /out:src\launcher\launcher.exe src\launcher\launcher.obj $(LUA_LIB)
@@ -15,6 +15,9 @@ src\launcher\launcher.exe: src\launcher\launcher.obj
 all: src\launcher\launcher.exe
 
 cgi: src\launcher\launcher.exe
+
+fcgi: src\fastcgi\lfcgi.dll
+      link /out:src\fastcgi\lfcgi.dll /def:src\fastcgi\lfcgi.def $(LIB_OPTION) src\fastcgi\lfcgi.obj
 
 install:
 	IF NOT EXIST $(LUA_DIR)\wsapi mkdir $(LUA_DIR)\wsapi
@@ -33,6 +36,9 @@ install-rocks:
 	IF NOT EXIST "$(PREFIX)\doc" mkdir "$(PREFIX)\doc"
 	IF NOT EXIST "$(PREFIX)\doc\us" mkdir "$(PREFIX)\doc\us"
 	copy doc\us\* "$(PREFIX)\doc\us"
+
+install-fcgi:
+	copy src\fastcgi\lfcgi.dll "$(LUA_LIBDIR)\"
 
 clean:
 	del src\launcher\launcher.obj

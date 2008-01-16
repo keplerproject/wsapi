@@ -35,17 +35,24 @@ build = {
      unix = {
         type = "make",
    	install_target = "install-fcgi",
-   	install_variables = {
-     	  PREFIX  = "$(PREFIX)",
-   	  LUA_BIN = "/usr/bin/env lua",
-     	  LUA_DIR = "$(LUADIR)",
-     	  BIN_DIR = "$(BINDIR)"
-   	},
        	build_pass = true,
        	build_target = "fcgi",
        	build_variables = {
          LIB_OPTION = "$(LIBFLAG) -L$(FASTCGI_LIBDIR)",
          CFLAGS = "$(CFLAGS) -I$(LUA_INCDIR) -I$(FASTCGI_INCDIR)",
+       	},
+       	install_variables = {
+         LUA_LIBDIR = "$(LIBDIR)"
+       	}
+     },
+     win32 = {
+        type = "make",
+   	install_target = "install-fcgi",
+       	build_pass = true,
+       	build_target = "fcgi",
+       	build_variables = {
+         LIB_OPTION = "$(LUA_LIBDIR)\lua5.1.lib $(FASTCGI_LIB)",
+         CFLAGS = "$(CFLAGS) /I$(FASTCGI_INCDIR)",
        	},
        	install_variables = {
          LUA_LIBDIR = "$(LIBDIR)"
