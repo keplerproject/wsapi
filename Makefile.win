@@ -1,4 +1,4 @@
-# $Id: Makefile.win,v 1.12 2008/01/08 18:07:12 mascarenhas Exp $
+# $Id: Makefile.win,v 1.13 2008/01/16 19:47:57 mascarenhas Exp $
 
 LUA_INCLUDE= c:\lua5.1\include
 LUA_LIB= c:\lua5.1\lua5.1.lib
@@ -26,6 +26,8 @@ install-rocks:
 	copy src\wsapi\*.lua "$(PREFIX)\lua\wsapi"
 	IF NOT EXIST "$(PREFIX)\bin" "mkdir $(PREFIX)\bin"
 	copy src\launcher\launcher.exe "$(PREFIX)\bin"
+	copy src\launcher\wsapi "$(PREFIX)\bin"
+	copy src\launcher\wsapi.fcgi "$(PREFIX)\bin"
 	IF NOT EXIST "$(PREFIX)\samples" mkdir "$(PREFIX)\samples"
 	copy samples\* "$(PREFIX)\samples"
 	IF NOT EXIST "$(PREFIX)\doc" mkdir "$(PREFIX)\doc"
