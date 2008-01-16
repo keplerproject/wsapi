@@ -1,4 +1,4 @@
-# $Id: Makefile.win,v 1.14 2008/01/16 21:01:16 mascarenhas Exp $
+# $Id: Makefile.win,v 1.15 2008/01/16 21:12:09 mascarenhas Exp $
 
 LUA_INCLUDE= c:\lua5.1\include
 LUA_LIB= c:\lua5.1\lua5.1.lib
@@ -16,8 +16,10 @@ all: src\launcher\launcher.exe
 
 cgi: src\launcher\launcher.exe
 
-fcgi: src\fastcgi\lfcgi.dll
+src\fastcgi\lfcgi.dll: src\fastcgi\lfcgi.obj
       link /out:src\fastcgi\lfcgi.dll /def:src\fastcgi\lfcgi.def $(LIB_OPTION) src\fastcgi\lfcgi.obj
+
+fcgi: src\fastcgi\lfcgi.dll
 
 install:
 	IF NOT EXIST $(LUA_DIR)\wsapi mkdir $(LUA_DIR)\wsapi
