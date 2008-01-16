@@ -88,6 +88,16 @@ setmetatable(app_states, { __mode = "v" })
 
 local start_path = lfs.currentdir()
 
+local function adjust_for_iis(filename, wsapi_env)
+  local script_name, ext = wsapi_env.SCRIPT_NAME:match("([^/\\%.]+)%.([^%.]+)$")
+  if script_name then
+    local path = filename:match("^(.+)" .. script_name .. "%." .. ext .. "[/\\]")
+    if path then return path .. script_name .. "." .. ext else return filename end
+  else
+    return filename
+  end
+end
+
 local function app_loader(wsapi_env)
   lfs.chdir(start_path)
   local filename = arg_filename or wsapi_env.SCRIPT_FILENAME
@@ -95,6 +105,7 @@ local function app_loader(wsapi_env)
   if filename == "" then
     return send500("The server didn't provide a filename")(wsapi_env)
   end
+  filename = adjust_for_iis(filename, wsapi_env)
   local ok, path, file, modname, mtime, ext = pcall(find_file, filename)
   if not ok then
     if type(path) == table then
