@@ -1,14 +1,10 @@
----------------------------------------------------------------------
--- Main Lua script.
--- This script should be run by the executable.
--- $Id: sapi.lua,v 1.8 2007/12/18 15:08:12 carregal Exp $
----------------------------------------------------------------------
+#!/usr/bin/env wsapi
 
-require"wsapi.response" 
+require "wsapi.response"
 
-wsapi.sapi = {}
+module(..., package.seeall)
 
-function wsapi.sapi.run(wsapi_env)
+function run(wsapi_env)
   local res = wsapi.response.new()
 
   SAPI = {
@@ -46,5 +42,4 @@ function wsapi.sapi.run(wsapi_env)
   return res:finish()
 end
 
-return wsapi.sapi
 

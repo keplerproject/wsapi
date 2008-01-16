@@ -1,7 +1,7 @@
 ## Overview
 
 WSAPI includes a set of helper libraries to make writing applications and web frameworks easier.
-To use these libraries just require them in your application or framework.
+To use these libraries just `require` them in your application or framework.
 
 ## Request
 
@@ -34,7 +34,7 @@ object, optionally setting an initial status code, header table and body content
 
 **res[*name*]** - same as **res.headers[*name*]**, unless *name* is a field in res
 
-**res[*name*]** **=** **value** - same as **res.headers[*name*] = value**, unless *name* is
+**res[*name*] = _value_** - same as **res.headers[*name*] = _value_**, unless *name* is
 a field in res
 
 **res:write(*s*)** - adds *s* to the body if it is a string, if it is a table
@@ -51,3 +51,4 @@ concatenate the contents of the table and add to the body
 **wsapi.util.url_encode(*s*)** - encodes *s* according to RFC2396
 
 **wsapi.util.url_decode(*s*)** - decodes *s* according to RFC2396
+

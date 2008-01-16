@@ -88,17 +88,29 @@ local function wsapihandler (req, res, wsapi_run, app_prefix)
    end
 
    local function send_content(res_iter)
-      local s = res_iter()
-      while s do
+      local ok, s = pcall(res_iter)
+      while ok and s do
 	 res:send_data(s)
-	 s = res_iter()
+	 ok, s = pcall(res_iter)
+      end
+      if not ok then
+         res:write("======== WSAPI ERROR DURING RESPONSE PROCESSING: " ..
+		   tostring(res))
       end
    end
 
-   local status, headers, res_iter = wsapi_run(wsapi_env)
-   set_status(status)
-   send_headers(headers)
-   send_content(res_iter)
+   local ok, status, headers, res_iter = pcall(wsapi_run, wsapi_env)
+   if ok then
+      set_status(status or 500)
+      send_headers(headers or {})
+      send_content(res_iter)
+   else
+     res.statusline = "HTTP/1.1 500" 
+     io.stderr:write("WSAPI error in application: " .. tostring(status) .. "\n")
+     res:write("Status: 500 Internal Server Error\r\n")
+     res:write("Content-type: text/plain\r\n\r\n")
+     res:write("WSAPI error in application: " .. tostring(status) .. "\n")
+   end
 end
 
 -------------------------------------------------------------------------------

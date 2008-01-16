@@ -45,18 +45,10 @@ function run(app_run)
 
       if wsapi_env.PATH_INFO == "" then wsapi_env.PATH_INFO = "/" end
 
---      if wsapi_env.PATH_TRANSLATED == "" and
---        wsapi_env.SCRIPT_NAME == "" and
---         wsapi_env.SCRIPT_FILENAME ~= "" then 
---        wsapi_env.PATH_TRANSLATED = wsapi_env.SCRIPT_FILENAME
---        wsapi_env.SCRIPT_NAME = string.match(wsapi_env.SCRIPT_FILENAME,
---          "^" .. wsapi_env.DOCUMENT_ROOT .. "(.+)$")
---      end
-
       local ok, status, headers, res_iter = pcall(app_run, wsapi_env)
       if ok then
-	 lfcgi.stdout:write("Status: " .. status .. "\r\n")
-	 for h, v in pairs(headers) do
+	 lfcgi.stdout:write("Status: " .. (status or 500) .. "\r\n")
+	 for h, v in pairs(headers or {}) do
             if type(v) ~= "table" then
 	       lfcgi.stdout:write(h .. ": " .. tostring(v) .. "\r\n") 
             else
@@ -66,13 +58,20 @@ function run(app_run)
             end 
 	 end
 	 lfcgi.stdout:write("\r\n")
-	 local res = res_iter()
-	 while res do
-            lfcgi.stdout:write(res)
-            res = res_iter()
+	 local ok, res = pcall(res_iter)
+	 while ok and res do
+	    lfcgi.stdout:write(res)
+	    ok, res = pcall(res_iter)
 	 end
-       else
-	 io.stderr:write(status)
+	 if not ok then
+	    lfcgi.stdout:write("======== WSAPI ERROR DURING RESPONSE PROCESSING: " ..
+			    tostring(res))
+	 end
+      else
+	 lfcgi.stderr:write("WSAPI error in application: " .. tostring(status) .. "\n")
+	 lfcgi.stdout:write("Status: 500 Internal Server Error\r\n")
+	 lfcgi.stdout:write("Content-type: text/plain\r\n\r\n")
+	 lfcgi.stdout:write("WSAPI error in application: " .. tostring(status) .. "\n")
       end
    end
 end

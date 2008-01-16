@@ -42,8 +42,8 @@ function run(app_run)
  
    local ok, status, headers, res_iter = pcall(app_run, wsapi_env)
    if ok then
-     io.stdout:write("Status: " .. status .. "\r\n")
-     for h, v in pairs(headers) do
+     io.stdout:write("Status: " .. (status or 500) .. "\r\n")
+     for h, v in pairs(headers or {}) do
        if type(v) ~= "table" then
          io.stdout:write(h .. ": " .. tostring(v) .. "\r\n") 
        else
@@ -53,15 +53,19 @@ function run(app_run)
        end 
      end
      io.stdout:write("\r\n")
-     local res = res_iter()
-     while res do
+     local ok, res = pcall(res_iter)
+     while ok and res do
        io.stdout:write(res)
-       res = res_iter()
+       ok, res = pcall(res_iter)
+     end
+     if not ok then
+       io.stdout:write("======== WSAPI ERROR DURING RESPONSE PROCESSING: " ..
+		       tostring(res))
      end
    else
-     io.stderr:write(tostring(status))
+     io.stderr:write("WSAPI error in application: " .. tostring(status) .. "\n")
      io.stdout:write("Status: 500 Internal Server Error\r\n")
      io.stdout:write("Content-type: text/plain\r\n\r\n")
-     io.stdout:write(tostring(status))
+     io.stdout:write("WSAPI error in application: " .. tostring(status) .. "\n")
    end
 end
