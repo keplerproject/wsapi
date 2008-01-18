@@ -25,13 +25,11 @@ local init = [==[
     _, package.path = remotedostring("return package.path")
     _, package.cpath = remotedostring("return package.cpath")
   end
+  local common = require"wsapi.common"
   require"wsapi.coxpcall"
   pcall = copcall
   xpcall = coxpcall
-  local app = require(arg(1))
-  if type(app) == "table" then
-    app = app.run
-  end
+  local app = common.norm_app(require(arg(1)))
   local wsapi_error = {
        write = function (self, err)
          remotedostring("env.error:write(arg(1))", err)
@@ -44,15 +42,13 @@ local init = [==[
   }
   local wsapi_meta = { 
        __index = function (tab, k)
-         local  _, v = remotedostring("return env[arg(1)]", k)
-         rawset(tab, k, v)
-         return v
-    end 
+		    local  _, v = remotedostring("return env[arg(1)]", k)
+		    rawset(tab, k, v)
+		    return v
+		 end 
   }
   main_func = function ()
-     local wsapi_env = {}
-     wsapi_env.error = wsapi_error
-     wsapi_env.input = wsapi_input
+     local wsapi_env = { error = wsapi_error, input = wsapi_input }
      setmetatable(wsapi_env, wsapi_meta)
      local status, headers, res = app(wsapi_env)
      remotedostring("status = arg(1)", status)

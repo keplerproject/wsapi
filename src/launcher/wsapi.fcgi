@@ -1,86 +1,15 @@
 #!/usr/bin/lua
 
+-- Generic WSAPI FastCGI launcher, extracts application to launch
+-- from SCRIPT_FILENAME/PATH_TRANSLATED, each application (defined
+-- by its script entry point) gets an isolated Lua VM; sequential
+-- requests to the same application go to the same VM
+
 pcall(require,"luarocks.require")
-require "lfs"
+local lfs = require "lfs"
+local common = require "wsapi.common"
 require "wsapi.fastcgi"
 require "wsapi.ringer"
-
-local arg_filename = (...)
-
-local function splitpath(filename)
-  local path, file = string.match(filename, "^(.*[/\\])([^/\\]*)$")
-  if not path then path, file = "", filename end
-  local start_path, colon = string.sub(path, 1, 1), string.sub(path, 2, 2)
-  if not (start_path == "/" or start_path == "." or colon == ":" or
-      start_path == "\\") then
-    path = "./" .. path
-  end
-  return path, file
-end
-
-local function splitext(filename)
-  local modname, ext = string.match(filename, "^(.+)%.([^%.]+)$")
-  if not modname then modname, ext = filename, "" end
-  return modname, ext
-end
-
-local function find_file(filename)
-  local mode, err = lfs.attributes(filename, "mode")
-  if not mode then error({ type = 404, message = err }) end
-  local path, file, modname, ext
-  if mode == "directory" then
-    path, modname = splitpath(filename)
-    path = path .. "/" .. modname
-    file = modname .. ".lua"
-    ext = "lua"
-  else
-    path, file = splitpath(filename)
-    modname, ext = splitext(file)
-  end
-  local mtime, err = lfs.attributes(path .. "/" .. file, "modification")
-  if not mtime then error({ type = 404, message = err }) end
-  return path, file, modname, mtime, ext
-end
-
-function send404(message)
-  return function (wsapi_env)
-    local function res()
-      coroutine.yield(string.format([[
-        <html>
-        <head><title>Resource not Found</title></head>
-        <body>
-        <p>The specified resource could not be found on the server.
-        The full error message follows:</p>
-<pre>
-%s
-</pre>
-        </body>
-        </html>
-      ]], tostring(message)))
-    end
-    return 404, { ["Content-Type"] = "text/html" }, coroutine.wrap(res)
-  end
-end
-
-function send500(message)
-  return function (wsapi_env)
-    local function res()
-      coroutine.yield(string.format([[
-        <html>
-        <head><title>Error in Application</title></head>
-        <body>
-        <p>There was an error in the specified application.
-        The full error message follows:</p>
-<pre>
-%s
-</pre>
-        </body>
-        </html>
-      ]], tostring(message)))
-    end
-    return 500, { ["Content-Type"] = "text/html" }, coroutine.wrap(res)
-  end
-end
 
 local app_states = {}
 
@@ -88,63 +17,25 @@ setmetatable(app_states, { __mode = "v" })
 
 local start_path = lfs.currentdir()
 
-local function adjust_for_iis(filename, wsapi_env)
-  local script_name, ext = wsapi_env.SCRIPT_NAME:match("([^/\\%.]+)%.([^%.]+)$")
-  if script_name then
-    local path = filename:match("^(.+)" .. script_name .. "%." .. ext .. "[/\\]")
-    if path then return path .. script_name .. "." .. ext else return filename end
-  else
-    return filename
-  end
-end
-
 local function app_loader(wsapi_env)
   lfs.chdir(start_path)
-  local filename = arg_filename or wsapi_env.SCRIPT_FILENAME
-  if filename == "" then filename = wsapi_env.PATH_TRANSLATED end
-  if filename == "" then
-    return send500("The server didn't provide a filename")(wsapi_env)
-  end
-  filename = adjust_for_iis(filename, wsapi_env)
-  local ok, path, file, modname, mtime, ext = pcall(find_file, filename)
-  if not ok then
-    if type(path) == table then
-        return send404(path.message)(wsapi_env)
-    else
-        return send500(path)(wsapi_env)
-    end
-  end
+  local path, file, modname, ext, mtime = 
+    common.find_module(nil, wsapi_env)
   lfs.chdir(path)
-  if wsapi_env.PATH_INFO:match(modname .. "%." .. ext) then
-    wsapi_env.PATH_INFO = 
-      wsapi_env.PATH_INFO:match(modname .. "%." .. ext .. "(.*)$")
-    if wsapi_env.PATH_INFO == "" then wsapi_env.PATH_INFO = "/" end    
-  end
+  local ringer
   local app_state = app_states[filename]
   if app_state and (app_state.mtime == mtime) then
-    local ringer = app_state.state
-    local ok, status, headers, res = pcall(ringer, wsapi_env)
-    if not ok then
-      return send500(status)(wsapi_env)
-    else
-      return status, headers, res
-    end
+    ringer = app_state.state
   else
     local bootstrap = [[
       pcall(require, "luarocks.require")
       _, package.path = remotedostring("return package.path")
       _, package.cpath = remotedostring("return package.cpath")
     ]]
-    local ringer = wsapi.ringer.new(modname, bootstrap)
-    local ok, status, headers, res = pcall(ringer, wsapi_env)
-    if not ok then
-      return send500(status)(wsapi_env)
-    else
-      app_states[filename] = { state = ringer, mtime = mtime }
-      return status, headers, res
-    end
+    ringer = wsapi.ringer.new(modname, bootstrap)
+    app_states[filename] = { state = ringer, mtime = mtime }
   end
+  return ringer(wsapi_env)
 end 
 
 wsapi.fastcgi.run(app_loader)
-

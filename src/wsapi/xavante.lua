@@ -6,6 +6,8 @@
 --
 -----------------------------------------------------------------------------
 
+local common = require"wsapi.common"
+
 module (..., package.seeall)
 
 -------------------------------------------------------------------------------
@@ -37,35 +39,14 @@ end
 
 local function wsapihandler (req, res, wsapi_run, app_prefix)
    local path_info_pat = "^" .. app_prefix .. "(.*)"
-   local script_name_pat = app_prefix
+   set_cgivars(req, nil, path_info_pat, app_prefix)
 
-   set_cgivars(req, nil, path_info_pat, script_name_pat)
+   local get_cgi_var = function (var) 
+			  return req.cgivars[var] or ""
+		       end
 
-   local function get_cgi_var(env, var)
-      local val = req.cgivars[var] or ""
-      env[var] = val
-      return val
-   end
-
-   local wsapi_env, input, error = {}, { bytes_read = 0 }, {}
-
-   function error:write(s)
-      io.stderr:write(s)
-   end
-
-   function input:read(n)
-      local n = n or self.size - self.bytes_read
-      if self.bytes_read < self.size then
-	 n = math.min(n, self.size - self.bytes_read)
-	 self.bytes_read = self.bytes_read + n
-	 return req.socket:receive(n)
-      end
-   end
-
-   setmetatable(wsapi_env, { __index = get_cgi_var })
-   wsapi_env.input = input
-   input.size = tonumber(wsapi_env.CONTENT_LENGTH) or 0
-   wsapi_env.error = error
+   local wsapi_env = common.wsapi_env{ input = req.socket, 
+      read_method = "receive", error = io.stderr, env = get_cgi_var }
 
    local function set_status(status)
       res.statusline = "HTTP/1.1 " .. tostring(status) 
@@ -87,29 +68,14 @@ local function wsapihandler (req, res, wsapi_run, app_prefix)
       end
    end
 
-   local function send_content(res_iter)
-      local ok, s = pcall(res_iter)
-      while ok and s do
-	 res:send_data(s)
-	 ok, s = pcall(res_iter)
-      end
-      if not ok then
-         res:write("======== WSAPI ERROR DURING RESPONSE PROCESSING: " ..
-		   tostring(res))
-      end
-   end
-
-   local ok, status, headers, res_iter = pcall(wsapi_run, wsapi_env)
+   local ok, status, headers, res_iter = common.run_app(wsapi_run, wsapi_env)
    if ok then
       set_status(status or 500)
       send_headers(headers or {})
-      send_content(res_iter)
+      common.send_content(res, res_iter, "send_data")
    else
-     res.statusline = "HTTP/1.1 500" 
-     io.stderr:write("WSAPI error in application: " .. tostring(status) .. "\n")
-     res:write("Status: 500 Internal Server Error\r\n")
-     res:write("Content-type: text/plain\r\n\r\n")
-     res:write("WSAPI error in application: " .. tostring(status) .. "\n")
+      res.statusline = "HTTP/1.1 500" 
+      common.send_error(res, io.stderr, status)
    end
 end
 
