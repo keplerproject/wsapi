@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.7 2008/01/12 23:10:37 mascarenhas Exp $
+# $Id: Makefile,v 1.8 2008/01/18 13:14:15 mascarenhas Exp $
 
 include config
 
@@ -33,3 +33,10 @@ install-rocks: install
 
 clean:
 	rm src/fastcgi/lfcgi.o src/fastcgi/lfcgi.so
+
+snapshot:
+	cvs export -r HEAD -d wsapi-1.0-snapshot wsapi
+	tar czf wsapi-1.0-snapshot.tar.gz wsapi-1.0-snapshot
+	rm -rf wsapi-1.0-snapshot
+	scp wsapi-1.0-snapshot.tar.gz mascarenhas@139.82.100.4:public_html/
+
