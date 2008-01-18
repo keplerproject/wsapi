@@ -74,14 +74,14 @@ local repository.</p>
 as well as a C compiler and the development files for
 <a href="http://www.fastcgi.com/#TheDevKit">libfcgi</a>.
 Run the included configure script, passing the name of your Lua interpreter's executable
-(usually <em>lua</em>, <em>lua51</em> or <em>lua5.1</em>). Then run <em>make</em> and finally <em>make install</em>.
+(usually <em>lua</em>, <em>lua51</em> or <em>lua5.1</em>). Then run <em>make all</em> and finally <em>make install</em>.
 This last step will probably need root privileges.</p>
 
 <h3>Windows</h3>
 
 <p>To build the Windows binaries you will need the Lua 5.1 interpreter and a version
 of Visual C++ 2005 (the freely available Express edition works fine). Edit <em>Makefile.win</em>
-according to the instructions there, then run <em>nmake -f Makefile.win</em> and finally
+according to the instructions there, then run <em>nmake -f Makefile.win all</em> and finally
 <em>nmake -f Makefile.win install</em>.</p>
 
 <h3>General</h3>
@@ -157,14 +157,14 @@ execute permission. You should then see something like this:</p>
     SCRIPT\_NAME: /cgi-bin/hello.lua
 </code></pre>
 
-<p>The generic FastCGI launcher <em>wsapi.fcgi</em> can also run the <em>hello.lua</em> file
+<p>The generic FastCGI launcher <em>wsapi-fcgi</em> can also run the <em>hello.lua</em> file
 directly. Configuration depends on your web server, but you should tell it to run
-<em>.lua</em> files as FastCGI scripts with <em>wsapi.fcgi</em> as the wrapper (the configuration
+<em>.lua</em> files as FastCGI scripts with <em>wsapi-fcgi</em> as the wrapper (the configuration
 is analogous to the necessary for running PHP scripts with FastCGI). As an example,
 this is for Apache's <em>mod_fcgid</em>:</p>
 
 <pre><code>    AddHandler fcgid-script .lua
-    FCGIWrapper /usr/bin/wsapi.fcgi .lua
+    FCGIWrapper /usr/bin/wsapi-fcgi .lua
 </code></pre>
 
 <p>You can also run <em>hello.lua</em> through a launcher script specially tailored to it. The driver

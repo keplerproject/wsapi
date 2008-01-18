@@ -1,8 +1,8 @@
-# $Id: Makefile,v 1.9 2008/01/18 19:25:21 mascarenhas Exp $
+# $Id: Makefile,v 1.10 2008/01/18 20:58:09 mascarenhas Exp $
 
 include config
 
-all: fastcgi
+all: cgi fastcgi
 
 cgi:
 

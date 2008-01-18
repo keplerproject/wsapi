@@ -1,4 +1,4 @@
-# $Id: Makefile.win,v 1.20 2008/01/18 19:45:24 mascarenhas Exp $
+# $Id: Makefile.win,v 1.21 2008/01/18 20:58:09 mascarenhas Exp $
 
 LUA_INCLUDE= c:\lua5.1\include
 LUA_LIB= c:\lua5.1\lua5.1.lib
@@ -22,7 +22,7 @@ src\launcher\wsapi-fcgi.exe: src\launcher\wsapi.obj
 	rc /r /fosrc\launcher\wsapi-fcgi.res src\launcher\wsapi-fcgi.rc
 	link /out:src\launcher\wsapi-fcgi.exe src\launcher\wsapi.obj src\launcher\wsapi-fcgi.res $(LUA_LIB) user32.lib
 
-all: src\launcher\launcher.exe
+all: cgi fcgi
 
 cgi: src\launcher\launcher.exe src\launcher\wsapi.exe
 

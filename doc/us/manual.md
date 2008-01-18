@@ -17,14 +17,14 @@ To build and install WSAPI you are going to need to have Lua 5.1 installed,
 as well as a C compiler and the development files for
 [libfcgi](http://www.fastcgi.com/#TheDevKit).
 Run the included configure script, passing the name of your Lua interpreter's executable
-(usually *lua*, *lua51* or *lua5.1*). Then run *make* and finally *make install*.
+(usually *lua*, *lua51* or *lua5.1*). Then run *make all* and finally *make install*.
 This last step will probably need root privileges.
 
 ### Windows
 
 To build the Windows binaries you will need the Lua 5.1 interpreter and a version
 of Visual C++ 2005 (the freely available Express edition works fine). Edit *Makefile.win*
-according to the instructions there, then run *nmake -f Makefile.win* and finally
+according to the instructions there, then run *nmake -f Makefile.win all* and finally
 *nmake -f Makefile.win install*.
 
 ### General
