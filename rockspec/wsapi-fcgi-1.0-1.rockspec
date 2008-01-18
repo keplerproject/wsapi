@@ -6,8 +6,7 @@ description = {
   summary = "Lua Web Server API FastCGI Adapter",
   detailed = [[
     WSAPI is an API that abstracts the web server from Lua web applications. This
-    is the rock that contains the FCGI module used by wsapi.fcgi (only for Unix
-    for now).
+    is the rock that contains the FCGI module lfcgi.
   ]],
   license = "MIT/X11",
   homepage = "http://www.keplerproject.org/wsapi"

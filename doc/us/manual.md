@@ -97,14 +97,14 @@ execute permission. You should then see something like this:
         PATH\_INFO: /
         SCRIPT\_NAME: /cgi-bin/hello.lua
 
-The generic FastCGI launcher *wsapi.fcgi* can also run the *hello.lua* file
+The generic FastCGI launcher *wsapi-fcgi* can also run the *hello.lua* file
 directly. Configuration depends on your web server, but you should tell it to run
-*.lua* files as FastCGI scripts with *wsapi.fcgi* as the wrapper (the configuration
+*.lua* files as FastCGI scripts with *wsapi-fcgi* as the wrapper (the configuration
 is analogous to the necessary for running PHP scripts with FastCGI). As an example,
 this is for Apache's *mod_fcgid*:
 
         AddHandler fcgid-script .lua
-        FCGIWrapper /usr/bin/wsapi.fcgi .lua
+        FCGIWrapper /usr/bin/wsapi-fcgi .lua
 
 You can also run *hello.lua* through a launcher script specially tailored to it. The driver
 script is very similar for both connectors. For CGI it can be this one (*hello.cgi*):

@@ -1,4 +1,4 @@
-# $Id: Makefile.win,v 1.17 2008/01/16 21:43:02 mascarenhas Exp $
+# $Id: Makefile.win,v 1.18 2008/01/18 19:25:21 mascarenhas Exp $
 
 LUA_INCLUDE= c:\lua5.1\include
 LUA_LIB= c:\lua5.1\lua5.1.lib
@@ -12,14 +12,24 @@ LUA_LIBDIR= c:\lua5.1
 src\launcher\launcher.exe: src\launcher\launcher.obj
 	link /out:src\launcher\launcher.exe src\launcher\launcher.obj $(LUA_LIB)
 
+src\launcher\wsapi.exe: src\launcher\wsapi.obj
+	lua5.1 src\launcher\make_rc.lua src\launcher\wsapi > src\launcher\wsapi.rc
+	rc /r /fosrc\launcher\wsapi.res wsapi.rc
+	link /out:src\launcher\wsapi.exe src\launcher\wsapi.obj src\launcher\wsapi.res $(LUA_LIB) user32.lib
+
+src\launcher\wsapi-fcgi.exe: src\launcher\wsapi.obj
+	lua5.1 src\launcher\make_rc.lua src\launcher\wsapi-fcgi > src\launcher\wsapi-fcgi.rc
+	rc /r /fosrc\launcher\wsapi-fcgi.res wsapi-fcgi.rc
+	link /out:src\launcher\wsapi-fcgi.exe src\launcher\wsapi.obj src\launcher\wsapi-fcgi.res $(LUA_LIB) user32.lib
+
 all: src\launcher\launcher.exe
 
-cgi: src\launcher\launcher.exe
+cgi: src\launcher\launcher.exe src\launcher\wsapi.exe
 
 src\fastcgi\lfcgi.dll: src\fastcgi\lfcgi.obj
       link /dll /out:src\fastcgi\lfcgi.dll /def:src\fastcgi\lfcgi.def $(LIB_OPTION) src\fastcgi\lfcgi.obj
 
-fcgi: src\fastcgi\lfcgi.dll
+fcgi: src\fastcgi\lfcgi.dll src\launcher\wsapi-fcgi.exe
 
 install:
 	IF NOT EXIST $(LUA_DIR)\wsapi mkdir $(LUA_DIR)\wsapi
@@ -31,8 +41,7 @@ install-rocks:
 	copy src\wsapi\*.lua "$(PREFIX)\lua\wsapi"
 	IF NOT EXIST "$(PREFIX)\bin" "mkdir $(PREFIX)\bin"
 	copy src\launcher\launcher.exe "$(PREFIX)\bin"
-	copy src\launcher\wsapi "$(PREFIX)\bin"
-	copy src\launcher\wsapi.fcgi "$(PREFIX)\bin"
+	copy src\launcher\wsapi.exe "$(PREFIX)\bin"
 	IF NOT EXIST "$(PREFIX)\samples" mkdir "$(PREFIX)\samples"
 	copy samples\* "$(PREFIX)\samples"
 	IF NOT EXIST "$(PREFIX)\doc" mkdir "$(PREFIX)\doc"
@@ -40,6 +49,7 @@ install-rocks:
 	copy doc\us\* "$(PREFIX)\doc\us"
 
 install-fcgi:
+	copy src\launcher\wsapi-fcgi.exe "$(PREFIX)\bin"
 	copy src\fastcgi\lfcgi.dll "$(LUA_LIBDIR)\"
 
 clean:
