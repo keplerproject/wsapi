@@ -21,6 +21,7 @@ local function app_loader(wsapi_env)
   lfs.chdir(start_path)
   local path, file, modname, ext, mtime = 
     common.find_module(nil, wsapi_env)
+  local filename = path .. "/" .. file
   lfs.chdir(path)
   local ringer
   local app_state = app_states[filename]
