@@ -29,7 +29,13 @@ local init = [==[
   require"wsapi.coxpcall"
   pcall = copcall
   xpcall = coxpcall
-  local app = common.norm_app(require(arg(1)))
+  local app
+  if arg(1):match("%.[^%.]+$") then
+    app = dofile(arg(1))
+  else
+    app = require(arg(1))
+  end
+  app = common.norm_app(app)
   local wsapi_error = {
        write = function (self, err)
          remotedostring("env.error:write(arg(1))", err)

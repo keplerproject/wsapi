@@ -53,7 +53,7 @@ build = {
          CFLAGS = "$(CFLAGS) /I$(FASTCGI_INCDIR)",
        	},
        	install_variables = {
-         LUA_LIBDIR = "$(LIBDIR)"
+         LUA_LIBDIR = "$(LIBDIR)",
 	 BIN_DIR = "$(BINDIR)"
        	}
      }

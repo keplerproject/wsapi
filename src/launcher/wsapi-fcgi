@@ -33,7 +33,11 @@ local function app_loader(wsapi_env)
       _, package.path = remotedostring("return package.path")
       _, package.cpath = remotedostring("return package.cpath")
     ]]
-    ringer = wsapi.ringer.new(modname, bootstrap)
+    if ext == "lua" then
+      ringer = wsapi.ringer.new(modname, bootstrap)
+    else
+      ringer = wsapi.ringer.new(file, bootstrap)
+    end
     app_states[filename] = { state = ringer, mtime = mtime }
   end
   return ringer(wsapi_env)

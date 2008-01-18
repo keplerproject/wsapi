@@ -12,9 +12,15 @@ require "wsapi.cgi"
 local arg_filename = (...)
 
 local function app_loader(wsapi_env)
-  local path, file, modname = common.find_module(arg_filename, wsapi_env)
+  local path, file, modname, ext = common.find_module(arg_filename, wsapi_env)
   lfs.chdir(path)
-  return common.norm_app(modname)(wsapi_env)
+  local app
+  if ext == "lua" then
+    app = common.require_file(file, modname)
+  else
+    app = dofile(file)
+  end
+  return common.norm_app(app)(wsapi_env)
 end 
 
 wsapi.cgi.run(app_loader)
