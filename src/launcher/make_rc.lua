@@ -2,7 +2,7 @@
 io.write("#define IDS_WSAPI 1\r\n")
 io.write("STRINGTABLE\r\nBEGIN\r\n")
 io.write("IDS_WSAPI \"")
-io.write("package.path = [[" .. 
+io.write("package.path = [[?.lua;?/init.lua;" .. 
     	package.path:gsub("\\", "\\\\"):gsub('"', '""')
 	.. "]]\\n\\\r\n")
 
