@@ -25,8 +25,7 @@ external_dependencies = {
 }
 
 source = {
-  url = "cvs://:pserver:anonymous@cvs.luaforge.net:/cvsroot/wsapi",
-  cvs_tag = "HEAD"
+  url = "http://www.lua.inf.puc-rio.br/~mascarenhas/wsapi-1.0-snapshot.tar.gz"
 }
 
 build = {
@@ -55,6 +54,7 @@ build = {
        	},
        	install_variables = {
          LUA_LIBDIR = "$(LIBDIR)"
+	 BIN_DIR = "$(BINDIR)"
        	}
      }
   }
