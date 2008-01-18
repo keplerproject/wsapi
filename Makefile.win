@@ -1,4 +1,4 @@
-# $Id: Makefile.win,v 1.18 2008/01/18 19:25:21 mascarenhas Exp $
+# $Id: Makefile.win,v 1.19 2008/01/18 19:33:08 mascarenhas Exp $
 
 LUA_INCLUDE= c:\lua5.1\include
 LUA_LIB= c:\lua5.1\lua5.1.lib
@@ -14,12 +14,12 @@ src\launcher\launcher.exe: src\launcher\launcher.obj
 
 src\launcher\wsapi.exe: src\launcher\wsapi.obj
 	lua5.1 src\launcher\make_rc.lua src\launcher\wsapi > src\launcher\wsapi.rc
-	rc /r /fosrc\launcher\wsapi.res wsapi.rc
+	rc /r /fosrc\launcher\wsapi.res src\launcher\wsapi.rc
 	link /out:src\launcher\wsapi.exe src\launcher\wsapi.obj src\launcher\wsapi.res $(LUA_LIB) user32.lib
 
 src\launcher\wsapi-fcgi.exe: src\launcher\wsapi.obj
 	lua5.1 src\launcher\make_rc.lua src\launcher\wsapi-fcgi > src\launcher\wsapi-fcgi.rc
-	rc /r /fosrc\launcher\wsapi-fcgi.res wsapi-fcgi.rc
+	rc /r /fosrc\launcher\wsapi-fcgi.res src\launcher\wsapi-fcgi.rc
 	link /out:src\launcher\wsapi-fcgi.exe src\launcher\wsapi.obj src\launcher\wsapi-fcgi.res $(LUA_LIB) user32.lib
 
 all: src\launcher\launcher.exe
