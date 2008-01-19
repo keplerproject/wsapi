@@ -30,7 +30,7 @@ local init = [==[
   pcall = copcall
   xpcall = coxpcall
   local app
-  if arg(1):match("%.[^%.]+$") then
+  if arg(3) then
     app = dofile(arg(1))
   else
     app = require(arg(1))
@@ -78,11 +78,11 @@ local init = [==[
 
 init = string.gsub(init, "arg%((%d+)%)", arg)
 
-function new(app_name, bootstrap)
+function new(app_name, bootstrap, is_file)
   local data = {}
   setmetatable(data, { __index = _G })
   local state = rings.new(data)
-  assert(state:dostring(init, app_name, bootstrap))
+  assert(state:dostring(init, app_name, bootstrap, is_file))
   return function (wsapi_env)
 	   data.status = 500
 	   data.headers = {}

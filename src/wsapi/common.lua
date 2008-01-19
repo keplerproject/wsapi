@@ -144,7 +144,7 @@ function find_file(filename)
    return path, file, modname, ext, mtime
 end
 
-function adjust_iis_path(filename, wsapi_env)
+function adjust_iis_path(wsapi_env, filename)
    local script_name, ext = 
       wsapi_env.SCRIPT_NAME:match("([^/%.]+)%.([^%.]+)$")
    if script_name then
@@ -160,20 +160,22 @@ function adjust_iis_path(filename, wsapi_env)
    end
 end
 
-function adjust_non_wrapped(filename, wsapi_env)
-  if filename == "" or filename:match("%.exe$") then
+function adjust_non_wrapped(wsapi_env, filename, launcher)
+  if filename == "" or filename:match("%.exe$") or 
+    (launcher and filename:match(launcher:gsub("%.", "%.") .. "$")) then
     local path_info = wsapi_env.PATH_INFO
     local docroot = wsapi_env.DOCUMENT_ROOT
+    if docroot:sub(#docroot) ~= "/" and docroot:sub(#docroot) ~= "\\" then
+      docroot = docroot .. "/"
+    end
     local s, e = path_info:find("[^/%.]+%.[^/%.]+", 1)
     while s do
-      local filepath = path_info:sub(1, e)
+      local filepath = path_info:sub(2, e)
       local filename = docroot .. filepath
       if lfs.attributes(filename, "mode") == "file" then
 	wsapi_env.PATH_INFO = path_info:sub(e + 1)
 	if wsapi_env.PATH_INFO == "" then wsapi_env.PATH_INFO = "/" end    
 	wsapi_env.SCRIPT_NAME = wsapi_env.SCRIPT_NAME .. filepath
-	wsapi_env.PATH_TRANSLATED = filename
-	wsapi_env.SCRIPT_FILENAME = filename
 	return filename
       end
       s, e = path_info:find("[^/%.]+%.[^/%.]+", e + 1)
@@ -182,20 +184,25 @@ function adjust_non_wrapped(filename, wsapi_env)
   else return filename end
 end
 
-function find_module(filename, wsapi_env)
+function normalize_paths(wsapi_env, filename, launcher)
    if not filename then
      filename = wsapi_env.SCRIPT_FILENAME
      if filename == "" then filename = wsapi_env.PATH_TRANSLATED end
-     filename = adjust_non_wrapped(filename, wsapi_env)
-     filename = adjust_iis_path(filename, wsapi_env)
+     filename = adjust_non_wrapped(wsapi_env, filename, launcher)
+     filename = adjust_iis_path(wsapi_env, filename)
    end
-   local path, file, modname, ext, mtime = find_file(filename)
    local s, e = wsapi_env.PATH_INFO:find(wsapi_env.SCRIPT_NAME, 1, true)
    if s == 1 then
      wsapi_env.PATH_INFO = wsapi_env.PATH_INFO:sub(e+1)
      if wsapi_env.PATH_INFO == "" then wsapi_env.PATH_INFO = "/" end    
    end
-   return path, file, modname, ext, mtime
+   wsapi_env.PATH_TRANSLATED = filename
+   wsapi_env.SCRIPT_FILENAME = filename
+end
+
+function find_module(wsapi_env, filename)
+   normalize_paths(wsapi_env, filename)
+   return find_file(wsapi_env.PATH_TRANSLATED)
 end
 
 function require_file(filename, modname)
@@ -240,7 +247,7 @@ do
       if ext == "lua" then
 	app = ringer.new(modname, bootstrap)
       else
-	app = ringer.new(file, bootstrap)
+	app = ringer.new(file, bootstrap, true)
       end
       app_states[filename] = { state = app, mtime = mtime }
     end
@@ -250,7 +257,7 @@ end
 
 function wsapi_loader_isolated(wsapi_env)
   local path, file, modname, ext, mtime = 
-      	      	    find_module(nil, wsapi_env)
+      	      	    find_module(wsapi_env)
   local app = load_wsapi_isolated(path, file, modname, ext, mtime)
   return app(wsapi_env)
 end 

@@ -1,4 +1,4 @@
-#!/usr/bin/env wsapi
+#!/usr/bin/env wsapi.cgi
 
 require "wsapi.response"
 
@@ -7,7 +7,7 @@ module(..., package.seeall)
 function run(wsapi_env)
   local res = wsapi.response.new()
 
-  SAPI = {
+  _G.SAPI = {
     Info =  {
 	_COPYRIGHT = "Copyright (C) 2007 Kepler Project",
 	_DESCRIPTION = "WSAPI SAPI implementation",
