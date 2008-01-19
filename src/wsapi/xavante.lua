@@ -15,6 +15,7 @@ module (..., package.seeall)
 -------------------------------------------------------------------------------
 
 local function set_cgivars (req, diskpath, path_info_pat, script_name_pat)
+   diskpath = diskpath or req.diskpath or ""
    req.cgivars = {
       SERVER_SOFTWARE = req.serversoftware,
       SERVER_NAME = req.parsed_url.host,
@@ -22,9 +23,9 @@ local function set_cgivars (req, diskpath, path_info_pat, script_name_pat)
       SERVER_PROTOCOL = "HTTP/1.1",
       SERVER_PORT = req.parsed_url.port,
       REQUEST_METHOD = req.cmd_mth,
-      DOCUMENT_ROOT = req.diskpath,
+      DOCUMENT_ROOT = diskpath,
       PATH_INFO = string.match(req.parsed_url.path, path_info_pat) or "",
-      PATH_TRANSLATED = (req.diskpath or "") .. (string.match(req.parsed_url.path, script_name_pat) or ""),
+      PATH_TRANSLATED = script_name_pat and (diskpath .. script_name_pat),
       SCRIPT_NAME = script_name_pat,
       QUERY_STRING = req.parsed_url.query or "",
       REMOTE_ADDR = string.gsub (req.rawskt:getpeername (), ":%d*$", ""),
@@ -37,9 +38,9 @@ local function set_cgivars (req, diskpath, path_info_pat, script_name_pat)
    end
 end
 
-local function wsapihandler (req, res, wsapi_run, app_prefix)
-   local path_info_pat = "^" .. app_prefix .. "(.*)"
-   set_cgivars(req, nil, path_info_pat, app_prefix)
+local function wsapihandler (req, res, wsapi_run, app_prefix, docroot)
+   local path_info_pat = "^" .. (app_prefix or "") .. "(.*)"
+   set_cgivars(req, docroot, path_info_pat, app_prefix)
 
    local get_cgi_var = function (var) 
 			  return req.cgivars[var] or ""
@@ -75,15 +76,21 @@ local function wsapihandler (req, res, wsapi_run, app_prefix)
       common.send_content(res, res_iter, "send_data")
    else
       res.statusline = "HTTP/1.1 500" 
-      common.send_error(res, io.stderr, status)
+      common.send_error(res, io.stderr, status, "send_data")
    end
 end
 
 -------------------------------------------------------------------------------
 -- Returns the WSAPI handler
 -------------------------------------------------------------------------------
-function makeHandler (app_func, app_prefix)
+function makeHandler (app_func, app_prefix, docroot)
    return function (req, res)
-	     return wsapihandler(req, res, app_func, app_prefix or "")
+	     return wsapihandler(req, res, app_func, app_prefix, docroot)
 	  end
+end
+
+function makeGenericHandler(docroot)
+  return function (req, res)
+	   return wsapihandler(req, res, common.wsapi_loader_isolated, nil, docroot)
+	 end
 end

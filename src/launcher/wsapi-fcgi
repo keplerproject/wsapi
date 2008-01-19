@@ -6,41 +6,8 @@
 -- requests to the same application go to the same VM
 
 pcall(require,"luarocks.require")
-local lfs = require "lfs"
+
 local common = require "wsapi.common"
-require "wsapi.fastcgi"
-require "wsapi.ringer"
+local fastcgi = require "wsapi.fastcgi"
 
-local app_states = {}
-
-setmetatable(app_states, { __mode = "v" })
-
-local start_path = lfs.currentdir()
-
-local function app_loader(wsapi_env)
-  lfs.chdir(start_path)
-  local path, file, modname, ext, mtime = 
-    common.find_module(nil, wsapi_env)
-  local filename = path .. "/" .. file
-  lfs.chdir(path)
-  local ringer
-  local app_state = app_states[filename]
-  if app_state and (app_state.mtime == mtime) then
-    ringer = app_state.state
-  else
-    local bootstrap = [[
-      pcall(require, "luarocks.require")
-      _, package.path = remotedostring("return package.path")
-      _, package.cpath = remotedostring("return package.cpath")
-    ]]
-    if ext == "lua" then
-      ringer = wsapi.ringer.new(modname, bootstrap)
-    else
-      ringer = wsapi.ringer.new(file, bootstrap)
-    end
-    app_states[filename] = { state = ringer, mtime = mtime }
-  end
-  return ringer(wsapi_env)
-end 
-
-wsapi.fastcgi.run(app_loader)
+fastcgi.run(common.wsapi_loader_isolated)

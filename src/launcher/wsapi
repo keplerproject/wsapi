@@ -5,22 +5,16 @@
 -- or from SCRIPT_FILENAME/PATH_TRANSLATED
 
 pcall(require, "luarocks.require")
+
 local common = require "wsapi.common"
-require "lfs"
-require "wsapi.cgi"
+local cgi = require "wsapi.cgi"
 
 local arg_filename = (...)
 
-local function app_loader(wsapi_env)
+local function wsapi_loader(wsapi_env)
   local path, file, modname, ext = common.find_module(arg_filename, wsapi_env)
-  lfs.chdir(path)
-  local app
-  if ext == "lua" then
-    app = common.require_file(file, modname)
-  else
-    app = dofile(file)
-  end
-  return common.norm_app(app)(wsapi_env)
+  local app = common.load_wsapi(path, file, modname, ext)
+  return app(wsapi_env)
 end 
 
-wsapi.cgi.run(app_loader)
+cgi.run(wsapi_loader)

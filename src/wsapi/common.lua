@@ -7,6 +7,7 @@
 -----------------------------------------------------------------------------
 
 local lfs = require "lfs"
+local ringer = require "wsapi.ringer"
 
 module(..., package.seeall)
 
@@ -44,39 +45,42 @@ function norm_app(app_run)
 end
 
 function send_content(out, res_iter, write_method)
-   write_method = write_method or "write"
+   local write = out[write_method or "write"]
    local ok, res = xpcall(res_iter, debug.traceback)
    while ok and res do
-      out[write_method](out, res)
+      write(out, res)
       ok, res = xpcall(res_iter, debug.traceback)
    end
    if not ok then
-      out[write_method](out, 
-			"======== WSAPI ERROR DURING RESPONSE PROCESSING: " ..
-			   tostring(res))
+      write(out, 
+	    "======== WSAPI ERROR DURING RESPONSE PROCESSING: " ..
+	      tostring(res))
    end
 end
 
-function send_output(out, status, headers, res_iter)
-   out:write("Status: " .. (status or 500) .. "\r\n")
+function send_output(out, status, headers, res_iter, write_method)
+   local write = out[write_method or "write"]
+   write(out, "Status: " .. (status or 500) .. "\r\n")
    for h, v in pairs(headers or {}) do
       if type(v) ~= "table" then
-	 out:write(h .. ": " .. tostring(v) .. "\r\n") 
+	 write(out, h .. ": " .. tostring(v) .. "\r\n") 
       else
 	 for _, v in ipairs(v) do
-	    out:write(h .. ": " .. tostring(v) .. "\r\n")
+	    write(out, h .. ": " .. tostring(v) .. "\r\n")
 	 end
       end 
    end
-   out:write("\r\n")
+   write(out, "\r\n")
    send_content(out, res_iter)
 end
 
-function send_error(out, err, msg)
-   err:write("WSAPI error in application: " .. tostring(msg) .. "\n")
-   out:write("Status: 500 Internal Server Error\r\n")
-   out:write("Content-type: text/html\r\n\r\n")
-   out:write(string.format([[
+function send_error(out, err, msg, out_method, err_method)
+   local write = out[out_method or "write"]
+   local write_err = err[err_method or "write"]
+   write_err(err, "WSAPI error in application: " .. tostring(msg) .. "\n")
+   write(out, "Status: 500 Internal Server Error\r\n")
+   write(out, "Content-type: text/html\r\n\r\n")
+   write(out, string.format([[
         <html>
         <head><title>WSAPI Error in Application</title></head>
         <body>
@@ -117,13 +121,7 @@ function run(app, t)
 end
 
 function splitpath(filename)
-  local path, file = string.match(filename, "^(.*[/\\])([^/\\]*)$")
-  if not path then path, file = "", filename end
-  local start_path, colon = string.sub(path, 1, 1), string.sub(path, 2, 2)
-  if not (start_path == "/" or start_path == "." or 
-	  colon == ":" or start_path == "\\") then
-    path = "./" .. path
-  end
+  local path, file = string.match(filename, "^(.*)[/\\]([^/\\]*)$")
   return path, file
 end
 
@@ -151,7 +149,7 @@ end
 
 function adjust_iis_path(filename, wsapi_env)
    local script_name, ext = 
-      wsapi_env.SCRIPT_NAME:match("([^/\\%.]+)%.([^%.]+)$")
+      wsapi_env.SCRIPT_NAME:match("([^/%.]+)%.([^%.]+)$")
    if script_name then
       local path = 
 	 filename:match("^(.+)" .. script_name .. "%." .. ext .. "[/\\]")
@@ -165,18 +163,40 @@ function adjust_iis_path(filename, wsapi_env)
    end
 end
 
+function adjust_non_wrapped(filename, wsapi_env)
+  if filename == "" or filename:match("%.exe$") then
+    local path_info = wsapi_env.PATH_INFO
+    local docroot = wsapi_env.DOCUMENT_ROOT
+    local s, e = path_info:find("[^/%.]+%.[^/%.]+", 1)
+    while s do
+      local filepath = path_info:sub(1, e)
+      local filename = docroot .. filepath
+      if lfs.attributes(filename, "mode") == "file" then
+	wsapi_env.PATH_INFO = path_info:sub(e + 1)
+	if wsapi_env.PATH_INFO == "" then wsapi_env.PATH_INFO = "/" end    
+	wsapi_env.SCRIPT_NAME = wsapi_env.SCRIPT_NAME .. filepath
+	wsapi_env.PATH_TRANSLATED = filename
+	wsapi_env.SCRIPT_FILENAME = filename
+	return filename
+      end
+      s, e = path_info:find("[^/%.]+%.[^/%.]+", e + 1)
+    end
+    error("could not find a filename to load, check your URL")
+  else return filename end
+end
+
 function find_module(filename, wsapi_env)
-   filename = filename or wsapi_env.SCRIPT_FILENAME
-   if filename == "" then filename = wsapi_env.PATH_TRANSLATED end
-   if filename == "" then
-      error("the server didn't provide a filename")
+   if not filename then
+     filename = wsapi_env.SCRIPT_FILENAME
+     if filename == "" then filename = wsapi_env.PATH_TRANSLATED end
+     filename = adjust_non_wrapped(filename, wsapi_env)
+     filename = adjust_iis_path(filename, wsapi_env)
    end
-   filename = adjust_iis_path(filename, wsapi_env)
    local path, file, modname, ext, mtime = find_file(filename)
-   if wsapi_env.PATH_INFO:match(modname .. "%." .. ext) then
-      wsapi_env.PATH_INFO = 
-	 wsapi_env.PATH_INFO:match(modname .. "%." .. ext .. "(.*)$")
-      if wsapi_env.PATH_INFO == "" then wsapi_env.PATH_INFO = "/" end    
+   local s, e = wsapi_env.PATH_INFO:find(wsapi_env.SCRIPT_NAME, 1, true)
+   if s == 1 then
+     wsapi_env.PATH_INFO = wsapi_env.PATH_INFO:sub(e+1)
+     if wsapi_env.PATH_INFO == "" then wsapi_env.PATH_INFO = "/" end    
    end
    return path, file, modname, ext, mtime
 end
@@ -191,3 +211,49 @@ function require_file(filename, modname)
     return package.loaded[modname]
   end
 end
+
+function load_wsapi(path, file, modname, ext)
+  lfs.chdir(path)
+  local app
+  if ext == "lua" then
+    app = require_file(file, modname)
+  else
+    app = dofile(file)
+  end
+  return norm_app(app)
+end
+
+do
+  local app_states = {}
+  setmetatable(app_states, { __mode = "v" })
+
+  function load_wsapi_isolated(path, file, modname, ext, mtime)
+    local filename = path .. "/" .. file
+    lfs.chdir(path)
+    local app
+    local app_state = app_states[filename]
+    if app_state and (app_state.mtime == mtime) then
+      app = app_state.state
+    else
+      local bootstrap = [[
+	  pcall(require, "luarocks.require")
+	  _, package.path = remotedostring("return package.path")
+	  _, package.cpath = remotedostring("return package.cpath")
+      ]]
+      if ext == "lua" then
+	app = ringer.new(modname, bootstrap)
+      else
+	app = ringer.new(file, bootstrap)
+      end
+      app_states[filename] = { state = app, mtime = mtime }
+    end
+    return app
+  end
+end
+
+function wsapi_loader_isolated(wsapi_env)
+  local path, file, modname, ext, mtime = 
+      	      	    find_module(nil, wsapi_env)
+  local app = load_wsapi_isolated(path, file, modname, ext, mtime)
+  return app(wsapi_env)
+end 

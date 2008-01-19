@@ -2,13 +2,9 @@
 -- Sample Xavante configuration file for launching WSAPI applications.
 ------------------------------------------------------------------------------
 
+require "xavante"
 require "xavante.filehandler"
 require "wsapi.xavante"
-
--- Here you require your WSAPI/Orbit application
-require"wsapi.ringer"
-
-local RINGER_APP = "wsapi.sapi"
 
 -- Define here where Xavante HTTP documents scripts are located
 local webDir = "/var/www"
@@ -16,8 +12,8 @@ local webDir = "/var/www"
 local simplerules = {
 
     { -- WSAPI application will be mounted under /app
-      match = { "%.lp/", "%.lp$", "%.lua$", "%.lua/" },
-      with = wsapi.xavante.makeHandler(wsapi.ringer.new(RINGER_APP))
+      match = { "%.lua$", "%.lua/" },
+      with = wsapi.xavante.makeGenericHandler(webDir)
     },
     
     { -- filehandler 
@@ -41,4 +37,6 @@ xavante.HTTP{
     	rules = simplerules
     },
 }
+
+xavante.start()
 
