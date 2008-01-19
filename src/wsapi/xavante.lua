@@ -6,6 +6,11 @@
 --
 -----------------------------------------------------------------------------
 
+require "wsapi.coxpcall"
+
+pcall = copcall
+xpcall = coxpcall
+
 local common = require"wsapi.common"
 
 module (..., package.seeall)

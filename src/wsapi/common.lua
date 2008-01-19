@@ -20,15 +20,12 @@ function sv_index(func)
 end
 
 function input_maker(obj, read_method)
-   local input = { bytes_read = 0 }
+   local input = {}
+   read = obj[read_method or "read"]
 
    function input:read(n)
-      local n = n or self.size - self.bytes_read
-      if self.bytes_read < self.size then
-	 n = math.min(n, self.size - self.bytes_read)
-	 self.bytes_read = self.bytes_read + n
-	 return obj[read_method or "read"](obj, n)
-      end
+     n = n or self.length or 0
+     if n > 0 then return read(obj, n) end
    end
    return input
 end
@@ -104,7 +101,7 @@ function wsapi_env(t)
    env.input = input_maker(t.input, t.read_method)
    env.error = t.error
    setmetatable(env, { __index = sv_index(t.env) })
-   env.input.size = tonumber(env.CONTENT_LENGTH) or 0
+   env.input.length = tonumber(env.CONTENT_LENGTH) or 0
    if env.PATH_INFO == "" then env.PATH_INFO = "/" end
    return env
 end

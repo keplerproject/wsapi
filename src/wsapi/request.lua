@@ -49,7 +49,7 @@ end
 
 local function read_field_headers(input, pos)
   local EOH = "\r\n\r\n"
-  local s, e = string.find(input, EOH, pos)
+  local s, e = string.find(input, EOH, pos, true)
   if s then
     return break_headers(string.sub(input, pos, s-1)), e+1
   else return nil end
@@ -66,7 +66,7 @@ end
 
 local function read_field_contents(input, boundary, pos)
   local boundaryline = "\r\n" .. boundary
-  local s, e = string.find(input, boundaryline, pos)
+  local s, e = string.find(input, boundaryline, pos, true)
   if s then
     return string.sub(input, pos, s-1), s-pos, e+1
   else return nil end
@@ -116,12 +116,15 @@ end
 local function parse_post_data(wsapi_env, tab)
   tab = tab or {}
   local input_type = wsapi_env.CONTENT_TYPE or error("Undefined Media Type")
-  if string.find(input_type, "x%-www%-form%-urlencoded") then
-    parse_qs(wsapi_env.input:read(), tab)
-  elseif string.find(input_type, "multipart/form%-data") then
-    parse_multipart_data(wsapi_env.input:read(), input_type, tab)
+  if string.find(input_type, "x-www-form-urlencoded", 1, true) then
+    local length = tonumber(wsapi_env.CONTENT_LENGTH) or 0
+    parse_qs(wsapi_env.input:read(length), tab)
+  elseif string.find(input_type, "multipart/form-data", 1, true) then
+    local length = tonumber(wsapi_env.CONTENT_LENGTH) or 0
+    parse_multipart_data(wsapi_env.input:read(length), input_type, tab)
   else
-    tab.post_data = wsapi_env.input:read()
+    local length = tonumber(wsapi_env.CONTENT_LENGTH) or 0
+    tab.post_data = wsapi_env.input:read(length)
   end  
   return tab
 end
