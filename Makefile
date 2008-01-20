@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.11 2008/01/19 20:03:45 mascarenhas Exp $
+# $Id: Makefile,v 1.12 2008/01/20 20:19:51 mascarenhas Exp $
 
 include config
 
@@ -21,8 +21,6 @@ install:
 	cp src/wsapi/*.lua $(LUA_DIR)/wsapi
 	cp src/launcher/wsapi.cgi $(BIN_DIR)/
 	cp src/launcher/wsapi.fcgi $(BIN_DIR)/
-	cp src/launcher/cgilua.cgi $(BIN_DIR)/
-	cp src/launcher/cgilua.fcgi $(BIN_DIR)/
 
 install-fcgi:
 	cp src/fastcgi/lfcgi.so $(LUA_LIBDIR)/
