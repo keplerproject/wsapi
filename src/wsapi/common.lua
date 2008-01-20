@@ -240,9 +240,9 @@ do
       app = app_state.state
     else
       local bootstrap = [[
-	  pcall(require, "luarocks.require")
 	  _, package.path = remotedostring("return package.path")
 	  _, package.cpath = remotedostring("return package.cpath")
+	  pcall(require, "luarocks.require")
       ]]
       if ext == "lua" then
 	app = ringer.new(modname, bootstrap)
