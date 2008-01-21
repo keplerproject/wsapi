@@ -9,6 +9,9 @@
 local lfs = require "lfs"
 local ringer = require "wsapi.ringer"
 
+pcall(lfs.setmode, io.stdin, "binary")
+pcall(lfs.setmode, io.stdout, "binary")
+
 module(..., package.seeall)
 
 function sv_index(func)
