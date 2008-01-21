@@ -178,7 +178,7 @@ function adjust_non_wrapped(wsapi_env, filename, launcher)
       if lfs.attributes(filename, "mode") == "file" then
 	wsapi_env.PATH_INFO = path_info:sub(e + 1)
 	if wsapi_env.PATH_INFO == "" then wsapi_env.PATH_INFO = "/" end    
-	wsapi_env.SCRIPT_NAME = wsapi_env.SCRIPT_NAME .. filepath
+	wsapi_env.SCRIPT_NAME = wsapi_env.SCRIPT_NAME .. "/" .. filepath
 	return filename
       end
       s, e = path_info:find("[^/%.]+%.[^/%.]+", e + 1)
@@ -232,35 +232,51 @@ end
 
 do
   local app_states = {}
-  setmetatable(app_states, { __mode = "v" })
+  setmetatable(app_states, { __index = function (tab, app)
+					  tab[app] = {}
+					  return tab[app]
+				       end, __mode = "v" })
+
+  local function bootstrap_app(file, modname, ext)
+     local bootstrap = [[
+	   _, package.path = remotedostring("return package.path")
+	   _, package.cpath = remotedostring("return package.cpath")
+	   pcall(require, "luarocks.require")
+     ]]
+     if ext == "lua" then
+	return ringer.new(modname, bootstrap)
+     else
+	return ringer.new(file, bootstrap, true)
+     end
+  end
 
   function load_wsapi_isolated(path, file, modname, ext, mtime)
     local filename = path .. "/" .. file
     lfs.chdir(path)
-    local app
+    local app, data
     local app_state = app_states[filename]
-    if app_state and (app_state.mtime == mtime) then
-      app = app_state.state
-    else
-      local bootstrap = [[
-	  _, package.path = remotedostring("return package.path")
-	  _, package.cpath = remotedostring("return package.cpath")
-	  pcall(require, "luarocks.require")
-      ]]
-      if ext == "lua" then
-	app = ringer.new(modname, bootstrap)
-      else
-	app = ringer.new(file, bootstrap, true)
+    if app_state.mtime == mtime then
+       for _, state in ipairs(app_state.states) do
+	 if not rawget(state.data, "status") then
+	    return state.app
+	 end
       end
-      app_states[filename] = { state = app, mtime = mtime }
+      app, data = bootstrap_app(file, modname, ext)
+      table.insert(app_state.states, { app = app, data = data })
+   else
+      app, data = bootstrap_app(file, modname, ext)
+      app_states[filename] = { states = { { app = app, data = data } }, 
+	 mtime = mtime }
     end
     return app
   end
+
 end
 
 function wsapi_loader_isolated(wsapi_env)
-  local path, file, modname, ext, mtime = 
-      	      	    find_module(wsapi_env)
-  local app = load_wsapi_isolated(path, file, modname, ext, mtime)
-  return app(wsapi_env)
+   local path, file, modname, ext, mtime = 
+      find_module(wsapi_env)
+   local app = load_wsapi_isolated(path, file, modname, ext, mtime)
+   return app(wsapi_env)
 end 
+

@@ -83,7 +83,14 @@ function new(app_name, bootstrap, is_file)
   setmetatable(data, { __index = _G })
   local state = rings.new(data)
   assert(state:dostring(init, app_name, bootstrap, is_file))
+  local error = function (msg)
+		   data.status, data.headers, data.env = nil
+		   error(msg)
+		end
   return function (wsapi_env)
+	   if rawget(data, "status") then 
+	      error("this state is already in use")
+	   end
 	   data.status = 500
 	   data.headers = {}
 	   data.env = wsapi_env
@@ -126,6 +133,6 @@ function new(app_name, bootstrap, is_file)
 			 if not ok then error(s) end
 		       end
 	   return data.status, data.headers, res 
-	 end
+	end, data
 end
 
