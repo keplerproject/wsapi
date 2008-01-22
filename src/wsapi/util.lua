@@ -22,3 +22,7 @@ function url_encode(str)
   str = string.gsub (str, " ", "+")
   return str
 end
+
+function sanitize(text)
+   return text:gsub(">", "&gt;"):gsub("<", "&lt;")
+end
