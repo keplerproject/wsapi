@@ -176,9 +176,11 @@ function find_file(filename)
       path = path .. "/" .. modname
       file = modname .. ".lua"
       ext = "lua"
-   else
+   elseif mode == "file" then
       path, file = splitpath(filename)
       modname, ext = splitext(file)
+   else
+      return nil
    end
    local mtime = assert(lfs.attributes(path .. "/" .. file, "modification"))
    return path, file, modname, ext, mtime
@@ -317,6 +319,9 @@ end
 function wsapi_loader_isolated(wsapi_env)
    local path, file, modname, ext, mtime = 
       find_module(wsapi_env)
+   if not path then
+      error({ 404, "Resource " .. wsapi_env.SCRIPT_NAME .. " not found"})
+   end
    local app = load_wsapi_isolated(path, file, modname, ext, mtime)
    return app(wsapi_env)
 end 

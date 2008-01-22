@@ -14,6 +14,9 @@ local arg_filename = (...)
 local function wsapi_loader(wsapi_env)
   local path, file, modname, ext = 
   	common.find_module(wsapi_env, arg_filename, "wsapi.cgi")
+  if not path then
+    error({ 404, "Resource " .. wsapi_env.SCRIPT_NAME .. " not found" })
+  end	   
   local app = common.load_wsapi(path, file, modname, ext)
   return app(wsapi_env)
 end 
