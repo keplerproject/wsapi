@@ -6,7 +6,7 @@
 --
 -----------------------------------------------------------------------------
 
-require "wsapi.coxpcall"
+require "coxpcall"
 
 pcall = copcall
 xpcall = coxpcall

@@ -12,7 +12,7 @@ description = {
   homepage = "http://www.keplerproject.org/wsapi"
 }
 
-dependencies = { "luafilesystem cvs", "rings cvs" }
+dependencies = { "luafilesystem cvs", "rings cvs", "coxpcall cvs" }
 
 source = {
    url = "cvs://:pserver:anonymous:@cvs.luaforge.net:/cvsroot/wsapi",

@@ -33,14 +33,18 @@ function input_maker(obj, read_method)
    return input
 end
 
-function norm_app(app_run)
+function normalize_app(app_run, is_file)
    local t = type(app_run)
    if t == "function" then
       return app_run
    elseif t == "table" then
       return app_run.run
    elseif t == "string" then
-      return norm_app(require(app_run))
+      if is_file then
+	 return notmalize_app(dofile(app_run))
+      else
+	 return normalize_app(require(app_run))
+      end
    end
 end
 
@@ -95,7 +99,7 @@ function send_error(out, err, msg, out_method, err_method)
 end
 
 function run_app(app, env)
-   return xpcall(function () return (norm_app(app))(env) end,
+   return xpcall(function () return (normalize_app(app))(env) end,
 		 debug.traceback)
 end
 
@@ -227,7 +231,7 @@ function load_wsapi(path, file, modname, ext)
   else
     app = dofile(file)
   end
-  return norm_app(app)
+  return normalize_app(app)
 end
 
 do

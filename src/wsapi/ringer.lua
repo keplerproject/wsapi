@@ -26,16 +26,9 @@ local init = [==[
     _, package.cpath = remotedostring("return package.cpath")
   end
   local common = require"wsapi.common"
-  require"wsapi.coxpcall"
+  require"coxpcall"
   pcall = copcall
   xpcall = coxpcall
-  local app
-  if arg(3) then
-    app = dofile(arg(1))
-  else
-    app = require(arg(1))
-  end
-  app = common.norm_app(app)
   local wsapi_error = {
        write = function (self, err)
          remotedostring("env.error:write(arg(1))", err)
@@ -53,27 +46,28 @@ local init = [==[
 		    return v
 		 end 
   }
+  local app = common.normalize_app(arg(1), arg(3))
   main_func = function ()
-     local wsapi_env = { error = wsapi_error, input = wsapi_input }
-     setmetatable(wsapi_env, wsapi_meta)
-     local status, headers, res = app(wsapi_env)
-     remotedostring("status = arg(1)", status)
-     for k, v in pairs(headers) do
-       if type(v) == "table" then
-         remotedostring("headers[arg(1)] = {}", k)
-         for _, val in ipairs(v) do
-           remotedostring("table.insert(headers[arg(1)], arg(2))", k, val)
-         end
-       else
-         remotedostring("headers[arg(1)] = arg(2)", k, v)
-       end
-     end
-     local s = res()
-     while s do
-       coroutine.yield("SEND", s)
-       s = res()
-     end
-  end
+		 local wsapi_env = { error = wsapi_error, input = wsapi_input }
+		 setmetatable(wsapi_env, wsapi_meta)
+		 local status, headers, res = app(wsapi_env)
+		 remotedostring("status = arg(1)", status)
+		 for k, v in pairs(headers) do
+		    if type(v) == "table" then
+		       remotedostring("headers[arg(1)] = {}", k)
+		       for _, val in ipairs(v) do
+			  remotedostring("table.insert(headers[arg(1)], arg(2))", k, val)
+		       end
+		    else
+		       remotedostring("headers[arg(1)] = arg(2)", k, v)
+		    end
+		 end
+		 local s = res()
+		 while s do
+		    coroutine.yield("SEND", s)
+		    s = res()
+		 end
+	      end
 ]==]
 
 init = string.gsub(init, "arg%((%d+)%)", arg)
@@ -97,8 +91,8 @@ function new(app_name, bootstrap, is_file)
 	   local ok, flag, s, v = 
 	     state:dostring([[
 				main_coro = coroutine.wrap(main_func)
-				return main_coro()
-			    ]])
+				return main_coro(...)
+			  ]])
 	   repeat
 	     if not ok then error(flag) end
 	     if flag == "RECEIVE" then
