@@ -80,9 +80,15 @@ local function wsapihandler (req, res, wsapi_run, app_prefix, docroot)
       send_headers(headers or {})
       common.send_content(res, res_iter, "send_data")
    else
-      res.statusline = "HTTP/1.1 500" 
-      send_headers({ ["Content-Type"] = "text/html" })
-      common.send_error(res, io.stderr, status, "send_data")
+      if wsapi_env.STATUS == 404 then
+	 res.statusline = "HTTP/1.1 404" 
+	 send_headers({ ["Content-Type"] = "text/html" })
+	 res:send_data(status)
+      else
+	 res.statusline = "HTTP/1.1 500" 
+	 send_headers({ ["Content-Type"] = "text/html" })
+	 res:send_data(common.error_html(status))
+      end
    end
 end
 

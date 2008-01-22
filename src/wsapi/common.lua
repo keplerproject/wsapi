@@ -78,13 +78,8 @@ function send_output(out, status, headers, res_iter, write_method)
    send_content(out, res_iter)
 end
 
-function send_error(out, err, msg, out_method, err_method)
-   local write = out[out_method or "write"]
-   local write_err = err[err_method or "write"]
-   write_err(err, "WSAPI error in application: " .. tostring(msg) .. "\n")
-   write(out, "Status: 500 Internal Server Error\r\n")
-   write(out, "Content-type: text/html\r\n\r\n")
-   write(out, string.format([[
+function error_html(msg)
+   return string.format([[
         <html>
         <head><title>WSAPI Error in Application</title></head>
         <body>
@@ -95,12 +90,45 @@ function send_error(out, err, msg, out_method, err_method)
 </pre>
         </body>
         </html>
-      ]], tostring(msg)))
+      ]], tostring(msg))
+end
+
+function not_found_html(msg)
+   return string.format([[
+        <html>
+        <head><title>Resource not found</title></head>
+        <body>
+        <p>%s</p>
+        </body>
+        </html>
+      ]], tostring(msg))
+end
+
+function send_error(out, err, msg, out_method, err_method)
+   local write = out[out_method or "write"]
+   local write_err = err[err_method or "write"]
+   write_err(err, "WSAPI error in application: " .. tostring(msg) .. "\n")
+   write(out, "Status: 500 Internal Server Error\r\n")
+   write(out, "Content-type: text/html\r\n\r\n")
+   write(out, error_html(msg))
+end
+
+function send_404(out, msg, out_method)
+   local write = out[out_method or "write"]
+   write(out, "Status: 404 Not Found\r\n")
+   write(out, "Content-type: text/html\r\n\r\n")
+   write(out, not_found_html(msg))
 end
 
 function run_app(app, env)
    return xpcall(function () return (normalize_app(app))(env) end,
-		 debug.traceback)
+		 function (msg)
+		    if env.STATUS == 404 then
+		       return not_found_html(msg) 
+		    else
+		       return debug.traceback(msg, 2)
+		    end
+		 end)
 end
 
 function wsapi_env(t)
@@ -120,7 +148,11 @@ function run(app, t)
    if ok then
       send_output(t.output, status, headers, res_iter)
    else
-      send_error(t.output, t.error, status)
+      if env.STATUS == 404 then
+	 send_404(t.output, status)
+      else
+	 send_error(t.output, t.error, status)
+      end
    end
 end
 
@@ -179,7 +211,11 @@ function adjust_non_wrapped(wsapi_env, filename, launcher)
     while s do
       local filepath = path_info:sub(2, e)
       local filename = docroot .. filepath
-      if lfs.attributes(filename, "mode") == "file" then
+      local mode = lfs.attributes(filename, "mode")
+      if not mode then
+	wsapi_env.STATUS = 404 
+	error("Resource " .. filename .. " not found!", 0)
+      elseif lfs.attributes(filename, "mode") == "file" then
 	wsapi_env.PATH_INFO = path_info:sub(e + 1)
 	if wsapi_env.PATH_INFO == "" then wsapi_env.PATH_INFO = "/" end    
 	wsapi_env.SCRIPT_NAME = wsapi_env.SCRIPT_NAME .. "/" .. filepath
@@ -187,7 +223,7 @@ function adjust_non_wrapped(wsapi_env, filename, launcher)
       end
       s, e = path_info:find("[^/%.]+%.[^/%.]+", e + 1)
     end
-    error("could not find a filename to load, check your URL")
+    error("could not find a filename to load, check your configuration or URL")
   else return filename end
 end
 

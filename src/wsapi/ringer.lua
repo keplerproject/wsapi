@@ -44,7 +44,11 @@ local init = [==[
 		    local  _, v = remotedostring("return env[arg(1)]", k)
 		    rawset(tab, k, v)
 		    return v
-		 end 
+		 end,
+       __newindex = function (tab, k, v)
+		       rawset(tab, k, v)
+		       remotedostring("env[arg(1)] = arg(2)", k, v)
+		    end
   }
   local app = common.normalize_app(arg(1), arg(3))
   main_func = function ()
