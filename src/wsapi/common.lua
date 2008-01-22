@@ -93,7 +93,7 @@ function error_html(msg)
       ]], tostring(msg))
 end
 
-function not_found_html(msg)
+function status_404_html(msg)
    return string.format([[
         <html>
         <head><title>Resource not found</title></head>
@@ -117,14 +117,15 @@ function send_404(out, msg, out_method)
    local write = out[out_method or "write"]
    write(out, "Status: 404 Not Found\r\n")
    write(out, "Content-type: text/html\r\n\r\n")
-   write(out, not_found_html(msg))
+   write(out, status_404_html(msg))
 end
 
 function run_app(app, env)
    return xpcall(function () return (normalize_app(app))(env) end,
 		 function (msg)
-		    if env.STATUS == 404 then
-		       return not_found_html(msg) 
+		    if type(msg) == "table" then
+		       env.STATUS = msg[1]
+		       return _M["status_" .. msg[1] .. "_html"](msg[2]) 
 		    else
 		       return debug.traceback(msg, 2)
 		    end
@@ -213,8 +214,8 @@ function adjust_non_wrapped(wsapi_env, filename, launcher)
       local filename = docroot .. filepath
       local mode = lfs.attributes(filename, "mode")
       if not mode then
-	wsapi_env.STATUS = 404 
-	error("Resource " .. filename .. " not found!", 0)
+	error({ 404, "Resource " .. wsapi_env.SCRIPT_NAME .. "/" .. filepath
+		 .. " not found!" }, 0)
       elseif lfs.attributes(filename, "mode") == "file" then
 	wsapi_env.PATH_INFO = path_info:sub(e + 1)
 	if wsapi_env.PATH_INFO == "" then wsapi_env.PATH_INFO = "/" end    
