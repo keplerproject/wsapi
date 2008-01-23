@@ -1,4 +1,4 @@
-# $Id: Makefile.win,v 1.23 2008/01/23 01:53:40 mascarenhas Exp $
+# $Id: Makefile.win,v 1.24 2008/01/23 02:53:09 mascarenhas Exp $
 
 LUA_INCLUDE= c:\lua5.1\include
 LUA_LIB= c:\lua5.1\lua5.1.lib
@@ -10,17 +10,20 @@ LUA_LIBDIR= c:\lua5.1
         $(CC) /c /MD /Fo$@ $(CFLAGS) /I$(LUA_INCLUDE) $<
 
 src\launcher\launcher.exe: src\launcher\launcher.obj
-	link /manifest:no /out:src\launcher\launcher.exe src\launcher\launcher.obj $(LUA_LIB)
+	link /out:src\launcher\launcher.exe src\launcher\launcher.obj $(LUA_LIB)
+	mt -manifest src\launcher\launcher.exe.manifest -outputresource:src\launcher\launcher.exe;1
 
 src\launcher\wsapi.exe: src\launcher\wsapi.obj
 	lua5.1 src\launcher\make_rc.lua src\launcher\wsapi.cgi > src\launcher\wsapi.rc
 	rc /r /fosrc\launcher\wsapi.res src\launcher\wsapi.rc
-	link /manifest:no /out:src\launcher\wsapi.exe src\launcher\wsapi.obj src\launcher\wsapi.res $(LUA_LIB) user32.lib
+	link /out:src\launcher\wsapi.exe src\launcher\wsapi.obj src\launcher\wsapi.res $(LUA_LIB) user32.lib
+	mt -manifest src\launcher\wsapi.exe.manifest -outputresource:src\launcher\wsapi.exe;1
 
 src\launcher\wsapi-fcgi.exe: src\launcher\wsapi.obj
 	lua5.1 src\launcher\make_rc.lua src\launcher\wsapi.fcgi > src\launcher\wsapi-fcgi.rc
 	rc /r /fosrc\launcher\wsapi-fcgi.res src\launcher\wsapi-fcgi.rc
-	link /manifest:no /out:src\launcher\wsapi-fcgi.exe src\launcher\wsapi.obj src\launcher\wsapi-fcgi.res $(LUA_LIB) user32.lib
+	link /out:src\launcher\wsapi-fcgi.exe src\launcher\wsapi.obj src\launcher\wsapi-fcgi.res $(LUA_LIB) user32.lib
+	mt -manifest src\launcher\wsapi-fcgi.exe.manifest -outputresource:src\launcher\wsapi-fcgi.exe;1
 
 all: cgi fcgi
 
