@@ -104,6 +104,17 @@ function status_404_html(msg)
       ]], tostring(msg))
 end
 
+function status_200_html(msg)
+   return string.format([[
+        <html>
+        <head><title>Resource not found</title></head>
+        <body>
+        <p>%s</p>
+        </body>
+        </html>
+      ]], tostring(msg))
+end
+
 function send_error(out, err, msg, out_method, err_method)
    local write = out[out_method or "write"]
    local write_err = err[err_method or "write"]
@@ -202,8 +213,18 @@ function adjust_iis_path(wsapi_env, filename)
    end
 end
 
+local function not_compatible(wsapi_env, filename)
+  local script_name = wsapi_env.SCRIPT_NAME
+  if not filename:gsub("\\","/"):find(script_name) then
+    -- more IIS madness, down into the rabbit hole...
+    local path_info = wsapi_env.PATH_INFO:gsub("/", "\\")
+    wsapi_env.DOCUMENT_ROOT = filename:sub(1, #filename-#path_info)
+    return true
+  end
+end
+
 function adjust_non_wrapped(wsapi_env, filename, launcher)
-  if filename == "" or filename:match("%.exe$") or 
+  if filename == "" or not_compatible(wsapi_env, filename) or 
     (launcher and filename:match(launcher:gsub("%.", "%.") .. "$")) then
     local path_info = wsapi_env.PATH_INFO
     local docroot = wsapi_env.DOCUMENT_ROOT
@@ -213,7 +234,12 @@ function adjust_non_wrapped(wsapi_env, filename, launcher)
     local s, e = path_info:find("[^/%.]+%.[^/%.]+", 1)
     while s do
       local filepath = path_info:sub(2, e)
-      local filename = docroot .. filepath
+	local filename
+	if docroot:find("\\", 1, true) then
+        filename = docroot .. filepath:gsub("/","\\")
+      else
+        filename = docroot .. filepath
+      end
       local mode = lfs.attributes(filename, "mode")
       if not mode then
 	error({ 404, "Resource " .. wsapi_env.SCRIPT_NAME .. "/" .. filepath
