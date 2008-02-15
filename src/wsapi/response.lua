@@ -1,5 +1,7 @@
 local util = require "wsapi.util"
 
+local format = string.format
+
 module("wsapi.response", package.seeall)
 
 local function write(self, s)
