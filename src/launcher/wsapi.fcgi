@@ -14,6 +14,7 @@ local function wsapi_loader(wsapi_env)
   local path, file, modname, ext, mtime = 
   	common.find_module(wsapi_env, nil, "wsapi.fcgi")
   local app = common.load_wsapi_isolated(path, file, modname, ext, mtime)
+  wsapi_env.APP_PATH = path
   return app(wsapi_env)
 end 
 

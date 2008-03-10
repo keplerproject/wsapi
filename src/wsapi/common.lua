@@ -41,7 +41,7 @@ function normalize_app(app_run, is_file)
       return app_run.run
    elseif t == "string" then
       if is_file then
-	 return notmalize_app(dofile(app_run))
+	 return normalize_app(dofile(app_run))
       else
 	 return normalize_app(require(app_run))
       end
@@ -325,7 +325,7 @@ do
     local app, data
     local app_state = app_states[filename]
     if app_state.mtime == mtime then
-       for _, state in ipairs(app_state.states) do
+      for _, state in ipairs(app_state.states) do
 	 if not rawget(state.data, "status") then
 	    return state.app
 	 end
@@ -349,6 +349,6 @@ function wsapi_loader_isolated(wsapi_env)
       error({ 404, "Resource " .. wsapi_env.SCRIPT_NAME .. " not found"})
    end
    local app = load_wsapi_isolated(path, file, modname, ext, mtime)
+   wsapi_env.APP_PATH = path
    return app(wsapi_env)
 end 
-

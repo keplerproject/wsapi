@@ -43,7 +43,7 @@ local function set_cgivars (req, diskpath, path_info_pat, script_name_pat)
    end
 end
 
-local function wsapihandler (req, res, wsapi_run, app_prefix, docroot)
+local function wsapihandler (req, res, wsapi_run, app_prefix, docroot, app_path)
    local path_info_pat = "^" .. (app_prefix or "") .. "(.*)"
    set_cgivars(req, docroot, path_info_pat, app_prefix)
 
@@ -52,7 +52,9 @@ local function wsapihandler (req, res, wsapi_run, app_prefix, docroot)
 		       end
 
    local wsapi_env = common.wsapi_env{ input = req.socket, 
-      read_method = "receive", error = io.stderr, env = get_cgi_var }
+				       read_method = "receive", error = io.stderr, 
+				       env = get_cgi_var,
+				       APP_PATH = app_path }
 
    local function set_status(status)
       res.statusline = "HTTP/1.1 " .. tostring(status) 
@@ -95,9 +97,9 @@ end
 -------------------------------------------------------------------------------
 -- Returns the WSAPI handler
 -------------------------------------------------------------------------------
-function makeHandler (app_func, app_prefix, docroot)
+function makeHandler (app_func, app_prefix, docroot, app_path)
    return function (req, res)
-	     return wsapihandler(req, res, app_func, app_prefix, docroot)
+	     return wsapihandler(req, res, app_func, app_prefix, docroot, app_path)
 	  end
 end
 
