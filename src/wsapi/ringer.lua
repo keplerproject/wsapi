@@ -5,7 +5,7 @@ require "rings"
 module("wsapi.ringer", package.seeall)
 
 local function arg(n)
-  return "select(" .. tostring(n) .. ",...)"
+  return "(select(" .. tostring(n) .. ",...))"
 end
 
 local init = [==[
