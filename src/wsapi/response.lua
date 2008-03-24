@@ -1,5 +1,6 @@
 local util = require "wsapi.util"
 
+local date = os.date
 local format = string.format
 
 module("wsapi.response", package.seeall)
@@ -57,8 +58,8 @@ local function set_cookie(self, name, value)
   end
 end
 
-local function delete_cookie(self, name)
-  self:set_cookie(name, { value =  "xxx", expires = 1 })
+local function delete_cookie(self, name, path)
+  self:set_cookie(name, { value =  "xxx", expires = 1, path = path })
 end
 
 function new(status, headers, body)
