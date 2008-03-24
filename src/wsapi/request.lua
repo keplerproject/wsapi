@@ -61,7 +61,7 @@ local function get_field_names(headers)
   for attr, val in string.gmatch(disp_header, ';%s*([^%s=]+)="(.-)"') do
     attrs[attr] = val
   end
-  return attrs.name, filename and split_filename(attrs.filename)
+  return attrs.name, attrs.filename and split_filename(attrs.filename)
 end
 
 local function read_field_contents(input, boundary, pos)
@@ -84,12 +84,14 @@ local function file_value(file_contents, file_name, file_size, headers)
 end
 
 local function fields(input, boundary)
-  local state = { pos = 1 }
+  local state, _ = { }
+  _, state.pos = string.find(input, boundary)
+  state.pos = state.pos + 1
   return function (state, _)
-	   local headers, name, value, size
+	   local headers, name, file_name, value, size
 	   headers, state.pos = read_field_headers(input, state.pos)
 	   if headers then
-	     local name, file_name = get_field_names(headers)
+	     name, file_name = get_field_names(headers)
 	     if file_name then
 	       value, size, state.pos = read_field_contents(input,
 							    boundary,
