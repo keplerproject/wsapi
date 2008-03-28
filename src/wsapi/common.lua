@@ -215,7 +215,7 @@ end
 
 local function not_compatible(wsapi_env, filename)
   local script_name = wsapi_env.SCRIPT_NAME
-  if not filename:gsub("\\","/"):find(script_name) then
+  if not filename:gsub("\\","/"):find(script_name, 1, true) then
     -- more IIS madness, down into the rabbit hole...
     local path_info = wsapi_env.PATH_INFO:gsub("/", "\\")
     wsapi_env.DOCUMENT_ROOT = filename:sub(1, #filename-#path_info)
