@@ -23,11 +23,12 @@ function handle_get(web)
     return ""
   end
   function env.include(arg)
+    local file
     local name = arg[1]
     if name:sub(1, 1) == "/" then
-      local file = io.open(web.doc_root .. name)
+      file = io.open(web.doc_root .. name)
     else
-      local file = io.open(web.real_path .. "/" .. name)
+      file = io.open(web.real_path .. "/" .. name)
     end
     if not file then return "" end
     local template = file:read("*a")
