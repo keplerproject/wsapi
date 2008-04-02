@@ -23,11 +23,19 @@ function handle_get(web)
     return ""
   end
   function env.include(arg)
-    local file = io.open(web.real_path .. "/" .. arg[1])
+    local name = arg[1]
+    if name:sub(1, 1) == "/" then
+      local file = io.open(web.doc_root .. name)
+    else
+      local file = io.open(web.real_path .. "/" .. name)
+    end
     if not file then return "" end
     local template = file:read("*a")
     file:close()
     return cosmo.fill(template, env)
+  end
+  function env.model(arg)
+    return _M:model(arg[1])
   end
   local file = io.open(web.path_translated)
   if not file then
