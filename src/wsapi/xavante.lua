@@ -53,8 +53,8 @@ local function wsapihandler (req, res, wsapi_run, app_prefix, docroot, app_path)
 
    local wsapi_env = common.wsapi_env{ input = req.socket, 
 				       read_method = "receive", error = io.stderr, 
-				       env = get_cgi_var,
-				       APP_PATH = app_path }
+				       env = get_cgi_var }
+   wsapi_env.APP_PATH = app_path
 
    local function set_status(status)
       res.statusline = "HTTP/1.1 " .. tostring(status) 

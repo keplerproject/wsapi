@@ -49,6 +49,7 @@ function handle_get(web)
 	  <body><p>Not found!</p></body></html>]]
   end
   local template = file:read("*a")
+  file:close()
   return cosmo.fill(template, env)
 end
 
