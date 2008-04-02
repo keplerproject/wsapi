@@ -71,6 +71,7 @@ local init = [==[
 		    coroutine.yield("SEND", s)
 		    s = res()
 		 end
+		 return "SEND", nil 
 	      end
 ]==]
 
@@ -108,7 +109,11 @@ function new(app_name, bootstrap, is_file)
 	       error("Invalid command: " .. tostring(flag))
 	     end
 	   until flag == "SEND"
-	   local res = function ()
+	   local res
+	   if not s then 
+	     res = function () return nil end
+	   else
+	     res = function ()
 			 if s then 
 			   local res = s
 			   s = nil
@@ -130,6 +135,7 @@ function new(app_name, bootstrap, is_file)
 			 data.status, data.headers, data.env = nil
 			 if not ok then error(s) end
 		       end
+	   end
 	   return data.status, data.headers, res 
 	end, data
 end
