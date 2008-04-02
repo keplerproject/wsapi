@@ -22,6 +22,9 @@ function handle_get(web)
     web:redirect(arg[1])
     return ""
   end
+  function env.fill(arg)
+    cosmo.yield(arg[1])
+  end
   function env.include(arg)
     local file
     local name = arg[1]
