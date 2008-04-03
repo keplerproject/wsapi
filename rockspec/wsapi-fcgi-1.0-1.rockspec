@@ -25,7 +25,7 @@ external_dependencies = {
 }
 
 source = {
-  url = "http://www.lua.inf.puc-rio.br/~mascarenhas/wsapi-1.0-snapshot.tar.gz"
+  url = "http://wsapi.luaforge.net/wsapi-1.0.tar.gz"
 }
 
 build = {
