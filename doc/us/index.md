@@ -18,7 +18,7 @@ This is the first public release of WSAPI, version 1.0.
 
 ## Download
 
-Get WSAPI from its [LuaForge](http://luaforge.net/projects/wsapi) page.
+Get WSAPI using [LuaRocks](http://luarocks.org), with `luarocks install wsapi`.
 
 ## History
 
