@@ -1,4 +1,4 @@
-local cosmo = require "template.cosmo"
+local cosmo = require "cosmo"
 require "markdown"
 
 local pages = {

@@ -161,7 +161,7 @@ execute permission. You should then see something like this:</p>
 directly. Configuration depends on your web server, but you should tell it to run
 <em>.lua</em> files as FastCGI scripts with <em>wsapi-fcgi</em> as the wrapper (the configuration
 is analogous to the necessary for running PHP scripts with FastCGI). As an example,
-this is for Apache's <em>mod_fcgid</em>:</p>
+this is for Apache's *mod_fcgid*:</p>
 
 <pre><code>    AddHandler fcgid-script .lua
     FCGIWrapper /usr/bin/wsapi-fcgi .lua
