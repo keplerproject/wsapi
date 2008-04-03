@@ -9,8 +9,7 @@ local error, tostring = error, tostring
 module("wsapi.cosmo", orbit.new)
 
 function handle_get(web)
-  local env = {}
-  setmetatable(env, { __index = _G })
+  local env = setmetatable({}, { __index = _G })
   env.web = web
   function env.lua(arg)
     local f = loadstring(arg[1])
@@ -36,7 +35,13 @@ function handle_get(web)
     if not file then return "" end
     local template = file:read("*a")
     file:close()
-    return cosmo.fill(template, env)
+    local subt_env
+    if arg[2] then
+      subt_env = setmetatable(arg[2], { __index = env })
+    else
+      subt_env = env
+    end
+    return cosmo.fill(template, subt_env)
   end
   function env.model(arg)
     return _M:model(arg[1])
