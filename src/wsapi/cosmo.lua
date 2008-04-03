@@ -2,7 +2,7 @@
 local orbit = require "orbit"
 local cosmo = require "cosmo"
 
-local io = io
+local io, string = io, string
 local setmetatable, loadstring, setfenv = setmetatable, loadstring, setfenv
 local error, tostring = error, tostring
 
@@ -12,9 +12,16 @@ local function remove_shebang(s)
   return s:gsub("^#![^\n]+", "")
 end
 
+local function splitpath(filename)
+  local path, file = string.match(filename, "^(.*)[/\\]([^/\\]*)$")
+  return path, file
+end
+
 function handle_get(web)
   local env = setmetatable({}, { __index = _G })
   env.web = web
+  local filename = web.path_translated
+  web.real_path = splitpath(filename)
   function env.lua(arg)
     local f = loadstring(arg[1])
     setfenv(f, env)
@@ -50,7 +57,7 @@ function handle_get(web)
   function env.model(arg)
     return _M:model(arg[1])
   end
-  local file = io.open(web.path_translated)
+  local file = io.open(filename)
   if not file then
     web.status = 404
     return [[<html>
