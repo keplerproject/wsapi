@@ -85,7 +85,7 @@ end
 
 local function fields(input, boundary)
   local state, _ = { }
-  _, state.pos = string.find(input, boundary)
+  _, state.pos = string.find(input, boundary, 1, true)
   state.pos = state.pos + 1
   return function (state, _)
 	   local headers, name, file_name, value, size
@@ -120,13 +120,13 @@ local function parse_post_data(wsapi_env, tab)
   local input_type = wsapi_env.CONTENT_TYPE or error("Undefined Media Type")
   if string.find(input_type, "x-www-form-urlencoded", 1, true) then
     local length = tonumber(wsapi_env.CONTENT_LENGTH) or 0
-    parse_qs(wsapi_env.input:read(length), tab)
+    parse_qs(wsapi_env.input:read(length) or "", tab)
   elseif string.find(input_type, "multipart/form-data", 1, true) then
     local length = tonumber(wsapi_env.CONTENT_LENGTH) or 0
-    parse_multipart_data(wsapi_env.input:read(length), input_type, tab)
+    parse_multipart_data(wsapi_env.input:read(length) or "", input_type, tab)
   else
     local length = tonumber(wsapi_env.CONTENT_LENGTH) or 0
-    tab.post_data = wsapi_env.input:read(length)
+    tab.post_data = wsapi_env.input:read(length) or ""
   end  
   return tab
 end
