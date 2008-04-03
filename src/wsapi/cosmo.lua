@@ -8,6 +8,10 @@ local error, tostring = error, tostring
 
 module("wsapi.cosmo", orbit.new)
 
+local function remove_shebang(s)
+  return s:gsub("^#![^\n]+", "")
+end
+
 function handle_get(web)
   local env = setmetatable({}, { __index = _G })
   env.web = web
@@ -41,7 +45,7 @@ function handle_get(web)
     else
       subt_env = env
     end
-    return cosmo.fill(template, subt_env)
+    return cosmo.fill(remove_shebang(template), subt_env)
   end
   function env.model(arg)
     return _M:model(arg[1])
@@ -55,7 +59,7 @@ function handle_get(web)
   end
   local template = file:read("*a")
   file:close()
-  return cosmo.fill(template, env)
+  return cosmo.fill(remove_shebang(template), env)
 end
 
 handle_post = handle_get
