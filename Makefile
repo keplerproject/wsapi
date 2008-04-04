@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.12 2008/01/20 20:19:51 mascarenhas Exp $
+# $Id: Makefile,v 1.13 2008/04/04 01:59:56 mascarenhas Exp $
 
 include config
 
@@ -14,7 +14,7 @@ fastcgi: src/fastcgi/lfcgi.so
 fcgi: fastcgi
 
 src/fastcgi/lfcgi.so: src/fastcgi/lfcgi.o src/fastcgi/lfcgi.h
-	$(CC) $(CFLAGS) $(LIB_OPTION) -o src/fastcgi/lfcgi.so src/fastcgi/lfcgi.o -lfcgi 
+	export MACOSX_DEPLOYMENT_TARGET="10.3"; $(CC) $(CFLAGS) $(LIB_OPTION) -o src/fastcgi/lfcgi.so src/fastcgi/lfcgi.o -lfcgi 
 
 install:
 	mkdir -p $(LUA_DIR)/wsapi

@@ -304,7 +304,7 @@ do
   setmetatable(app_states, { __index = function (tab, app)
 					  tab[app] = {}
 					  return tab[app]
-				       end, __mode = "v" })
+				       end })
 
   local function bootstrap_app(file, modname, ext)
      local bootstrap = [[
@@ -352,3 +352,41 @@ function wsapi_loader_isolated(wsapi_env)
    wsapi_env.APP_PATH = path
    return app(wsapi_env)
 end 
+
+do
+  local app_states = {}
+  setmetatable(app_states, { __index = function (tab, app)
+					  tab[app] = {}
+					  return tab[app]
+				       end })
+
+  local function bootstrap_app(app_modname)
+     local bootstrap = [[
+	   _, package.path = remotedostring("return package.path")
+	   _, package.cpath = remotedostring("return package.cpath")
+	   pcall(require, "luarocks.require")
+     ]]
+     return ringer.new(app_modname, bootstrap)
+  end
+
+  function load_isolated_launcher(filename, app_modname)
+    local app, data
+    local app_state = app_states[filename]
+    local mtime = lfs.attributes(filename, "modification")
+    if app_state.mtime == mtime then
+      for _, state in ipairs(app_state.states) do
+	 if not rawget(state.data, "status") then
+	    return state.app
+	 end
+      end
+      app, data = bootstrap_app(app_modname)
+      table.insert(app_state.states, { app = app, data = data })
+   else
+      app, data = bootstrap_app(app_modname)
+      app_states[filename] = { states = { { app = app, data = data } }, 
+	 mtime = mtime }
+    end
+    return app
+  end
+
+end

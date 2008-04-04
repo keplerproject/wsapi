@@ -1,4 +1,4 @@
-# $Id: Makefile.win,v 1.24 2008/01/23 02:53:09 mascarenhas Exp $
+# $Id: Makefile.win,v 1.25 2008/04/04 01:59:56 mascarenhas Exp $
 
 LUA_INCLUDE= c:\lua5.1\include
 LUA_LIB= c:\lua5.1\lua5.1.lib
@@ -30,7 +30,8 @@ all: cgi fcgi
 cgi: src\launcher\launcher.exe src\launcher\wsapi.exe
 
 src\fastcgi\lfcgi.dll: src\fastcgi\lfcgi.obj
-      link /manifest:no /dll /out:src\fastcgi\lfcgi.dll /def:src\fastcgi\lfcgi.def $(LIB_OPTION) src\fastcgi\lfcgi.obj
+	link /dll /out:src\fastcgi\lfcgi.dll /def:src\fastcgi\lfcgi.def $(LIB_OPTION) src\fastcgi\lfcgi.obj
+	mt -manifest src\fastcgi\lfcgi.dll.manifest -outputresource:src\fastcgi\lfcgi.dll;2
 
 fcgi: src\fastcgi\lfcgi.dll src\launcher\wsapi-fcgi.exe
 
