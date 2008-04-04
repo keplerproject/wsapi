@@ -23,7 +23,6 @@ end
 local function load_template(filename)
   local template = template_cache[filename]
   if not template then
-     print("miss " .. filename)
      local file = io.open(filename)
      if not file then
 	return nil
