@@ -4,8 +4,10 @@ local cosmo = require "cosmo"
 
 local io, string = io, string
 local setmetatable, loadstring, setfenv = setmetatable, loadstring, setfenv
-local error, tostring = error, tostring
+local type, error, tostring = type, error, tostring
 local print = print
+
+local _G = _G
 
 module("wsapi.cosmo", orbit.new)
 
@@ -34,8 +36,22 @@ local function load_template(filename)
   return template
 end
 
+local function env_index(env, key)
+  local val = _G[key]
+  if not val and type(key) == "string" then
+    return function (arg)
+	     local template = 
+	       load_template(env.web.real_path .. "/" .. key .. ".cp")
+	     if not template then return "$" .. key end
+	     if arg[1] then arg.it = arg[1] end
+	     local subt_env = setmetatable(arg, { __index = env })
+	     return template(subt_env)
+	   end
+  end
+end
+
 function handle_get(web)
-  local env = setmetatable({}, { __index = _G })
+  local env = setmetatable({}, { __index = env_index })
   env.web = web
   local filename = web.path_translated
   web.real_path = splitpath(filename)
@@ -64,6 +80,7 @@ function handle_get(web)
     if not template then return "" end
     local subt_env
     if arg[2] then
+      if type(arg[2]) ~= "table" then arg[2] = { it = arg[2] } end
       subt_env = setmetatable(arg[2], { __index = env })
     else
       subt_env = env
