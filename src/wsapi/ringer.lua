@@ -54,25 +54,36 @@ local init = [==[
   main_func = function ()
 		 local wsapi_env = { error = wsapi_error, input = wsapi_input }
 		 setmetatable(wsapi_env, wsapi_meta)
-		 local status, headers, res = app(wsapi_env)
+		 local ok, status, headers, res = common.run_app(app, wsapi_env)
+		 if not ok then
+		   local msg = status
+		   headers = { ["Content-Type"] = "text/html" }
+		   if wsapi_env.STATUS ~= "" then
+		     status = wsapi_env.STATUS
+		     res = coroutine.wrap(function () coroutine.yield(msg) end)
+		   else
+		     status = 500
+		     res = coroutine.wrap(function () coroutine.yield(common.error_html(msg)) end)
+		   end
+		 end
 		 remotedostring("status = arg(1)", status)
 		 for k, v in pairs(headers) do
-		    if type(v) == "table" then
-		       remotedostring("headers[arg(1)] = {}", k)
-		       for _, val in ipairs(v) do
-			  remotedostring("table.insert(headers[arg(1)], arg(2))", k, val)
-		       end
-		    else
-		       remotedostring("headers[arg(1)] = arg(2)", k, v)
-		    end
+		   if type(v) == "table" then
+		     remotedostring("headers[arg(1)] = {}", k)
+		     for _, val in ipairs(v) do
+		       remotedostring("table.insert(headers[arg(1)], arg(2))", k, val)
+		     end
+		   else
+		     remotedostring("headers[arg(1)] = arg(2)", k, v)
+		   end
 		 end
 		 local s = res()
 		 while s do
-		    coroutine.yield("SEND", s)
-		    s = res()
+		   coroutine.yield("SEND", s)
+		   s = res()
 		 end
 		 return "SEND", nil 
-	      end
+	       end
 ]==]
 
 init = string.gsub(init, "arg%((%d+)%)", arg)
