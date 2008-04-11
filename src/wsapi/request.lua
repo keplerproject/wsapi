@@ -123,7 +123,9 @@ local function parse_post_data(wsapi_env, tab)
     parse_qs(wsapi_env.input:read(length) or "", tab)
   elseif string.find(input_type, "multipart/form-data", 1, true) then
     local length = tonumber(wsapi_env.CONTENT_LENGTH) or 0
-    parse_multipart_data(wsapi_env.input:read(length) or "", input_type, tab)
+    if length > 0 then
+       parse_multipart_data(wsapi_env.input:read(length) or "", input_type, tab)
+    end
   else
     local length = tonumber(wsapi_env.CONTENT_LENGTH) or 0
     tab.post_data = wsapi_env.input:read(length) or ""
