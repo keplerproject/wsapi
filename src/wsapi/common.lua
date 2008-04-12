@@ -272,8 +272,8 @@ function normalize_paths(wsapi_env, filename, launcher)
    wsapi_env.SCRIPT_FILENAME = filename
 end
 
-function find_module(wsapi_env, filename)
-   normalize_paths(wsapi_env, filename)
+function find_module(wsapi_env, filename, launcher)
+   normalize_paths(wsapi_env, filename, launcher)
    return find_file(wsapi_env.PATH_TRANSLATED)
 end
 
