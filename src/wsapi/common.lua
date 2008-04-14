@@ -306,12 +306,14 @@ do
 					  return tab[app]
 				       end })
 
-  local function bootstrap_app(file, modname, ext)
-     local bootstrap = [[
+  local function bootstrap_app(path, file, modname, ext)
+     local bootstrap = [=[
 	   _, package.path = remotedostring("return package.path")
 	   _, package.cpath = remotedostring("return package.cpath")
 	   pcall(require, "luarocks.require")
-     ]]
+	   wsapi = {}
+	   wsapi.app_path = [[]=] .. path .. [=[]]
+     ]=]
      if ext == "lua" then
 	return ringer.new(modname, bootstrap)
      else
@@ -330,10 +332,10 @@ do
 	    return state.app
 	 end
       end
-      app, data = bootstrap_app(file, modname, ext)
+      app, data = bootstrap_app(path, file, modname, ext)
       table.insert(app_state.states, { app = app, data = data })
     else
-      app, data = bootstrap_app(file, modname, ext)
+      app, data = bootstrap_app(path, file, modname, ext)
       if mtime then
 	app_states[filename] = { states = { { app = app, data = data } }, 
 				 mtime = mtime }
@@ -371,18 +373,21 @@ do
 					  return tab[app]
 				       end })
 
-  local function bootstrap_app(app_modname)
-     local bootstrap = [[
+  local function bootstrap_app(path, app_modname)
+     local bootstrap = [=[
 	   _, package.path = remotedostring("return package.path")
 	   _, package.cpath = remotedostring("return package.cpath")
 	   pcall(require, "luarocks.require")
-     ]]
+	   wsapi = {}
+	   wsapi.app_path = [[]=] .. path .. [=[]]
+     ]=]
      return ringer.new(app_modname, bootstrap)
   end
 
   function load_isolated_launcher(filename, app_modname)
     local app, data
     local app_state = app_states[filename]
+    local path, _ = splitpath(filename)
     local mtime = lfs.attributes(filename, "modification")
     if app_state.mtime == mtime then
       for _, state in ipairs(app_state.states) do
@@ -390,10 +395,10 @@ do
 	    return state.app
 	 end
       end
-      app, data = bootstrap_app(app_modname)
+      app, data = bootstrap_app(path, app_modname)
       table.insert(app_state.states, { app = app, data = data })
    else
-      app, data = bootstrap_app(app_modname)
+      app, data = bootstrap_app(path, app_modname)
       app_states[filename] = { states = { { app = app, data = data } }, 
 	 mtime = mtime }
     end

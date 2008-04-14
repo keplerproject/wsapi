@@ -17,6 +17,7 @@ local function wsapi_loader(wsapi_env)
   if not path then
     error({ 404, "Resource " .. wsapi_env.SCRIPT_NAME .. " not found" })
   end
+  wsapi.app_path = path
   local app = common.load_wsapi(path, file, modname, ext)
   wsapi_env.APP_PATH = path
   return app(wsapi_env)
