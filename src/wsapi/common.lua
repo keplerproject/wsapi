@@ -324,7 +324,7 @@ do
     lfs.chdir(path)
     local app, data
     local app_state = app_states[filename]
-    if app_state.mtime == mtime then
+    if mtime and app_state.mtime == mtime then
       for _, state in ipairs(app_state.states) do
 	 if not rawget(state.data, "status") then
 	    return state.app
@@ -332,25 +332,36 @@ do
       end
       app, data = bootstrap_app(file, modname, ext)
       table.insert(app_state.states, { app = app, data = data })
-   else
+    else
       app, data = bootstrap_app(file, modname, ext)
-      app_states[filename] = { states = { { app = app, data = data } }, 
-	 mtime = mtime }
+      if mtime then
+	app_states[filename] = { states = { { app = app, data = data } }, 
+				 mtime = mtime }
+      end
     end
     return app
   end
 
 end
 
-function wsapi_loader_isolated(wsapi_env)
+function wsapi_loader_isolated_helper(wsapi_env, reload)
    local path, file, modname, ext, mtime = 
       find_module(wsapi_env)
+   if reload then mtime = nil end
    if not path then
       error({ 404, "Resource " .. wsapi_env.SCRIPT_NAME .. " not found"})
    end
    local app = load_wsapi_isolated(path, file, modname, ext, mtime)
    wsapi_env.APP_PATH = path
    return app(wsapi_env)
+end
+
+function wsapi_loader_isolated(wsapi_env)
+   return wsapi_loader_isolated_helper(wsapi_env)
+end 
+
+function wsapi_loader_isolated_reload(wsapi_env)
+   return wsapi_loader_isolated_helper(wsapi_env, true)
 end 
 
 do

@@ -103,8 +103,14 @@ function makeHandler (app_func, app_prefix, docroot, app_path)
 	  end
 end
 
-function makeGenericHandler(docroot)
-  return function (req, res)
-	   return wsapihandler(req, res, common.wsapi_loader_isolated, nil, docroot)
-	 end
+function makeGenericHandler(docroot, reload)
+  if reload then
+    return function (req, res)
+	     return wsapihandler(req, res, common.wsapi_loader_isolated_reload, nil, docroot)
+	   end
+  else
+    return function (req, res)
+	     return wsapihandler(req, res, common.wsapi_loader_isolated, nil, docroot)
+	   end
+  end
 end
