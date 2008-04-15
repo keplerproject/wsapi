@@ -262,14 +262,25 @@ function normalize_paths(wsapi_env, filename, launcher)
      if filename == "" then filename = wsapi_env.PATH_TRANSLATED end
      filename = adjust_non_wrapped(wsapi_env, filename, launcher)
      filename = adjust_iis_path(wsapi_env, filename)
+     wsapi_env.PATH_TRANSLATED = filename
+     wsapi_env.SCRIPT_FILENAME = filename
+   else
+     if wsapi_env.PATH_TRANSLATED == "" then
+       wsapi_env.PATH_TRANSLATED = wsapi_env.SCRIPT_FILENAME
+     end
+     if wsapi_env.SCRIPT_FILENAME == "" then
+       wsapi_env.SCRIPT_FILENAME = wsapi_env.PATH_TRANSLATED
+     end
+     if wsapi_env.PATH_TRANSLATED == "" then
+       wsapi_env.PATH_TRANSLATED = filename
+       wsapi_env.SCRIPT_FILENAME = filename
+     end
    end
    local s, e = wsapi_env.PATH_INFO:find(wsapi_env.SCRIPT_NAME, 1, true)
    if s == 1 then
      wsapi_env.PATH_INFO = wsapi_env.PATH_INFO:sub(e+1)
      if wsapi_env.PATH_INFO == "" then wsapi_env.PATH_INFO = "/" end    
    end
-   wsapi_env.PATH_TRANSLATED = filename
-   wsapi_env.SCRIPT_FILENAME = filename
 end
 
 function find_module(wsapi_env, filename, launcher)
