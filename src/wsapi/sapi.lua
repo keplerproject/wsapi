@@ -26,7 +26,15 @@ function run(wsapi_env)
 	  wsapi_env.error:write (msg)
 	end,
 	header = function (header, value)
-	  res[header] = value
+          if res[header] then
+	     if type(res[header]) == "table" then
+		table.insert(res[header], value)
+	     else
+		res[header] = { res[header], value }
+	     end
+	  else
+	     res[header] = value
+	  end
 	end,
 	redirect = function (url)
 	  res.status = 302

@@ -395,18 +395,18 @@ do
 					  return tab[app]
 				       end })
 
-  local function bootstrap_app(path, app_modname)
+  local function bootstrap_app(path, app_modname, extra)
      local bootstrap = [=[
 	   _, package.path = remotedostring("return package.path")
 	   _, package.cpath = remotedostring("return package.cpath")
 	   pcall(require, "luarocks.require")
 	   wsapi = {}
 	   wsapi.app_path = [[]=] .. path .. [=[]]
-     ]=]
+     ]=] .. (extra or "")
      return ringer.new(app_modname, bootstrap)
   end
 
-  function load_isolated_launcher(filename, app_modname)
+  function load_isolated_launcher(filename, app_modname, bootstrap)
     local app, data
     local app_state = app_states[filename]
     local path, _ = splitpath(filename)
@@ -417,10 +417,10 @@ do
 	    return state.app
 	 end
       end
-      app, data = bootstrap_app(path, app_modname)
+      app, data = bootstrap_app(path, app_modname, bootstrap)
       table.insert(app_state.states, { app = app, data = data })
    else
-      app, data = bootstrap_app(path, app_modname)
+      app, data = bootstrap_app(path, app_modname, bootstrap)
       app_states[filename] = { states = { { app = app, data = data } }, 
 	 mtime = mtime }
     end
