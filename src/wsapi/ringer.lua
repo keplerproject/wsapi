@@ -158,7 +158,7 @@ function new(app_name, bootstrap, is_file)
 			   end
 			 end
 			 data.status, data.headers, data.env = nil
-			 if not ok then error(s) end
+			 if not ok then error(flag) end
 		       end
 	   end
 	   return data.status, data.headers, res 

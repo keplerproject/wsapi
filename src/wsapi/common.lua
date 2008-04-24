@@ -57,8 +57,8 @@ function send_content(out, res_iter, write_method)
    end
    if not ok then
       write(out, 
-	    "======== WSAPI ERROR DURING RESPONSE PROCESSING: " ..
-	      tostring(res))
+	    "======== WSAPI ERROR DURING RESPONSE PROCESSING: \n<pre>" ..
+	      tostring(res) .. "\n</pre>")
    end
 end
 
