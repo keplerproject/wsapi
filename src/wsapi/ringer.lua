@@ -53,6 +53,20 @@ local init = [==[
   local app = common.normalize_app(arg(1), arg(3))
   main_func = function ()
 		 local wsapi_env = { error = wsapi_error, input = wsapi_input }
+                 local _, all_headers = remotedostring([[
+                   if env.headers then
+		      local out = {}
+                      for k, v in pairs(env.headers) do
+			 table.insert(out, "[" .. string.format("%q", k) .. "]=" .. 
+				   string.format("%q", v))
+                      end
+                      return "return {" .. table.concat(out, ",") .. "}"
+                   end
+                 ]])
+                 if all_headers then
+		    wsapi_env.headers = loadstring(all_headers)()
+		    for k, v in pairs(wsapi_env.headers) do wsapi_env[k] = v end
+		 end
 		 setmetatable(wsapi_env, wsapi_meta)
 		 local ok, status, headers, res = common.run_app(app, wsapi_env)
 		 if not ok then

@@ -93,6 +93,10 @@ function error_html(msg)
       ]], tostring(msg))
 end
 
+function status_500_html(msg)
+   return error_html(msg)
+end
+
 function status_404_html(msg)
    return string.format([[
         <html>
@@ -145,9 +149,16 @@ end
 
 function wsapi_env(t)
    local env = {}
+   if type(t.env) == "table" then
+      for k, v in pairs(t.env) do env[k] = v end
+      env.headers = t.env
+      setmetatable(env, { __index = function () return "" end })
+   else
+      env = {}
+      setmetatable(env, { __index = sv_index(t.env) })
+   end
    env.input = input_maker(t.input, t.read_method)
    env.error = t.error
-   setmetatable(env, { __index = sv_index(t.env) })
    env.input.length = tonumber(env.CONTENT_LENGTH) or 0
    if env.PATH_INFO == "" then env.PATH_INFO = "/" end
    return env

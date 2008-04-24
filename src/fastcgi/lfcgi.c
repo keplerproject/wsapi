@@ -1,7 +1,7 @@
 /*
 ** FastCGI Input/Output library.
 **
-** $Id: lfcgi.c,v 1.5 2008/01/17 01:15:16 mascarenhas Exp $
+** $Id: lfcgi.c,v 1.6 2008/04/24 02:58:43 mascarenhas Exp $
 */
 
 
@@ -21,6 +21,11 @@
 #include "lauxlib.h"
 #include "lualib.h"
 
+#ifdef _WIN32
+#include <process.h>
+#else
+#include <unistd.h>
+#endif
 
 #include "lfcgi.h"
 
@@ -45,9 +50,6 @@
 #if _POSIX_C_SOURCE >= 2
 #define USE_POPEN	1
 #endif
-#endif
-#ifdef _WIN32
-#define USE_POPEN       1
 #endif
 #endif
 
@@ -75,6 +77,11 @@
 #define IO_INPUT		"_input"
 #define IO_OUTPUT		"_output"
 
+#ifndef _WIN32
+extern char **environ;
+#endif
+
+static char **old_env;
 
 static int pushresult (lua_State *L, int i, const char *filename) {
   if (i) {
@@ -268,11 +275,11 @@ static int io_output (lua_State *L) {
 static int io_readline (lua_State *L);
 
 
-static void aux_lines (lua_State *L, int idx, int close) {
+static void aux_lines (lua_State *L, int idx, int close_it) {
   lua_pushliteral(L, FILEHANDLE);
   lua_rawget(L, LUA_REGISTRYINDEX);
   lua_pushvalue(L, idx);
-  lua_pushboolean(L, close);  /* close/not close file when finished */
+  lua_pushboolean(L, close_it);  /* close/not close file when finished */
   lua_pushcclosure(L, io_readline, 3);
 }
 
@@ -522,8 +529,43 @@ static int lfcgi_getenv (lua_State *L) {
 		lua_pushstring(L, val);
 	}
 	else {
-		lua_pushnil(L);
+		if (old_env != environ) {
+			char **env = environ;
+			environ = old_env;
+			val = getenv(envVar);
+			environ = env;
+		}
+		if (val != NULL) lua_pushstring(L, val);
+		else lua_pushnil(L);
 	}
+	return 1;
+}
+
+static int lfcgi_environ(lua_State *L) {
+	char **envp;
+	int i=1;
+	lua_newtable(L);
+    	for ( envp = old_env; *envp != NULL; envp++, i++) {
+		lua_pushnumber(L, i);
+		lua_pushstring(L, *envp);
+		lua_settable(L, -3);
+	}
+	if (old_env != environ) {
+		for ( envp = environ; *envp != NULL; envp++, i++) {
+			lua_pushnumber(L, i);
+			lua_pushstring(L, *envp);
+			lua_settable(L, -3);
+		}
+	}
+	return 1;
+}
+static int lfcgi_iscgi(lua_State *L) {
+  lua_pushboolean(L, old_env == environ);
+  return 1;
+}
+
+static int lfcgi_getpid(lua_State *L) {
+	lua_pushnumber(L, getpid());
 	return 1;
 }
 
@@ -541,6 +583,9 @@ static const luaL_reg iolib[] = {
   {"write", io_write},
   {"accept", lfcgi_accept},
   {"getenv", lfcgi_getenv},
+  {"getpid", lfcgi_getpid},
+  {"environ", lfcgi_environ},
+  {"iscgi", lfcgi_iscgi},
   {NULL, NULL}
 };
 
@@ -571,6 +616,7 @@ static void createmeta (lua_State *L) {
 
 
 LUALIB_API int luaopen_lfcgi (lua_State *L) {
+  old_env = environ;
   createmeta(L);
   lua_pushvalue(L, -1);
   luaL_openlib(L, "lfcgi", iolib, 1);
