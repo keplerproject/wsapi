@@ -149,14 +149,7 @@ end
 
 function wsapi_env(t)
    local env = {}
-   if type(t.env) == "table" then
-      for k, v in pairs(t.env) do env[k] = v end
-      env.headers = t.env
-      setmetatable(env, { __index = function () return "" end })
-   else
-      env = {}
-      setmetatable(env, { __index = sv_index(t.env) })
-   end
+   setmetatable(env, { __index = sv_index(t.env) })
    env.input = input_maker(t.input, t.read_method)
    env.error = t.error
    env.input.length = tonumber(env.CONTENT_LENGTH) or 0
