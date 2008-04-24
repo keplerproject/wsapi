@@ -9,11 +9,14 @@ local function write(self, s)
   if type(s) == "string" then
     table.insert(self.body, s)
   else
-    table.insert(self.body, table.concat(s))
+    s = table.concat(s)
+    table.insert(self.body, s)
   end
+  self.length = self.length + #s
 end
 
 local function finish(self)
+  self.headers["Content-Length"] = self.length
   return self.status, self.headers,
     coroutine.wrap(function ()
 		     for _, s in ipairs(self.body) do
@@ -70,10 +73,10 @@ function new(status, headers, body)
   end
   body = body or function () return nil end
   
-  local resp = { status = status, headers = headers, body = {}, cookies = {} }
+  local resp = { status = status, headers = headers, body = {}, cookies = {}, length = 0 }
   local s = body()
   while s do
-    table.insert(resp.body, s)
+    write(resp, s)
     s = body()
   end
 
