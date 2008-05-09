@@ -7,7 +7,7 @@
 -----------------------------------------------------------------------------
 
 local lfs = require "lfs"
-local ringer = require "wsapi.ringer"
+local _, ringer = pcall(require, "wsapi.ringer")
 
 pcall(lfs.setmode, io.stdin, "binary")
 pcall(lfs.setmode, io.stdout, "binary")
