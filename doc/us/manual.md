@@ -1,8 +1,7 @@
 ## Installation
 
-The easiest way to install WSAPI is from [LuaRocks](http://luarocks.org). Add 
-[this repository](http://www.lua.inf.puc-rio.br/~mascarenhas/rocks) to your
-LuaRocks' configuration and install the `wsapi` package. If you want FastCGI
+The easiest way to install WSAPI is from [LuaRocks](http://luarocks.org). Just
+install the `wsapi` package. If you want FastCGI
 support you need to have the [FastCGI dev kit](http://www.fastcgi.com/#TheDevKit)
 installed, and the LuaRocks package is `wsapi-fcgi`.
 
