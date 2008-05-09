@@ -120,7 +120,7 @@ server's WSAPI connector. The generic application launchers provided with WSAPI 
 this pattern. This is how the above example would look package this way (for example,
 in a <em>hello.lua</em> file:</p>
 
-<pre><code>    #!/usr/bin/env wsapi
+<pre><code>    #!/usr/bin/env wsapi.cgi
 
     module(..., package.seeall)
 
@@ -206,6 +206,13 @@ Then copy <em>hello.lua</em> to some URL-accessible path.</p>
 will run the <em>hello.cgi</em> application launcher (<strong>not</strong> the <em>hello.lua</em> application!).
 Both should be in the same path, and it should be URL-accessible and have execute
 permissions on IIS. You should point your browser to <em>hello.exe</em>.</p>
+
+<h3>Xavante</h3>
+
+<p>The easiest way to run WSAPI applications in a standard Xavante install (via Kepler)
+is to give the extension .ws to the application. In the previous example you would
+call hello.lua hello.ws, and put it somewhere in Xavante's docroot. See Xavante's
+config.lua that Kepler installs for more information.</p>
 
 <h2>Writing WSAPI connectors</h2>
 
