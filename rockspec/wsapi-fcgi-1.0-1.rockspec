@@ -12,7 +12,7 @@ description = {
   homepage = "http://www.keplerproject.org/wsapi"
 }
 
-dependencies = { 'wsapi', 'rings == cvs' }
+dependencies = { 'wsapi', 'rings' }
 
 external_dependencies = {
   platforms = {
