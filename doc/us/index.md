@@ -3,7 +3,8 @@
 *WSAPI* is an API that abstracts the web server from Lua web applications. By coding
 against WSAPI your application can run on any of the supported servers and
 interfaces (currently CGI, FastCGI and Xavante, on Windows and UNIX-based systems).
-WSAPI also provides a set of helper libraries that help with request processing
+
+WSAPI provides a set of helper libraries that help with request processing
 and output buffering. You can also write applications that act as filters that
 provide some kind of service to other applications, such as authentication,
 file uploads, request isolation, or multiplexing.
@@ -14,20 +15,27 @@ clone of either of them, though, and tries to follow standard Lua idioms.
 
 ## Status
 
-This is the first public release of WSAPI, version 1.0.
+Current version is 1.0. It was developed for Lua 5.1.
 
 ## Download
 
-Get WSAPI using [LuaRocks](http://luarocks.org), with `luarocks install wsapi`.
+WSAPI can be downloaded from its [LuaForge](http://luaforge.net/projects/wsapi/) page.
+You can also get WSAPI using [LuaRocks](http://luarocks.org):
+
+<pre class="example">
+luarocks install wsapi
+</pre>
 
 ## History
 
-As this is the first release there is no history of previous releases.
+**WSAPI 1.0** [??/May/2008]
+
+* First public version.
 
 ## Credits
 
-WSAPI was designed and developed by Fabio Mascarenhas and André Carregal,
-and is maintained by Fabio Mascarenhas.
+WSAPI was designed and developed by F&aacute;bio Mascarenhas and
+Andr&eacute; Carregal, and is maintained by F&aacute;bio Mascarenhas.
 
 ## Contact Us
 
