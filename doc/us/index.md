@@ -28,7 +28,7 @@ luarocks install wsapi
 
 ## History
 
-**WSAPI 1.0** [??/May/2008]
+**WSAPI 1.0** [16/May/2008]
 
 * First public version.
 

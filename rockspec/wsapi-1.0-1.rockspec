@@ -2,6 +2,10 @@ package = "WSAPI"
 
 version = "1.0-1"
 
+source = {
+  url = "",
+}
+
 description = {
   summary = "Lua Web Server API",
   detailed = [[
@@ -13,10 +17,6 @@ description = {
 }
 
 dependencies = { }
-
-source = {
-  url = "http://wsapi.luaforge.net/wsapi-1.0.tar.gz",
-}
 
 build = {
    type = "make",

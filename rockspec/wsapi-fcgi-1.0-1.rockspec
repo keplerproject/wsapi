@@ -2,6 +2,10 @@ package = "WSAPI-FCGI"
 
 version = "1.0-1"
 
+source = {
+  url = ""
+}
+
 description = {
   summary = "Lua Web Server API FastCGI Adapter",
   detailed = [[
@@ -15,17 +19,9 @@ description = {
 dependencies = { 'wsapi', 'rings' }
 
 external_dependencies = {
-  platforms = {
-    unix = {
-      FASTCGI = {
-        header = "fcgi_stdio.h"
-      }
-    }
+  FASTCGI = {
+    header = "fcgi_stdio.h"
   }
-}
-
-source = {
-  url = "http://wsapi.luaforge.net/wsapi-1.0.tar.gz"
 }
 
 build = {
