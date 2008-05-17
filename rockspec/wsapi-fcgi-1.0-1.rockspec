@@ -13,7 +13,7 @@ description = {
     is the rock that contains the FCGI module lfcgi.
   ]],
   license = "MIT/X11",
-  homepage = "http://www.keplerproject.org/wsapi"
+  homepage = "http://wsapi.luaforge.net"
 }
 
 dependencies = { 'wsapi', 'rings' }
@@ -28,7 +28,7 @@ build = {
    platforms = {
      unix = {
         type = "make",
-   	install_target = "install-fcgi",
+   		install_target = "install-fcgi",
        	build_pass = true,
        	build_target = "fcgi",
        	build_variables = {
@@ -41,7 +41,7 @@ build = {
      },
      win32 = {
         type = "make",
-   	install_target = "install-fcgi",
+   		install_target = "install-fcgi",
        	build_pass = true,
        	build_target = "fcgi",
        	build_variables = {
@@ -50,7 +50,7 @@ build = {
        	},
        	install_variables = {
          LUA_LIBDIR = "$(LIBDIR)",
-	 BIN_DIR = "$(BINDIR)"
+	 	BIN_DIR = "$(BINDIR)"
        	}
      }
   }

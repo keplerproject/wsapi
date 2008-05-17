@@ -32,7 +32,7 @@ local template = [==[
 <div id="product">
 
 	<div id="product_logo">
-        <a href="http://www.keplerproject.org">
+        <a href="http://wsapi.luaforge.net">
 		<img alt="$name" src="$logo"/>
 	    </a>
     </div>
@@ -46,11 +46,7 @@ local template = [==[
 <h1>$name</h1>
 	<ul>
 $pages[[
-		<li>$namelink
-			<ul> 
-                            $sections[=[<li><a href="$anchor">$name</a></li>]=]
-			</ul>
-		</li>
+		<li>$namelink</li>
 ]]
 	</ul>
 </div> <!-- id="navigation" -->
@@ -94,7 +90,7 @@ local function gen_page(project, pages, p)
       if page.file == p.file then
         namelink = cosmo.fill([[<strong>$name</strong>]], { name = page.name})
       else
-	 namelink = cosmo.fill([[<a href="$file{}.html">$name</a>]], { name = page.name, file = page.file})
+      	namelink = cosmo.fill([[<a href="$file{}.html">$name</a>]], { name = page.name, file = page.file})
       end
       cosmo.yield{ namelink = namelink, sections = function ()
                                                      for _, s in ipairs(page.sections) do

@@ -14,6 +14,11 @@ pcall(lfs.setmode, io.stdout, "binary")
 
 module(..., package.seeall)
 
+-- Meta information is public even if begining with an "_"
+_COPYRIGHT   = "Copyright (C) 2007 Kepler Project"
+_DESCRIPTION = "WSAPI - the Lua Web Server API"
+_VERSION     = "WSAPI 1.0"
+
 function sv_index(func)
    return function (env, n)
 	     local v = func(n)

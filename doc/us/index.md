@@ -26,11 +26,15 @@ You can also get WSAPI using [LuaRocks](http://luarocks.org):
 luarocks install wsapi
 </pre>
 
+## CVS and Bug Tracker
+
+WSAPI CVS and bug tracker are available at its [LuaForge](http://luaforge.net/projects/wsapi/) page.
 ## History
 
-**WSAPI 1.0** [16/May/2008]
+**WSAPI 1.0** [17/May/2008]
 
 * First public version.
+* Includes CGI, FastCGI and Xavante WSAPI connectors.
 
 ## Credits
 

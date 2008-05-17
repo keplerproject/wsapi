@@ -10,7 +10,7 @@ local Rocks repository.
 
 If you do not want to use LuaRocks follow the installation instructions below.
 
-### UNIX-based
+### UNIX-based building
 
 To build and install WSAPI you are going to need to have Lua 5.1 installed,
 as well as a C compiler and the development files for
@@ -19,7 +19,7 @@ Run the included configure script, passing the name of your Lua interpreter's ex
 (usually *lua*, *lua51* or *lua5.1*). Then run *make all* and finally *make install*.
 This last step will probably need root privileges.
 
-### Windows
+### Windows building
 
 To build the Windows binaries you will need the Lua 5.1 interpreter and a version
 of Visual C++ 2005 (the freely available Express edition works fine). Edit *Makefile.win*
@@ -208,10 +208,12 @@ lets you easily send cookies back to the browser.
 
 Finally there is *wsapi.util*, which provides URI encoding/decoding functions.
 
-These facilities make it easier to write applications, but still are very basic.
-So there are also frameworks built on top of this foundation. Examples would be
-[Orbit](http://orbit.luaforge.net), which adds niceties as dispatch based on
+## WSAPI frameworks
+
+The facilities above make it easier to write applications, but still are very basic.
+For more advanced web programming there are also frameworks built on top of WSAPI.
+Examples would be **[Orbit](http://orbit.luaforge.net)**, which adds niceties as dispatch based on
 pattern matching over the PATH\_INFO, easy serving of static content, easy access
-to databases, and easy page caching, and SAPI, included in the WSAPI package as the
-*wsapi.sapi* application, for running [CGILua](http://www.keplerproject.org/cgilua/)
+to databases, and easy page caching, and **SAPI**, included in the WSAPI package as the
+*wsapi.sapi* application, for running **[CGILua](http://www.keplerproject.org/cgilua/)**
 scripts and Lua pages.
