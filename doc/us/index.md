@@ -13,6 +13,8 @@ WSAPI's main influence is Ruby's [Rack](http://rack.rubyforge.org/) framework, b
 also influenced by Python's [WSGI](http://wsgi.org/wsgi) (PEP 333). It's not a direct
 clone of either of them, though, and tries to follow standard Lua idioms.
 
+WSAPI is free software and uses the same license as Lua 5.1
+
 ## Status
 
 Current version is 1.0. It was developed for Lua 5.1.
