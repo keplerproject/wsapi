@@ -8,16 +8,17 @@
 
 local lfs = require "lfs"
 local _, ringer = pcall(require, "wsapi.ringer")
+local _G = _G
 
 pcall(lfs.setmode, io.stdin, "binary")
 pcall(lfs.setmode, io.stdout, "binary")
 
-module(..., package.seeall)
+module("wsapi.common", package.seeall)
 
 -- Meta information is public even if begining with an "_"
-_COPYRIGHT   = "Copyright (C) 2007 Kepler Project"
-_DESCRIPTION = "WSAPI - the Lua Web Server API"
-_VERSION     = "WSAPI 1.0"
+_G.wsapi._COPYRIGHT   = "Copyright (C) 2007 Kepler Project"
+_G.wsapi._DESCRIPTION = "WSAPI - the Lua Web Server API"
+_G.wsapi._VERSION     = "WSAPI 1.0"
 
 function sv_index(func)
    return function (env, n)
