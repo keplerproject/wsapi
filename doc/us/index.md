@@ -26,12 +26,6 @@ You can also get WSAPI using [LuaRocks](http://luarocks.org):
 luarocks install wsapi
 </pre>
 
-or for the FastCGI connector:
-
-<pre class="example">
-luarocks install wsapi-fcgi
-</pre>
-
 ## CVS and Bug Tracker
 
 WSAPI CVS and bug tracker are available at its [LuaForge](http://luaforge.net/projects/wsapi/) page.
