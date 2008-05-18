@@ -3,7 +3,7 @@ package = "WSAPI-FCGI"
 version = "1.0-1"
 
 source = {
-  url = ""
+  url = "http://luaforge.net/frs/download.php/3380/wsapi-1.0.0.tar.gz"
 }
 
 description = {
