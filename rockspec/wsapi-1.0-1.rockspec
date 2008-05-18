@@ -34,7 +34,7 @@ build = {
        build_target = "cgi",
        build_variables = {
          LUA_INCLUDE = "$(LUA_INCDIR)",
-	 	LUA_LIB = "$(LUA_LIBDIR)\\lua5.1.lib"
+         LUA_LIB = "$(LUA_LIBDIR)\\lua5.1.lib"
        }
      }
    }

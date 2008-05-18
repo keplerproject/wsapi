@@ -15,7 +15,7 @@
 <div id="product">
 
 	<div id="product_logo">
-        <a href="http://www.keplerproject.org">
+        <a href="http://wsapi.luaforge.net">
 		<img alt="WSAPI" src="wsapi.png"/>
 	    </a>
     </div>
@@ -28,26 +28,10 @@
 <div id="navigation">
 <h1>WSAPI</h1>
 	<ul>
-		<li><a href="index.html">Home</a>
-			<ul> 
-                            
-			</ul>
-		</li>
-		<li><strong>Manual</strong>
-			<ul> 
-                            
-			</ul>
-		</li>
-		<li><a href="libraries.html">Libraries</a>
-			<ul> 
-                            
-			</ul>
-		</li>
-		<li><a href="license.html">License</a>
-			<ul> 
-                            
-			</ul>
-		</li>
+		<li><a href="index.html">Home</a></li>
+		<li><strong>Manual</strong></li>
+		<li><a href="libraries.html">Libraries</a></li>
+		<li><a href="license.html">License</a></li>
 
 	</ul>
 </div> <!-- id="navigation" -->
@@ -67,7 +51,7 @@ local Rocks repository.</p>
 
 <p>If you do not want to use LuaRocks follow the installation instructions below.</p>
 
-<h3>UNIX-based</h3>
+<h3>UNIX-based building</h3>
 
 <p>To build and install WSAPI you are going to need to have Lua 5.1 installed,
 as well as a C compiler and the development files for
@@ -76,12 +60,23 @@ Run the included configure script, passing the name of your Lua interpreter's ex
 (usually <em>lua</em>, <em>lua51</em> or <em>lua5.1</em>). Then run <em>make all</em> and finally <em>make install</em>.
 This last step will probably need root privileges.</p>
 
-<h3>Windows</h3>
+<h3>Windows building</h3>
 
 <p>To build the Windows binaries you will need the Lua 5.1 interpreter and a version
 of Visual C++ 2005 (the freely available Express edition works fine). Edit <em>Makefile.win</em>
 according to the instructions there, then run <em>nmake -f Makefile.win all</em> and finally
 <em>nmake -f Makefile.win install</em>.</p>
+
+<p>If you are building the FastCGI connector in Windows but using LuaRocks, you
+need to pass the FastCGI installation variables as in (do not use line breaks):</p>
+
+
+<pre class="example">
+luarocks make rockspec/wsapi-fcgi-1.0-1.rockspec 
+ FASTCGI_INCDIR=C:\work\fcgi-2.4.0\include
+ FASTCGI_LIB=C:\work\fcgi-2.4.0\libfcgi\Release\libfcgi.lib
+</pre>
+
 
 <h3>About web servers</h3>
 
@@ -276,12 +271,14 @@ lets you easily send cookies back to the browser.</p>
 
 <p>Finally there is <em>wsapi.util</em>, which provides URI encoding/decoding functions.</p>
 
-<p>These facilities make it easier to write applications, but still are very basic.
-So there are also frameworks built on top of this foundation. Examples would be
-<a href="http://orbit.luaforge.net">Orbit</a>, which adds niceties as dispatch based on
+<h2>WSAPI frameworks</h2>
+
+<p>The facilities above make it easier to write applications, but still are very basic.
+For more advanced web programming there are also frameworks built on top of WSAPI.
+Examples would be <strong><a href="http://orbit.luaforge.net">Orbit</a></strong>, which adds niceties as dispatch based on
 pattern matching over the PATH_INFO, easy serving of static content, easy access
-to databases, and easy page caching, and SAPI, included in the WSAPI package as the
-<em>wsapi.sapi</em> application, for running <a href="http://www.keplerproject.org/cgilua/">CGILua</a>
+to databases, and easy page caching, and <strong>SAPI</strong>, included in the WSAPI package as the
+<em>wsapi.sapi</em> application, for running <strong><a href="http://www.keplerproject.org/cgilua/">CGILua</a></strong>
 scripts and Lua pages.</p>
 
 

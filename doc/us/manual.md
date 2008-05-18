@@ -26,6 +26,15 @@ of Visual C++ 2005 (the freely available Express edition works fine). Edit *Make
 according to the instructions there, then run *nmake -f Makefile.win all* and finally
 *nmake -f Makefile.win install*.
 
+If you are building the FastCGI connector in Windows but using LuaRocks, you
+need to pass the FastCGI installation variables as in (do not use line breaks):
+
+<pre class="example">
+luarocks make rockspec/wsapi-fcgi-1.0-1.rockspec 
+ FASTCGI_INCDIR=C:\work\fcgi-2.4.0\include
+ FASTCGI_LIB=C:\work\fcgi-2.4.0\libfcgi\Release\libfcgi.lib
+</pre>
+
 ### About web servers
 
 To run WSAPI applications you will also need a web server such as Apache, Lighttpd,
