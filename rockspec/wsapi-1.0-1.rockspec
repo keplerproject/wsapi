@@ -24,7 +24,7 @@ build = {
    install_target = "install-rocks",
    install_variables = {
      PREFIX  = "$(PREFIX)",
-     LUA_BIN = "/usr/bin/env lua",
+     LUA_BIN = "$(LUA)",
      LUA_DIR = "$(LUADIR)",
      BIN_DIR = "$(BINDIR)"
    },
