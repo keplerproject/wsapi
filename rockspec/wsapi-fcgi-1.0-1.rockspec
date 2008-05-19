@@ -16,7 +16,10 @@ description = {
   homepage = "http://wsapi.luaforge.net"
 }
 
-dependencies = { 'wsapi', 'rings' }
+dependencies = {
+	'wsapi >= 1.0',
+	'rings >= 1.2.1',
+}
 
 external_dependencies = {
   FASTCGI = {
