@@ -275,16 +275,8 @@ function normalize_paths(wsapi_env, filename, launcher)
      wsapi_env.PATH_TRANSLATED = filename
      wsapi_env.SCRIPT_FILENAME = filename
    else
-     if wsapi_env.PATH_TRANSLATED == "" then
-       wsapi_env.PATH_TRANSLATED = wsapi_env.SCRIPT_FILENAME
-     end
-     if wsapi_env.SCRIPT_FILENAME == "" then
-       wsapi_env.SCRIPT_FILENAME = wsapi_env.PATH_TRANSLATED
-     end
-     if wsapi_env.PATH_TRANSLATED == "" then
-       wsapi_env.PATH_TRANSLATED = filename
-       wsapi_env.SCRIPT_FILENAME = filename
-     end
+     wsapi_env.PATH_TRANSLATED = filename
+     wsapi_env.SCRIPT_FILENAME = filename
    end
    local s, e = wsapi_env.PATH_INFO:find(wsapi_env.SCRIPT_NAME, 1, true)
    if s == 1 then
