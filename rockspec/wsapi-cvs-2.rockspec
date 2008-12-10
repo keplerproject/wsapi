@@ -1,6 +1,6 @@
 package = "WSAPI"
 
-version = "cvs-1"
+version = "cvs-2"
 
 description = {
   summary = "Lua Web Server API",
