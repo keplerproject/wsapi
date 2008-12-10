@@ -40,7 +40,8 @@ build = {
 	    incdirs = "$(FASTCGI_INCDIR)",
 	    libdirs = "$(FASTCGI_LIBDIR)"
           }
-        }
+        },
+       install = { bin = { "src/launcher/wsapi.fcgi" } }
      },
      win32 = {
         type = "make",
