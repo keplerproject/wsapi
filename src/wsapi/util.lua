@@ -28,17 +28,19 @@ function sanitize(text)
 end
 
 function virtualize_postdata(wsapi_env)
-   local new_env = { input = { position = 1 } }
-   local length = tonumber(wsapi_env.CONTENT_LENGTH) or 0
-   if length > 0 then
-      new_env.input.contents = wsapi_env.input:read(length)
-   end
+   local new_env = { input = { position = 1, contents = "" } }
    function new_env.input:read(size)
-      if self.contents then
-	 local s = self.contents:sub(self.position, self.position + size)
+      local left = #self.contents - self.position + 1
+      local s
+      if left < size then
+	 self.contents = self.contents .. wsapi_env.input:read(size - left)
+	 s = self.contents:sub(self.position)
+	 self.position = #self.contents + 1
+      else
+	 s = self.contents:sub(self.position, self.position + size)
 	 self.position = self.position + size
-	 if s == "" then return nil else return s end
-      else return nil end
+      end
+      if s == "" then return nil else return s end
    end
    function new_env:reset()
       self.input.position = 1
