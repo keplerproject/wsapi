@@ -27,7 +27,7 @@ function sanitize(text)
    return text:gsub(">", "&gt;"):gsub("<", "&lt;")
 end
 
-function virtualize_postdata(wsapi_env)
+function rewindable(wsapi_env)
    local new_env = { input = { position = 1, contents = "" } }
    function new_env.input:read(size)
       local left = #self.contents - self.position + 1
@@ -42,8 +42,8 @@ function virtualize_postdata(wsapi_env)
       end
       if s == "" then return nil else return s end
    end
-   function new_env:reset()
-      self.input.position = 1
+   function new_env.input:rewind()
+      self.position = 1
    end
    return setmetatable(new_env, { __index = wsapi_env, __newindex = wsapi_env })
 end
