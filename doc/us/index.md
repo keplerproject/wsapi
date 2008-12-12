@@ -17,7 +17,7 @@ WSAPI is free software and uses the same license as Lua 5.1
 
 ## Status
 
-Current version is 1.0. It was developed for Lua 5.1.
+Current version is 1.1. It was developed for Lua 5.1.
 
 ## Download
 
@@ -33,11 +33,13 @@ luarocks install wsapi
 WSAPI CVS and bug tracker are available at its [LuaForge](http://luaforge.net/projects/wsapi/) page.
 ## History
 
-**WSAPI 1.0.1** [12/Dec/2008]
+**WSAPI 1.1** [15/Dec/2008]
 
-* Correctly handles PATH_TRANSLATED and SCRIPT_FILENAME in case the web server gets creative
+* Adds **wsapi.util.make\_rewindable(*wsapi_env*)** method - wraps *wsapi_env* in a new
+environment that lets you process the POST data more than once.
+* Correctly handles PATH\_TRANSLATED and SCRIPT\_FILENAME in case the web server gets creative
 
-**WSAPI 1.0** [18/May/2008]
+[**WSAPI 1.0**](http://wsapi.luaforge.net/1.0/) [18/May/2008]
 
 * First public version.
 * Includes CGI, FastCGI and Xavante WSAPI connectors.

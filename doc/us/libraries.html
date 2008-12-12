@@ -93,6 +93,10 @@ concatenate the contents of the table and add to the body</p>
 
 <p><strong>wsapi.util.url_decode(<em>s</em>)</strong> - decodes <em>s</em> according to RFC2396</p>
 
+<p><strong>wsapi.util.make<em>rewindable(*wsapi</em>env*)</strong> - wraps *wsapi_env* in a new
+environment that lets you process the POST data more than once. This new
+environment's input object has a <em>rewind</em> method that you can call to allow you to read
+the POST data again.</p>
 
 
 

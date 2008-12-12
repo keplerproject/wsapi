@@ -62,7 +62,7 @@ clone of either of them, though, and tries to follow standard Lua idioms.</p>
 
 <h2>Status</h2>
 
-<p>Current version is 1.0. It was developed for Lua 5.1.</p>
+<p>Current version is 1.1. It was developed for Lua 5.1.</p>
 
 <h2>Download</h2>
 
@@ -80,7 +80,15 @@ luarocks install wsapi
 <p>WSAPI CVS and bug tracker are available at its <a href="http://luaforge.net/projects/wsapi/">LuaForge</a> page.</p>
 <h2>History</h2>
 
-<p><strong>WSAPI 1.0</strong> [18/May/2008]</p>
+<p><strong>WSAPI 1.1</strong> [15/Dec/2008]</p>
+
+<ul>
+    <li>Adds <strong>wsapi.util.make_rewindable(*wsapi_env*)</strong> method - wraps *wsapi_env* in a new
+    environment that lets you process the POST data more than once.</li>
+    <li>Correctly handles PATH_TRANSLATED and SCRIPT_FILENAME in case the web server gets creative</li>
+</ul>
+
+<p><a href="http://wsapi.luaforge.net/1.0/"><strong>WSAPI 1.0</strong></a> [18/May/2008]</p>
 
 <ul>
     <li>First public version.</li>
