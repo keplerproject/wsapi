@@ -33,6 +33,10 @@ luarocks install wsapi
 WSAPI CVS and bug tracker are available at its [LuaForge](http://luaforge.net/projects/wsapi/) page.
 ## History
 
+**WSAPI 1.0.1** [12/Dec/2008]
+
+* Correctly handles PATH_TRANSLATED and SCRIPT_FILENAME in case the web server gets creative
+
 **WSAPI 1.0** [18/May/2008]
 
 * First public version.
