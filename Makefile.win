@@ -1,4 +1,4 @@
-# $Id: Makefile.win,v 1.27 2009/01/02 15:16:05 carregal Exp $
+# $Id: Makefile.win,v 1.28 2009/01/22 16:50:28 mascarenhas Exp $
 
 LUA_INCLUDE= c:\lua5.1\include
 LUA_LIB= c:\lua5.1\lua5.1.lib
@@ -59,3 +59,5 @@ clean:
 	del src\launcher\launcher.obj
 	del src\launcher\launcher.exe
 	del src\launcher\launcher.exe.manifest
+	del src\fastcgi\lfcgi.dll
+	del src\launcher\wsapi-fcgi.exe

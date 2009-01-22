@@ -51,8 +51,8 @@ build = {
        	build_variables = {
        	 LUA_INCLUDE = "$(LUA_INCDIR)",
 	 	 LUA_LIB = "$(LUA_LIBDIR)\\lua5.1.lib",
-         LIB_OPTION = "$(LUA_LIBDIR)\\lua5.1.lib $(FASTCGI_LIBDIR)",
-         CFLAGS = "$(CFLAGS) /I$(FASTCGI_INCDIR)",
+         LIB_OPTION = "$(LUA_LIBDIR)\\lua5.1.lib $(FASTCGI_DIR)\\libfcgi\\fcgi_stdio.obj $(FASTCGI_DIR)\\libfcgi\\os_win32.obj $(FASTCGI_DIR)\\libfcgi\\fcgiapp.obj",
+         CFLAGS = "$(CFLAGS) /I$(FASTCGI_DIR)\\include",
        	},
        	install_variables = {
          LUA_LIBDIR = "$(LIBDIR)",
