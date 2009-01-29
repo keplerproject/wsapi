@@ -52,7 +52,7 @@ local function read_field_headers(input, pos)
   local s, e = string.find(input, EOH, pos, true)
   if s then
     return break_headers(string.sub(input, pos, s-1)), e+1
-  else return nil end
+  else return nil, pos end
 end
 
 local function get_field_names(headers)
@@ -69,7 +69,7 @@ local function read_field_contents(input, boundary, pos)
   local s, e = string.find(input, boundaryline, pos, true)
   if s then
     return string.sub(input, pos, s-1), s-pos, e+1
-  else return nil end
+  else return nil, 0, pos end
 end
 
 local function file_value(file_contents, file_name, file_size, headers)
