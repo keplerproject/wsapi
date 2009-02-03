@@ -10,6 +10,8 @@ local os = require"os"
 local io = require"io"
 local common = require"wsapi.common"
 
+common.setmode()
+
 module(...)
 
 function run(app_run)

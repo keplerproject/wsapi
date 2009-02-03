@@ -10,9 +10,6 @@ local lfs = require "lfs"
 local _, ringer = pcall(require, "wsapi.ringer")
 local _G = _G
 
-pcall(lfs.setmode, io.stdin, "binary")
-pcall(lfs.setmode, io.stdout, "binary")
-
 module("wsapi.common", package.seeall)
 
 -- Meta information is public even if begining with an "_"
@@ -37,6 +34,11 @@ function input_maker(obj, read_method)
      if n > 0 then return read(obj, n) end
    end
    return input
+end
+
+function setmode()
+   pcall(lfs.setmode, io.stdin, "binary")
+   pcall(lfs.setmode, io.stdout, "binary")
 end
 
 function normalize_app(app_run, is_file)

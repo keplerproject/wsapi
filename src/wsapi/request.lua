@@ -133,12 +133,24 @@ local function parse_post_data(wsapi_env, tab)
   return tab
 end
 
-function new(wsapi_env)
+function new(wsapi_env, options)
   local req = { GET = {}, POST = {}, method = wsapi_env.REQUEST_METHOD,
     path_info = wsapi_env.PATH_INFO, query_string = wsapi_env.QUERY_STRING,
     script_name = wsapi_env.SCRIPT_NAME }
   parse_qs(wsapi_env.QUERY_STRING, req.GET)
-  parse_post_data(wsapi_env, req.POST)
+  if options and options.delay_post then
+    req.parse_post_data = function (self)
+		       parse_post_data(wsapi_env, self.POST)
+		       self.parse_post_data = function ()
+					   error("POST data already processed")
+					 end
+		     end
+  else
+    parse_post_data(wsapi_env, req.POST)
+    req.parse_post_data = function () 
+		       error("POST data already processed")
+		     end
+  end
   req.params = {}
   setmetatable(req.params, { __index = function (tab, name)
 					 local var = req.GET[name] or
