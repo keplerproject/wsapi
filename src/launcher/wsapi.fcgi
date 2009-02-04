@@ -10,8 +10,6 @@ pcall(require,"luarocks.require")
 local common = require "wsapi.common"
 local fastcgi = require "wsapi.fastcgi"
 
-common.setmode()
-
 local function wsapi_loader(wsapi_env)
   local path, file, modname, ext, mtime = 
   	common.find_module(wsapi_env, nil, "wsapi.fcgi")

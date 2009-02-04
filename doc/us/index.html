@@ -80,9 +80,12 @@ luarocks install wsapi
 <p>WSAPI CVS and bug tracker are available at its <a href="http://luaforge.net/projects/wsapi/">LuaForge</a> page.</p>
 <h2>History</h2>
 
-<p><strong>WSAPI 1.1</strong> [15/Dec/2008]</p>
+<p><strong>WSAPI 1.1</strong> [04/Feb/2009]</p>
 
 <ul>
+    <li>Adds <em>options</em> table to <strong>wsapi.request.new</strong>, *delay_post* option delays
+    POST processing until <strong>req:parse<em>post</em>data()</strong> is called</li>
+    <li>Moves call to <strong>lfs.setmode</strong> from wsapi.common to wsapi.cgi</li>
     <li>Adds <strong>wsapi.util.make_rewindable(*wsapi_env*)</strong> method - wraps *wsapi_env* in a new
     environment that lets you process the POST data more than once.</li>
     <li>Correctly handles PATH_TRANSLATED and SCRIPT_FILENAME in case the web server gets creative</li>

@@ -142,14 +142,14 @@ function new(wsapi_env, options)
     req.parse_post_data = function (self)
 		       parse_post_data(wsapi_env, self.POST)
 		       self.parse_post_data = function ()
-					   error("POST data already processed")
-					 end
+						error("POST data already processed")
+					      end
 		     end
   else
     parse_post_data(wsapi_env, req.POST)
     req.parse_post_data = function () 
-		       error("POST data already processed")
-		     end
+			    error("POST data already processed")
+			  end
   end
   req.params = {}
   setmetatable(req.params, { __index = function (tab, name)
