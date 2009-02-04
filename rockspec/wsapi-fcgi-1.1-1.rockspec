@@ -13,18 +13,24 @@ description = {
     is the rock that contains the FCGI module lfcgi.
   ]],
   license = "MIT/X11",
-  homepage = "http://wsapi.luaforge.net"
+  homepage = "http://www.keplerproject.org/wsapi"
 }
 
-dependencies = {
-	'wsapi >= 1.1',
-	'rings >= 1.2.1',
-}
+dependencies = { "wsapi cvs" }
 
 external_dependencies = {
-  FASTCGI = {
-    header = "fcgi_stdio.h"
+  platforms = {
+    unix = {
+      FASTCGI = {
+        header = "fcgi_stdio.h"
+      }
+    }
   }
+}
+
+source = {
+   url = "cvs://:pserver:anonymous:@cvs.luaforge.net:/cvsroot/wsapi",
+   cvs_tag = "HEAD",
 }
 
 build = {
@@ -38,21 +44,23 @@ build = {
 	    incdirs = "$(FASTCGI_INCDIR)",
 	    libdirs = "$(FASTCGI_LIBDIR)"
           }
-        }
+        },
+       install = { bin = { "src/launcher/wsapi.fcgi" } }
      },
      win32 = {
         type = "make",
-   		install_target = "install-fcgi",
+   	install_target = "install-fcgi",
        	build_pass = true,
        	build_target = "fcgi",
        	build_variables = {
-         LIB_OPTION = "$(LUA_LIBDIR)\\lua5.1.lib $(FASTCGI_DIR)\\libfcgi\\fcgi_stdio.obj $(FASTCGI_DIR)\\libfcgi\\os_win32.obj $(FASTCGI_DIR)\\libfcgi\\fcgiapp.obj",
+       	 LUA_INCLUDE = "$(LUA_INCDIR)",
+	 	 LUA_LIB = "$(LUA_LIBDIR)\\lua5.1.lib",
+         LIB_OPTION = "$(LUA_LIBDIR)\\lua5.1.lib $(FASTCGI_DIR)\\libfcgi\\Release\\fcgi_stdio.obj $(FASTCGI_DIR)\\libfcgi\\Release\\os_win32.obj $(FASTCGI_DIR)\\libfcgi\\Release\\fcgiapp.obj",
          CFLAGS = "$(CFLAGS) /I$(FASTCGI_DIR)\\include",
-       	 LUA_LIB = "$(LUA_LIBDIR)\\lua5.1.lib",
        	},
        	install_variables = {
-            LUA_LIBDIR = "$(LIBDIR)",
-	 	    BIN_DIR = "$(BINDIR)",
+         LUA_LIBDIR = "$(LIBDIR)",
+	 BIN_DIR = "$(BINDIR)"
        	}
      }
   }
