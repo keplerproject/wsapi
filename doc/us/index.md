@@ -38,9 +38,10 @@ WSAPI CVS and bug tracker are available at its [LuaForge](http://luaforge.net/pr
 * Adds *options* table to **wsapi.request.new**, *delay_post* option delays
 POST processing until **req:parse_post_data()** is called
 * Moves call to **lfs.setmode** from wsapi.common to wsapi.cgi
-* Adds **wsapi.util.make\_rewindable(*wsapi_env*)** method - wraps *wsapi_env* in a new
+* Adds **wsapi.util.make\_rewindable(*wsapi\_env*)** method - wraps *wsapi\_env* in a new
 environment that lets you process the POST data more than once.
 * Correctly handles PATH\_TRANSLATED and SCRIPT\_FILENAME in case the web server gets creative
+* Statically links the FastCGI version on Windows
 
 [**WSAPI 1.0**](http://wsapi.luaforge.net/1.0/) [18/May/2008]
 

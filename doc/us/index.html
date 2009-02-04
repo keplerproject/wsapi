@@ -86,9 +86,10 @@ luarocks install wsapi
     <li>Adds <em>options</em> table to <strong>wsapi.request.new</strong>, *delay_post* option delays
     POST processing until <strong>req:parse<em>post</em>data()</strong> is called</li>
     <li>Moves call to <strong>lfs.setmode</strong> from wsapi.common to wsapi.cgi</li>
-    <li>Adds <strong>wsapi.util.make_rewindable(*wsapi_env*)</strong> method - wraps *wsapi_env* in a new
+    <li>Adds <strong>wsapi.util.make_rewindable(<em>wsapi_env</em>)</strong> method - wraps <em>wsapi_env</em> in a new
     environment that lets you process the POST data more than once.</li>
     <li>Correctly handles PATH_TRANSLATED and SCRIPT_FILENAME in case the web server gets creative</li>
+    <li>Statically links the FastCGI version on Windows</li>
 </ul>
 
 <p><a href="http://wsapi.luaforge.net/1.0/"><strong>WSAPI 1.0</strong></a> [18/May/2008]</p>
