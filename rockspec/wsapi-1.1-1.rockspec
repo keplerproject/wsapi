@@ -3,7 +3,7 @@ package = "WSAPI"
 version = "1.1-1"
 
 source = {
-  url = "http://luaforge.net/frs/download.php/3382/wsapi-1.1.0.tar.gz",
+  url = "http://luaforge.net/frs/download.php/3935/wsapi-1.1.0.tar.gz",
 }
 
 description = {
