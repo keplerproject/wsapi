@@ -269,7 +269,7 @@ function adjust_non_wrapped(wsapi_env, filename, launcher)
 end
 
 function normalize_paths(wsapi_env, filename, launcher)
-   if not filename then
+   if not filename or filename == "" then
      filename = wsapi_env.SCRIPT_FILENAME
      if filename == "" then filename = wsapi_env.PATH_TRANSLATED end
      filename = adjust_non_wrapped(wsapi_env, filename, launcher)
