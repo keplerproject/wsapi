@@ -399,12 +399,12 @@ do
      return ringer.new(app_modname, bootstrap)
   end
 
-  function load_isolated_launcher(filename, app_modname, bootstrap)
+  function load_isolated_launcher(filename, app_modname, bootstrap, reload)
     local app, data
     local app_state = app_states[filename]
     local path, _ = splitpath(filename)
     local mtime = lfs.attributes(filename, "modification")
-    if app_state.mtime == mtime then
+    if not reload and app_state.mtime == mtime then
       for _, state in ipairs(app_state.states) do
 	 if not rawget(state.data, "status") then
 	    return state.app
