@@ -270,8 +270,8 @@ end
 
 function normalize_paths(wsapi_env, filename, launcher)
    if not filename or filename == "" then
-     filename = wsapi_env.SCRIPT_FILENAME
-     if filename == "" then filename = wsapi_env.PATH_TRANSLATED end
+     filename = wsapi_env.PATH_TRANSLATED
+     if filename == "" then filename = wsapi_env.SCRIPT_FILENAME end
      filename = adjust_non_wrapped(wsapi_env, filename, launcher)
      filename = adjust_iis_path(wsapi_env, filename)
      wsapi_env.PATH_TRANSLATED = filename
