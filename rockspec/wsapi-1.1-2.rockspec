@@ -16,7 +16,7 @@ description = {
   homepage = "http://wsapi.luaforge.net"
 }
 
-dependencies = { }
+dependencies = { "luafilesystem >= 1.4.2" }
 
 build = {
    platforms = {
