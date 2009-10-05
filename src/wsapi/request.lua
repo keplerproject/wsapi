@@ -117,7 +117,7 @@ end
 
 local function parse_post_data(wsapi_env, tab)
   tab = tab or {}
-  local input_type = util.isempty(wsapi_env.CONTENT_TYPE) or error("Undefined Media Type")
+  local input_type = wsapi_env.CONTENT_TYPE
   if string.find(input_type, "x-www-form-urlencoded", 1, true) then
     local length = tonumber(wsapi_env.CONTENT_LENGTH) or 0
     parse_qs(wsapi_env.input:read(length) or "", tab)
