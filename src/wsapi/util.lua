@@ -27,6 +27,10 @@ function sanitize(text)
    return text:gsub(">", "&gt;"):gsub("<", "&lt;")
 end
 
+function isempty(s)
+  if s and s ~= "" then return s else return nil end
+end
+
 function make_rewindable(wsapi_env)
    local new_env = { input = { position = 1, contents = "" } }
    function new_env.input:read(size)
