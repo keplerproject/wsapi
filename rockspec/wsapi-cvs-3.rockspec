@@ -6,7 +6,7 @@ description = {
   summary = "Lua Web Server API",
   detailed = [[
     WSAPI is an API that abstracts the web server from Lua web applications. This is the rock
-    contains the base WSAPI libraries plus the CGI and Xavante adapters.
+    that contains the base WSAPI libraries plus the CGI adapters.
   ]],
   license = "MIT/X11",
   homepage = "http://www.keplerproject.org/wsapi"
@@ -28,10 +28,8 @@ build = {
 	  ["wsapi.response"] = "src/wsapi/response.lua",
 	  ["wsapi.util"] = "src/wsapi/util.lua",
 	  ["wsapi.cgi"] = "src/wsapi/cgi.lua",
-	  ["wsapi.fastcgi"] = "src/wsapi/fastcgi.lua",
-	  ["wsapi.ringer"] = "src/wsapi/ringer.lua",
 	  ["wsapi.sapi"] = "src/wsapi/sapi.lua",
-	  ["wsapi.xavante"] = "src/wsapi/xavante.lua"
+	  ["wsapi.ringer"] = "src/wsapi/ringer.lua",
 	},
 	copy_directories = { "samples", "doc" },
 	install = { bin = { "src/launcher/wsapi.cgi" } }

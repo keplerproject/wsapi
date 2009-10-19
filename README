@@ -19,31 +19,37 @@ tries to follow standard Lua idioms.
 WSAPI is free software and uses the same license as Lua 5.1
 
 Status
-Current version is 1.1. It was developed for Lua 5.1.
+Current version is 1.2. It was developed for Lua 5.1.
 
 Download
 WSAPI can be downloaded from its LuaForge page. You can also get WSAPI using LuaRocks:
 luarocks install wsapi
 
-CVS and Bug Tracker
-WSAPI CVS and bug tracker are available at its LuaForge page.
+Latest Sources and Bug Tracker
+WSAPI CVS and bug tracker are available at its Github page.
 
 History
 
+WSAPI 1.2 []
+    * Adds "wsapi" laucher script, to start a Xavante WSAPI server
+    * Fixed "undefined media type" error
+    * Added isempty utility function to check if a string is nil or ''
+    * Fixed bug with empty bodies in wsapi.xavante, and added full http status codes to responses 
+    * Changing order of evaluating PATH_TRANSLATED and SCRIPT_FILENAME, to make non-wrapped launchers work in OSX Apache
+    * Reload support for load_isolated_launcher
 WSAPI 1.1 [04/Feb/2009]
     * Adds options table to wsapi.request.new, *delay_post* option delays POST processing until req:parsepostdata() is called
     * Moves call to lfs.setmode from wsapi.common to wsapi.cgi
     * Adds wsapi.util.make_rewindable(wsapi_env) method - wraps wsapi_env in a new environment that lets you process the POST data more than once.
     * Correctly handles PATH_TRANSLATED and SCRIPT_FILENAME in case the web server gets creative
     * Statically links the FastCGI version on Windows
-
 WSAPI 1.0 [18/May/2008]
     * First public version.
     * Includes CGI, FastCGI and Xavante WSAPI connectors.
 
 Credits
 
-WSAPI was designed and developed by Fábio Mascarenhas and André Carregal,
-and is maintained by Fábio Mascarenhas.
+WSAPI was designed and developed by Fabio Mascarenhas and Andre Carregal,
+and is maintained by Fabio Mascarenhas.
 
 For more information please check the HTML documentation at /doc/us

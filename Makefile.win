@@ -42,6 +42,8 @@ install-rocks:
 	IF NOT EXIST "$(PREFIX)\lua" mkdir "$(PREFIX)\lua"
 	IF NOT EXIST "$(PREFIX)\lua\wsapi" mkdir "$(PREFIX)\lua\wsapi"
 	copy src\wsapi\*.lua "$(PREFIX)\lua\wsapi"
+	del "$(PREFIX)\lua\wsapi\fastcgi.lua"
+	del "$(PREFIX)\lua\wsapi\xavante.lua"
 	IF NOT EXIST "$(PREFIX)\bin" "mkdir $(PREFIX)\bin"
 	copy src\launcher\launcher.exe "$(PREFIX)\bin"
 	copy src\launcher\wsapi.exe "$(PREFIX)\bin"
@@ -52,6 +54,9 @@ install-rocks:
 	copy doc\us\* "$(PREFIX)\doc\us"
 
 install-fcgi:
+	IF NOT EXIST "$(PREFIX)\lua" mkdir "$(PREFIX)\lua"
+	IF NOT EXIST "$(PREFIX)\lua\wsapi" mkdir "$(PREFIX)\lua\wsapi"
+	copy src\wsapi\fastcgi.lua "$(PREFIX)\lua\wsapi"
 	copy src\launcher\wsapi-fcgi.exe "$(BIN_DIR)"
 	copy src\fastcgi\lfcgi.dll "$(LUA_LIBDIR)\"
 

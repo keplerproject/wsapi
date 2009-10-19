@@ -3,7 +3,8 @@
 The easiest way to install WSAPI is from [LuaRocks](http://luarocks.org). Just
 install the `wsapi` package. If you want FastCGI
 support you need to have the [FastCGI dev kit](http://www.fastcgi.com/#TheDevKit)
-installed, and use the `wsapi-fcgi` LuaRocks package.
+installed, and use the `wsapi-fcgi` LuaRocks package. If you want Xavante support
+installed use the `wsapi-xavante` LuaRocks package.
 
 The WSAPI rock copies samples, docs and support files to it's path inside your
 local Rocks repository.
@@ -38,7 +39,7 @@ luarocks make rockspec/wsapi-fcgi-1.0-1.rockspec FASTCGI_DIR=C:\work\fcgi-2.4.0
 To run WSAPI applications you will also need a web server such as Apache, Lighttpd,
 or IIS (available only for Windows).
 If you want to use the Xavante connector you will need to have Xavante installed; the
-easiest way to do that is to install [Kepler](http://www.keplerproject.org).
+easiest way to do that is to install the "wsapi-xavante" rock.
 
 ## A Simple WSAPI Application
 

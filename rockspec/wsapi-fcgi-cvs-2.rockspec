@@ -34,6 +34,7 @@ build = {
      unix = {
         type = "module",
 	modules = {
+	  ["wsapi.fastcgi"] = "src/wsapi/fastcgi.lua",
 	  lfcgi = {
             sources = "src/fastcgi/lfcgi.c",
             libraries = "fcgi",
