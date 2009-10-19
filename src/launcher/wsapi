@@ -14,7 +14,7 @@ Usage: wsapi [options] [document root]
 
 Starts a Xavante instance to serve static files and WSAPI applications.
 Treats .lua and .ws files as WSAPI applications, and everything else as
-static.
+static (but see the --cgilua and --op options, below).
 
 The default document root is the current path.
 
@@ -25,6 +25,9 @@ Options:
 -l<file>, --log=<file>      Logs all output to the file (default stdout
                             and stderr)
 -p<port>, --port=<port>     Binds to the specified port (default 8080)
+--cgilua                    Adds .lp and .cgi rules for CGILua pages and 
+                            scripts
+--op                        Adds an .op rule that for Orbit pages
 -h, --help                  Shows this help screen
 
 ]]
@@ -93,7 +96,7 @@ if #config.rules == 0 then
     { -- URI remapping example
       match = "^/$",
       with = xavante.redirecthandler,
-      params = {"index.lua"}
+      params = {"index.html"}
     }, 
 
     { -- wsapihandler example
@@ -105,12 +108,25 @@ if #config.rules == 0 then
       match = {"%.ws$", "%.ws/" },
       with = wsapi.xavante.makeGenericHandler (config.docroot)
     },
-    
-    { -- filehandler example
-      match = ".",
-      with = xavante.filehandler,
-      params = { baseDir = config.docroot }
-    }
+  }
+  if opts.cgilua then
+     require "xavante.cgiluahandler"
+     config.rules[#config.rules+1] = {
+	match = {"%.lp$", "%.lp/.*$", "%.cgi$", "%.cgi/.*$" },
+	with = xavante.cgiluahandler.makeHandler (config.docroot)
+     }
+  end
+  if opts.op then
+     require "orbit.ophandler"
+     config.rules[#config.rules+1] = {
+	match = {"%.op$", "%.op/.*$" },
+	with = orbit.ophandler.makeHandler (config.docroot)
+     },
+  end
+  config.rules[#config.rules+1] = { -- filehandler example
+     match = ".",
+     with = xavante.filehandler,
+     params = { baseDir = config.docroot }
   }
 end
 
