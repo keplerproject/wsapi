@@ -121,7 +121,7 @@ if #config.rules == 0 then
      config.rules[#config.rules+1] = {
 	match = {"%.op$", "%.op/.*$" },
 	with = orbit.ophandler.makeHandler (config.docroot)
-     },
+     }
   end
   config.rules[#config.rules+1] = { -- filehandler example
      match = ".",
