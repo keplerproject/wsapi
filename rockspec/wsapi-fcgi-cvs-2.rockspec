@@ -25,8 +25,7 @@ external_dependencies = {
 }
 
 source = {
-   url = "cvs://:pserver:anonymous:@cvs.luaforge.net:/cvsroot/wsapi",
-   cvs_tag = "HEAD",
+   url = "git://github.com/keplerproject/wsapi.git",
 }
 
 build = {
