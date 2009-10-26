@@ -53,6 +53,8 @@ function normalize_app(app_run, is_file)
       else
 	 return normalize_app(require(app_run))
       end
+   else
+      error("not a valid WSAPI application")
    end
 end
 
