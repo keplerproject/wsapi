@@ -1,6 +1,6 @@
 package = "WSAPI-FCGI"
 
-version = "1.1-2"
+version = "1.1-3"
 
 source = {
   url = "http://luaforge.net/frs/download.php/3935/wsapi-1.1.0.tar.gz"
@@ -16,7 +16,7 @@ description = {
   homepage = "http://www.keplerproject.org/wsapi"
 }
 
-dependencies = { "wsapi >= 1.1" }
+dependencies = { "wsapi >= 1.1", "rings >= 1.2.2", "coxpcall >= 1.13" }
 
 external_dependencies = {
   platforms = {
