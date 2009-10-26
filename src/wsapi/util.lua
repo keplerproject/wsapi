@@ -27,7 +27,7 @@ function sanitize(text)
    return text:gsub(">", "&gt;"):gsub("<", "&lt;")
 end
 
-function isempty(s)
+function is_empty(s)
   if s and s ~= "" then return s else return nil end
 end
 

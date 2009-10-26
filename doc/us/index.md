@@ -21,23 +21,27 @@ Current version is 1.2. It was developed for Lua 5.1.
 
 ## Download
 
-WSAPI can be downloaded from its [LuaForge](http://luaforge.net/projects/wsapi/) page.
-You can also get WSAPI using [LuaRocks](http://luarocks.org):
+You can get WSAPI using [LuaRocks](http://luarocks.org):
 
 <pre class="example">
 luarocks install wsapi-xavante
 </pre>
 
+You can also get an installer script that installs Lua+LuaRocks+WSAPI 
+[here](http://cloud.github.com/downloads/keplerproject/wsapi-install-1.2.0.tar.gz). See
+the [manual](manual.html) for installation instructions.
+
 ## Latest Sources and Bug Tracker
 
 WSAPI sources and bug tracker are available at its [Github](http://github.com/keplerproject/wsapi/) page.
+
 ## History
 
 **WSAPI 1.2** []
 
 * Adds "wsapi" laucher script, to start a Xavante WSAPI server
 * Fixed "undefined media type" error
-* Added isempty utility function to check if a string is nil or ''
+* Added is_empty utility function to check if a string is nil or ''
 * Fixed bug with empty bodies in wsapi.xavante, and added full http status codes to responses 
 * Changing order of evaluating PATH\_TRANSLATED and SCRIPT\_FILENAME, to make non-wrapped launchers work in OSX Apache
 * Reload support for load\_isolated\_launcher

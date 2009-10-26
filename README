@@ -33,7 +33,7 @@ History
 WSAPI 1.2 []
     * Adds "wsapi" laucher script, to start a Xavante WSAPI server
     * Fixed "undefined media type" error
-    * Added isempty utility function to check if a string is nil or ''
+    * Added is_empty utility function to check if a string is nil or ''
     * Fixed bug with empty bodies in wsapi.xavante, and added full http status codes to responses 
     * Changing order of evaluating PATH_TRANSLATED and SCRIPT_FILENAME, to make non-wrapped launchers work in OSX Apache
     * Reload support for load_isolated_launcher

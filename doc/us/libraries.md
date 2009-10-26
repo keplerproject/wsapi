@@ -45,17 +45,19 @@ a field in res
 **res:write(*s*)** - adds *s* to the body if it is a string, if it is a table
 concatenate the contents of the table and add to the body
 
-**res:set_cookie(*name*, *value*)** - sets the value of a cookie
+**res:set\_cookie(*name*, *value*)** - sets the value of a cookie
 
-**res:delete_cookie(*name*)** - erases a cookie from browser
+**res:delete\_cookie(*name*)** - erases a cookie from browser
 
 **res:finish()** - finishes response, returning status, headers and an iterator for the body
 
 ## Util
 
-**wsapi.util.url_encode(*s*)** - encodes *s* according to RFC2396
+**wsapi.util.url\_encode(*s*)** - encodes *s* according to RFC2396
 
-**wsapi.util.url_decode(*s*)** - decodes *s* according to RFC2396
+**wsapi.util.url\_decode(*s*)** - decodes *s* according to RFC2396
+
+**wsapi.util.is\_empty(*s*)** - returns `true` is *s* is `nil` or the empty string
 
 **wsapi.util.make\_rewindable(*wsapi\_env*)** - wraps *wsapi\_env* in a new
 environment that lets you process the POST data more than once. This new
