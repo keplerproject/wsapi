@@ -125,10 +125,10 @@ do
    --with-ncurses=*)
       NCURSES_DIR="$value"
       ;;
-   --with-$PACKAGE=*)
+   --with-$PACKAGE_OPT=*)
       PACKAGE_VERSION="$value"
       ;;
-   --without-$PACKAGE*)
+   --without-$PACKAGE_OPT*)
       SKIP_PACKAGE=yes
       ;;
    --without-rocks*)
