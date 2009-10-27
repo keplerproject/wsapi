@@ -10,12 +10,15 @@ pcall(require,"luarocks.require")
 local common = require "wsapi.common"
 local fastcgi = require "wsapi.fastcgi"
 
-local function wsapi_loader(wsapi_env)
-  local path, file, modname, ext, mtime = 
-  	common.find_module(wsapi_env, nil, "wsapi.fcgi")
-  local app = common.load_wsapi_isolated(path, file, modname, ext, mtime)
-  wsapi_env.APP_PATH = path
-  return app(wsapi_env)
-end 
+local ONE_HOUR = 60 * 60
+local ONE_DAY = 24 * ONE_HOUR
+
+local wsapi_loader = common.make_isolated_loader{
+  filename = nil,          -- if you want to force the launch of a single script
+  launcher = "wsapi.fcgi", -- the name of this script
+  reload = false,          -- if you want to reload the application on every request
+  period = ONE_HOUR,       -- frequency of Lua state staleness checks
+  ttl = ONE_DAY            -- time-to-live for Lua states
+}
 
 fastcgi.run(wsapi_loader)

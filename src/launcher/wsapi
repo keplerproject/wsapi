@@ -28,6 +28,7 @@ Options:
 --cgilua                    Adds .lp and .cgi rules for CGILua pages and 
                             scripts
 --op                        Adds an .op rule that for Orbit pages
+-r, --reload                Reloads applications on every request
 -h, --help                  Shows this help screen
 
 ]]
@@ -52,6 +53,7 @@ local config = {
 		  end,
   rules = {},
   is_finished = function() return false end,
+  reload = opts.r or opts.reload,
   timeout = nil,
 }
 
@@ -91,6 +93,15 @@ if config.logfile then
   end
 end
 
+local ONE_HOUR = 60 * 60
+local ONE_DAY = 24 * ONE_HOUR
+
+local launcher_params = {
+  reload = config.reload,
+  period = config.period or ONE_HOUR,
+  ttl = config.ttl or ONE_DAY
+}
+
 if #config.rules == 0 then
   config.rules = {
     { -- URI remapping example
@@ -101,26 +112,26 @@ if #config.rules == 0 then
 
     { -- wsapihandler example
       match = {"%.lua$", "%.lua/" },
-      with = wsapi.xavante.makeGenericHandler (config.docroot)
+      with = wsapi.xavante.makeGenericHandler (config.docroot, launcher_params)
     },
 
     { -- wsapihandler example
       match = {"%.ws$", "%.ws/" },
-      with = wsapi.xavante.makeGenericHandler (config.docroot)
+      with = wsapi.xavante.makeGenericHandler (config.docroot, launcher_params)
     },
   }
   if opts.cgilua then
      require "xavante.cgiluahandler"
      config.rules[#config.rules+1] = {
 	match = {"%.lp$", "%.lp/.*$", "%.cgi$", "%.cgi/.*$" },
-	with = xavante.cgiluahandler.makeHandler (config.docroot)
+	with = xavante.cgiluahandler.makeHandler (config.docroot, launcher_params)
      }
   end
   if opts.op then
      require "orbit.ophandler"
      config.rules[#config.rules+1] = {
 	match = {"%.op$", "%.op/.*$" },
-	with = orbit.ophandler.makeHandler (config.docroot)
+	with = orbit.ophandler.makeHandler (config.docroot, launcher_params)
      }
   end
   config.rules[#config.rules+1] = { -- filehandler example

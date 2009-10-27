@@ -109,7 +109,7 @@ local init = [==[
 init = string.gsub(init, "arg%((%d+)%)", arg)
 
 function new(app_name, bootstrap, is_file)
-  local data = {}
+  local data = { created_at = os.time() }
   setmetatable(data, { __index = _G })
   local state = rings.new(data)
   assert(state:dostring(init, app_name, bootstrap, is_file))

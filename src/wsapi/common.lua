@@ -364,6 +364,7 @@ end
 
 do
   local app_states = {}
+  local last_collection = os.time()
   setmetatable(app_states, { __index = function (tab, app)
 					  tab[app] = {}
 					  return tab[app]
@@ -384,13 +385,40 @@ do
      end
   end
 
+  local function collect_states(period, ttl)
+     if period and (last_collection + period < os.time()) then
+	for app, app_state in pairs(app_states) do
+	   local new_states = {}
+	   for _, state in ipairs(app_state.states) do
+	      if ttl and (rawget(state.data, "created_at") + ttl > os.time()) then
+		 table.insert(new_states, state)
+	      end
+	   end
+	   app_state.states = new_states
+	end
+	last_collection = os.time()
+     end
+  end
+
+  local function wsapi_loader_isolated_helper(wsapi_env, params)
+     local path, file, modname, ext, mtime = 
+	find_module(wsapi_env, params.filename, params.launcher)
+     if params.reload then mtime = nil end
+     if not path then
+	error({ 404, "Resource " .. wsapi_env.SCRIPT_NAME .. " not found"})
+     end
+     local app = load_wsapi_isolated(path, file, modname, ext, mtime, params.timeout)
+     wsapi_env.APP_PATH = path
+     return app(wsapi_env)
+  end
+
   function load_wsapi_isolated(path, file, modname, ext, mtime)
     local filename = path .. "/" .. file
     lfs.chdir(path)
     local app, data
     local app_state = app_states[filename]
     if mtime and app_state.mtime == mtime then
-      for _, state in ipairs(app_state.states) do
+      for i, state in ipairs(app_state.states) do
 	 if not rawget(state.data, "status") then
 	    return state.app
 	 end
@@ -407,34 +435,46 @@ do
     return app
   end
 
+  function make_isolated_loader(params)
+     params = params or {}
+     return function (wsapi_env)
+	       collect_states(params.period, params.ttl)
+	       return wsapi_loader_isolated_helper(wsapi_env, params)
+	    end
+  end
+
+  function wsapi_loader_isolated(wsapi_env)
+     return wsapi_loader_isolated_helper(wsapi_env, {})
+  end 
+  
+  function wsapi_loader_isolated_reload(wsapi_env)
+     return wsapi_loader_isolated_helper(wsapi_env, { reload = true })
+  end 
+
 end
-
-function wsapi_loader_isolated_helper(wsapi_env, reload)
-   local path, file, modname, ext, mtime = 
-      find_module(wsapi_env)
-   if reload then mtime = nil end
-   if not path then
-      error({ 404, "Resource " .. wsapi_env.SCRIPT_NAME .. " not found"})
-   end
-   local app = load_wsapi_isolated(path, file, modname, ext, mtime)
-   wsapi_env.APP_PATH = path
-   return app(wsapi_env)
-end
-
-function wsapi_loader_isolated(wsapi_env)
-   return wsapi_loader_isolated_helper(wsapi_env)
-end 
-
-function wsapi_loader_isolated_reload(wsapi_env)
-   return wsapi_loader_isolated_helper(wsapi_env, true)
-end 
 
 do
   local app_states = {}
+  local last_collection = os.time()
   setmetatable(app_states, { __index = function (tab, app)
 					  tab[app] = {}
 					  return tab[app]
 				       end })
+
+  local function collect_states(period, ttl)
+     if period and (last_collection + period < os.time()) then
+	for app, app_state in pairs(app_states) do
+	   local new_states = {}
+	   for _, state in ipairs(app_state.states) do
+	      if ttl and (rawget(state.data, "created_at") + ttl > os.time()) then
+		 table.insert(new_states, state)
+	      end
+	   end
+	   app_state.states = new_states
+	end
+	last_collection = os.time()
+     end
+  end
 
   local function bootstrap_app(path, app_modname, extra)
      local bootstrap = [=[
@@ -453,20 +493,29 @@ do
     local path, _ = splitpath(filename)
     local mtime = lfs.attributes(filename, "modification")
     if not reload and app_state.mtime == mtime then
-      for _, state in ipairs(app_state.states) do
-	 if not rawget(state.data, "status") then
-	    return state.app
-	 end
-      end
-      app, data = bootstrap_app(path, app_modname, bootstrap)
-      table.insert(app_state.states, { app = app, data = data })
-   else
-      app, data = bootstrap_app(path, app_modname, bootstrap)
-      app_states[filename] = { states = { { app = app, data = data } }, 
-	 mtime = mtime }
+       for _, state in ipairs(app_state.states) do
+	  if not rawget(state.data, "status") then
+	     return state.app
+	  end
+       end
+       app, data = bootstrap_app(path, app_modname, bootstrap)
+       table.insert(app_state.states, { app = app, data = data })
+    else
+       app, data = bootstrap_app(path, app_modname, bootstrap)
+       app_states[filename] = { states = { { app = app, data = data } }, 
+				mtime = mtime }
     end
     return app
   end
 
+  function make_isolated_launcher(params)
+     params = params or {}
+     return function (wsapi_env)
+	       collect_states(params.period, params.ttl)
+	       normalize_paths(wsapi_env, params.filename, params.launcher)
+	       local app = load_isolated_launcher(wsapi_env.PATH_TRANSLATED, params.modname, params.bootstrap, params.reload)
+	       return app(wsapi_env)
+	    end 
+  end
 end
 
