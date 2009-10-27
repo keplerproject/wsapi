@@ -1,4 +1,4 @@
-WSAPI (http://wsapi.luaforge.net)
+WSAPI (http://keplerproject.github.com/wsapi)
 
 Overview
 
@@ -31,6 +31,7 @@ WSAPI CVS and bug tracker are available at its Github page.
 History
 
 WSAPI 1.2 []
+    * Adds time-based collection of Lua states to FCGI and Xavante launchers
     * Adds "wsapi" laucher script, to start a Xavante WSAPI server
     * Fixed "undefined media type" error
     * Added is_empty utility function to check if a string is nil or ''

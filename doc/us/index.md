@@ -39,6 +39,7 @@ WSAPI sources and bug tracker are available at its [Github](http://github.com/ke
 
 **WSAPI 1.2** []
 
+* Adds time-based collection of Lua states to FCGI and Xavante launchers
 * Adds "wsapi" laucher script, to start a Xavante WSAPI server
 * Fixed "undefined media type" error
 * Added is_empty utility function to check if a string is nil or ''
