@@ -47,8 +47,8 @@ PACKAGE=WSAPI
 PACKAGE_OPT=wsapi
 PACKAGE_ROCK=wsapi-xavante
 INSTALLER_VERSION=0.6
-PACKAGE_VERSION=cvs
-LUAROCKS_REPO=http://luarocks.org/repositories/rocks-cvs
+PACKAGE_VERSION=1.2
+LUAROCKS_REPO=http://luarocks.org/repositories/rocks
 LUAROCKS_URL=http://www.luarocks.org/releases/luarocks-2.0.1.tar.gz
 LUAROCKS_VERSION=2.0.1
 
