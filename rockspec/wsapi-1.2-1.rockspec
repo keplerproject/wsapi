@@ -1,6 +1,6 @@
 package = "WSAPI"
 
-version = "cvs-3"
+version = "1.2-1"
 
 description = {
   summary = "Lua Web Server API",
@@ -12,10 +12,10 @@ description = {
   homepage = "http://www.keplerproject.org/wsapi"
 }
 
-dependencies = { "luafilesystem cvs" }
+dependencies = { "luafilesystem >= 1.4.2" }
 
 source = {
-  url = "git://github.com/keplerproject/wsapi.git"
+  url = "http://cloud.github.com/downloads/keplerproject/wsapi/wsapi-1.2.tar.gz"
 }
 
 build = {

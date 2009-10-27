@@ -28,9 +28,13 @@
 <div id="navigation">
 <h1>WSAPI</h1>
 	<ul>
+
 		<li><a href="index.html">Home</a></li>
+
 		<li><a href="manual.html">Manual</a></li>
+
 		<li><strong>Libraries</strong></li>
+
 		<li><a href="license.html">License</a></li>
 
 	</ul>
@@ -97,6 +101,8 @@ concatenate the contents of the table and add to the body</p>
 <p><strong>wsapi.util.url_encode(<em>s</em>)</strong> - encodes <em>s</em> according to RFC2396</p>
 
 <p><strong>wsapi.util.url_decode(<em>s</em>)</strong> - decodes <em>s</em> according to RFC2396</p>
+
+<p><strong>wsapi.util.is_empty(<em>s</em>)</strong> - returns <code>true</code> is <em>s</em> is <code>nil</code> or the empty string</p>
 
 <p><strong>wsapi.util.make_rewindable(<em>wsapi_env</em>)</strong> - wraps <em>wsapi_env</em> in a new
 environment that lets you process the POST data more than once. This new

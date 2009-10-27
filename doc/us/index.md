@@ -37,7 +37,7 @@ WSAPI sources and bug tracker are available at its [Github](http://github.com/ke
 
 ## History
 
-**WSAPI 1.2** []
+**WSAPI 1.2** [27/Oct/2009]
 
 * Adds time-based collection of Lua states to FCGI and Xavante launchers
 * Adds "wsapi" laucher script, to start a Xavante WSAPI server

@@ -1,6 +1,6 @@
 package = "WSAPI-FCGI"
 
-version = "cvs-2"
+version = "1.2-1"
 
 description = {
   summary = "Lua Web Server API FastCGI Adapter",
@@ -12,7 +12,7 @@ description = {
   homepage = "http://www.keplerproject.org/wsapi"
 }
 
-dependencies = { "wsapi cvs", "rings cvs", "coxpcall cvs" }
+dependencies = { "wsapi >= 1.2", "rings >= 1.2.3", "coxpcall >= 1.13" }
 
 external_dependencies = {
   platforms = {
@@ -25,7 +25,7 @@ external_dependencies = {
 }
 
 source = {
-   url = "git://github.com/keplerproject/wsapi.git",
+  url = "http://cloud.github.com/downloads/keplerproject/wsapi/wsapi-1.2.tar.gz"
 }
 
 build = {

@@ -28,9 +28,13 @@
 <div id="navigation">
 <h1>WSAPI</h1>
 	<ul>
+
 		<li><a href="index.html">Home</a></li>
+
 		<li><strong>Manual</strong></li>
+
 		<li><a href="libraries.html">Libraries</a></li>
+
 		<li><a href="license.html">License</a></li>
 
 	</ul>
@@ -41,47 +45,27 @@
 
 <h2>Installation</h2>
 
-<p>The easiest way to install WSAPI is from <a href="http://luarocks.org">LuaRocks</a>. Just
+<p>To install WSAPI you need to have <a href="http://luarocks.org">LuaRocks</a>. Just
 install the <code>wsapi</code> package. If you want FastCGI
 support you need to have the <a href="http://www.fastcgi.com/#TheDevKit">FastCGI dev kit</a>
-installed, and use the <code>wsapi-fcgi</code> LuaRocks package.</p>
+installed, and use the <code>wsapi-fcgi</code> LuaRocks package. If you want Xavante support
+installed use the <code>wsapi-xavante</code> LuaRocks package.</p>
 
 <p>The WSAPI rock copies samples, docs and support files to it's path inside your
 local Rocks repository.</p>
 
-<p>If you do not want to use LuaRocks follow the installation instructions below.</p>
-
-<h3>UNIX-based building</h3>
-
-<p>To build and install WSAPI you are going to need to have Lua 5.1 installed,
-as well as a C compiler and the development files for
-<a href="http://www.fastcgi.com/#TheDevKit">libfcgi</a>.
-Run the included configure script, passing the name of your Lua interpreter's executable
-(usually <em>lua</em>, <em>lua51</em> or <em>lua5.1</em>). Then run <em>make all</em> and finally <em>make install</em>.
-This last step will probably need root privileges.</p>
-
-<h3>Windows building</h3>
-
-<p>To build the Windows binaries you will need the Lua 5.1 interpreter and a version
-of Visual C++ 2005 (the freely available Express edition works fine). Edit <em>Makefile.win</em>
-according to the instructions there, then run <em>nmake -f Makefile.win all</em> and finally
-<em>nmake -f Makefile.win install</em>.</p>
-
-<p>If you are building the FastCGI connector in Windows but using LuaRocks, you
-need to pass the FastCGI installation variable as in (do not use line breaks):</p>
-
-
-<pre class="example">
-luarocks make rockspec/wsapi-fcgi-1.0-1.rockspec FASTCGI_DIR=C:\work\fcgi-2.4.0
-</pre>
-
+<p>There is an all-in-one installer script that installs Lua, LuaRocks, and <code>wsapi-xavante</code> in
+a single step. Download the <a href="http://cloud.github.com/downloads/keplerproject/wsapi-install-1.2.0.tar.gz">tarball</a>,
+unpack it, then run the provided <code>wsapi-install</code> script in its path. Run <code>wsapi-install --help</code> for
+installation options.</p>
 
 <h3>About web servers</h3>
 
 <p>To run WSAPI applications you will also need a web server such as Apache, Lighttpd,
 or IIS (available only for Windows).
 If you want to use the Xavante connector you will need to have Xavante installed; the
-easiest way to do that is to install <a href="http://www.keplerproject.org">Kepler</a>.</p>
+easiest way to do that is to install the "wsapi-xavante" rock (it is already installed
+if you used the <code>wsapi-install</code> script).</p>
 
 <h2>A Simple WSAPI Application</h2>
 
@@ -144,6 +128,14 @@ generic CGI launcher when executing this file as a CGI script.</p>
 <h2>Running the application</h2>
 
 <p>This step depends on your server and the connector you want to use.</p>
+
+<h3>Xavante</h3>
+
+<p>If you installed the <code>wsapi-xavante</code> package you already have a Xavante
+launcher with WSAPI support. Just run the <code>wsapi</code> script in the path you
+want as your document root, and point your browser either to the <code>hello.lua</code>
+or <code>hello.ws</code> script (both extensions are treated as WSAPI applications).
+See <code>wsapi --help</code> for the launcher's configuration options.</p>
 
 <h3>UNIX-like (Apache, Lighty, etc.) CGI/FastCGI</h3>
 
@@ -212,13 +204,6 @@ will run the <em>hello.cgi</em> application launcher (<strong>not</strong> the <
 Both should be in the same path, and it should be URL-accessible and have execute
 permissions on IIS. You should point your browser to <em>hello.exe</em>.</p>
 
-<h3>Xavante</h3>
-
-<p>The easiest way to run WSAPI applications in a standard Xavante install (via Kepler)
-is to give the extension .ws to the application. In the previous example you would
-call the file <code>hello.ws</code>, and put it somewhere in Xavante's docroot. See Xavante's
-config.lua that Kepler installs for more information on how to configure it.</p>
-
 <h2>Writing WSAPI connectors</h2>
 
 <p>A WSAPI connector builds the environment from information passed by the web server
@@ -273,7 +258,7 @@ lets you easily send cookies back to the browser.</p>
 
 <p>The facilities above make it easier to write applications, but still are very basic.
 For more advanced web programming there are also frameworks built on top of WSAPI.
-Examples would be <strong><a href="http://orbit.luaforge.net">Orbit</a></strong>, which adds niceties as dispatch based on
+Examples would be <strong><a href="http://keplerproject.github.com/orbit">Orbit</a></strong>, which adds niceties as dispatch based on
 pattern matching over the PATH_INFO, easy serving of static content, easy access
 to databases, and easy page caching, and <strong>SAPI</strong>, included in the WSAPI package as the
 <em>wsapi.sapi</em> application, for running <strong><a href="http://www.keplerproject.org/cgilua/">CGILua</a></strong>

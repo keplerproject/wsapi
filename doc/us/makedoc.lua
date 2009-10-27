@@ -90,7 +90,7 @@ local function gen_page(project, pages, p)
       if page.file == p.file then
         namelink = cosmo.fill([[<strong>$name</strong>]], { name = page.name})
       else
-      	namelink = cosmo.fill([[<a href="$file{}.html">$name</a>]], { name = page.name, file = page.file})
+	namelink = cosmo.fill([[<a href="$file{}.html">$name</a>]], { name = page.name, file = page.file})
       end
       cosmo.yield{ namelink = namelink, sections = function ()
                                                      for _, s in ipairs(page.sections) do
