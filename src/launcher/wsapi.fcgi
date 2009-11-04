@@ -19,6 +19,9 @@ local wsapi_loader = common.make_isolated_loader{
   reload = false,          -- if you want to reload the application on every request
   period = ONE_HOUR,       -- frequency of Lua state staleness checks
   ttl = ONE_DAY            -- time-to-live for Lua states
+  vars =                   -- order of checking for the path of the script
+   { "SCRIPT_FILENAME",
+     "PATH_TRANSLATED" } 
 }
 
 fastcgi.run(wsapi_loader)

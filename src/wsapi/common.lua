@@ -316,10 +316,13 @@ function adjust_non_wrapped(wsapi_env, filename, launcher)
   else return filename end
 end
 
-function normalize_paths(wsapi_env, filename, launcher)
+function normalize_paths(wsapi_env, filename, launcher, vars)
+   vars = vars or { "SCRIPT_FILENAME", "PATH_TRANSLATED" }
    if not filename or filename == "" then
-     filename = wsapi_env.PATH_TRANSLATED
-     if filename == "" then filename = wsapi_env.SCRIPT_FILENAME end
+     for _, var in ipairs(vars) do
+	filename = wsapi_env[var]
+	if filename ~= "" then break end
+     end
      filename = adjust_non_wrapped(wsapi_env, filename, launcher)
      filename = adjust_iis_path(wsapi_env, filename)
      wsapi_env.PATH_TRANSLATED = filename
@@ -335,8 +338,8 @@ function normalize_paths(wsapi_env, filename, launcher)
    end
 end
 
-function find_module(wsapi_env, filename, launcher)
-   normalize_paths(wsapi_env, filename, launcher)
+function find_module(wsapi_env, filename, launcher, vars)
+   normalize_paths(wsapi_env, filename, launcher, vars)
    return find_file(wsapi_env.PATH_TRANSLATED)
 end
 
@@ -366,7 +369,7 @@ do
   local app_states = {}
   local last_collection = os.time()
   setmetatable(app_states, { __index = function (tab, app)
-					  tab[app] = {}
+					  tab[app] = { states = {} }
 					  return tab[app]
 				       end })
 
@@ -402,12 +405,12 @@ do
 
   local function wsapi_loader_isolated_helper(wsapi_env, params)
      local path, file, modname, ext, mtime = 
-	find_module(wsapi_env, params.filename, params.launcher)
+	find_module(wsapi_env, params.filename, params.launcher, params.vars)
      if params.reload then mtime = nil end
      if not path then
 	error({ 404, "Resource " .. wsapi_env.SCRIPT_NAME .. " not found"})
      end
-     local app = load_wsapi_isolated(path, file, modname, ext, mtime, params.timeout)
+     local app = load_wsapi_isolated(path, file, modname, ext, mtime)
      wsapi_env.APP_PATH = path
      return app(wsapi_env)
   end
@@ -457,7 +460,7 @@ do
   local app_states = {}
   local last_collection = os.time()
   setmetatable(app_states, { __index = function (tab, app)
-					  tab[app] = {}
+					  tab[app] = { states = {} }
 					  return tab[app]
 				       end })
 
@@ -512,7 +515,7 @@ do
      params = params or {}
      return function (wsapi_env)
 	       collect_states(params.period, params.ttl)
-	       normalize_paths(wsapi_env, params.filename, params.launcher)
+	       normalize_paths(wsapi_env, params.filename, params.launcher, params.vars)
 	       local app = load_isolated_launcher(wsapi_env.PATH_TRANSLATED, params.modname, params.bootstrap, params.reload)
 	       return app(wsapi_env)
 	    end 
