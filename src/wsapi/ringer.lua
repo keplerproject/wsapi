@@ -97,10 +97,14 @@ local init = [==[
 		     remotedostring("headers[arg(1)] = arg(2)", k, v)
 		   end
 		 end
-		 local s = res()
+		 local s, v = res()
 		 while s do
-		   coroutine.yield("SEND", s)
-		   s = res()
+		   if s == "RECEIVE" and v then
+		      s, v = res(coroutine.yield(s, v))
+		   else
+		      coroutine.yield("SEND", s)
+		   end
+		   s, v = res()
 		 end
 		 return "SEND", nil 
 	       end
@@ -126,7 +130,7 @@ function new(app_name, bootstrap, is_file)
 	   data.status = 500
 	   data.headers = {}
 	   data.env = wsapi_env
-	   local ok, flag, s, v = 
+	   local ok, flag, s = 
 	     state:dostring([[
 				main_coro = coroutine.wrap(main_func)
 				return main_coro(...)
@@ -134,8 +138,8 @@ function new(app_name, bootstrap, is_file)
 	   repeat
 	     if not ok then error(flag) end
 	     if flag == "RECEIVE" then
-	       ok, flag, s, v = state:dostring("return main_coro(...)",
-					       wsapi_env.input:read(s))
+	       ok, flag, s = state:dostring("return main_coro(...)",
+					    wsapi_env.input:read(s))
 	     elseif flag == "SEND" then
 	       break
 	     else
@@ -152,11 +156,11 @@ function new(app_name, bootstrap, is_file)
 			   s = nil
 			   return res
 			 end
-			 local ok, flag, s, v = 
+			 local ok, flag, s = 
 			   state:dostring("return main_coro()")
 			 while ok and flag and s do
 			   if flag == "RECEIVE" then
-			     ok, flag, s, v = 
+			     ok, flag, s = 
 			       state:dostring("return main_coro(...)",
 					      wsapi_env.input:read(s))
 			   elseif flag == "SEND" then
@@ -172,4 +176,3 @@ function new(app_name, bootstrap, is_file)
 	   return data.status, data.headers, res 
 	end, data
 end
-
