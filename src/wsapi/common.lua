@@ -606,3 +606,85 @@ do
   end
 end
 
+-- Local state and helper functions for the loader of persistent applications,
+-- used in the FastCGI and Xavante WSAPI launchers
+do
+  local apps = {}
+  local last_collection = os.time()
+  setmetatable(apps, { __index = function (tab, app)
+					  tab[app] = { created_at = os.time() }
+					  return tab[app]
+				       end })
+
+  -- Bootstraps a Lua state (using rings) with the provided WSAPI application
+  local function bootstrap_app(path, file, modname, ext)
+     return load_wsapi(path, file, modname, ext) 
+  end
+
+  -- "Garbage-collect" stale Lua states
+  local function collect_states(period, ttl)
+     if period and (last_collection + period < os.time()) then
+	for app_name, app_data in pairs(apps) do
+	   local new_data = { created_at = os.time() }
+	   if ttl and app_data.created_at + ttl > os.time() then
+	      new_data.app = app_data.app
+	   end
+	   apps[app_name] = new_data
+	end
+	last_collection = os.time()
+     end
+  end
+
+  -- Loads a persistent WSAPI application Lua state and returns
+  -- the application handler (reusing an existing state if one is free)
+  local function load_wsapi_persistent(path, file, modname, ext, mtime)
+    local filename = path .. "/" .. file
+    lfs.chdir(path)
+    local app
+    local app_data = apps[filename]
+    if mtime and app_data.mtime == mtime then
+      return app_data.app
+    else
+      app = bootstrap_app(path, file, modname, ext)
+      if mtime then
+	apps[filename].app = app
+	apps[filename].mtime = mtime
+      end
+      return app
+    end
+  end
+
+  -- Helper for the persistent launchers: find the application path and script,
+  -- loads and runs the application in the provided WSAPI environment
+  local function wsapi_loader_persistent_helper(wsapi_env, params)
+     local path, file, modname, ext, mtime = 
+	find_module(wsapi_env, params.filename, params.launcher, params.vars)
+     if params.reload then mtime = nil end
+     if not path then
+	error({ 404, "Resource " .. wsapi_env.SCRIPT_NAME .. " not found"})
+     end
+     local app = load_wsapi_persistent(path, file, modname, ext, mtime)
+     wsapi_env.APP_PATH = path
+     return app(wsapi_env)
+  end
+
+  -- Makes an WSAPI application that launches persistent WSAPI applications
+  -- scripts with the provided parameters - see wsapi.fcgi for the
+  -- parameters and their descriptions
+  function make_persistent_loader(params)
+     params = params or {}
+     return function (wsapi_env)
+	       collect_states(params.period, params.ttl)
+	       return wsapi_loader_persistent_helper(wsapi_env, params)
+	    end
+  end
+end
+
+function make_loader(params)
+   params = params or {}
+   if params.isolated then
+      return make_isolated_loader(params)
+   else
+      return make_persistent_loader(params)
+   end
+end

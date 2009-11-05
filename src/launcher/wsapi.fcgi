@@ -13,7 +13,8 @@ local fastcgi = require "wsapi.fastcgi"
 local ONE_HOUR = 60 * 60
 local ONE_DAY = 24 * ONE_HOUR
 
-local wsapi_loader = common.make_isolated_loader{
+local wsapi_loader = common.make_loader{
+  isolated = true,         -- isolate each script in its own Lua state
   filename = nil,          -- if you want to force the launch of a single script
   launcher = "wsapi.fcgi", -- the name of this script
   reload = false,          -- if you want to reload the application on every request
