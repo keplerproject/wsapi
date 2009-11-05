@@ -54,7 +54,7 @@ local config = {
   rules = {},
   is_finished = function() return false end,
   reload = opts.r or opts.reload,
-  timeout = nil,
+  isolated = true
 }
 
 local config_file = opts.c or opts.config
@@ -97,6 +97,7 @@ local ONE_HOUR = 60 * 60
 local ONE_DAY = 24 * ONE_HOUR
 
 local launcher_params = {
+  isolated = config.isolated,
   reload = config.reload,
   period = config.period or ONE_HOUR,
   ttl = config.ttl or ONE_DAY

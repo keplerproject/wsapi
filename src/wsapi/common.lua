@@ -681,7 +681,7 @@ do
 end
 
 function make_loader(params)
-   params = params or {}
+   params = params or { isolated = true }
    if params.isolated then
       return make_isolated_loader(params)
    else

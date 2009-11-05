@@ -152,8 +152,8 @@ end
 -- Makes a generic WSAPI handler, that launches WSAPI application scripts
 -- See the wsapi script for the possible values of the "params" table
 function makeGenericHandler(docroot, params)
-   params = params or {}
+   params = params or { isolated = true }
    return function (req, res)
-	     return wsapihandler(req, res, common.make_isolated_loader(params), nil, docroot)
+	     return wsapihandler(req, res, common.make_loader(params), nil, docroot)
 	  end
 end
