@@ -7,8 +7,8 @@ local function split_filename(path)
   return (string.match(path, name_patt))
 end
 
-local function insert_field (tab, name, value)
-  if not tab[name] then
+local function insert_field (tab, name, value, overwrite)
+  if overwrite or not tab[name] then
     tab[name] = value
   else
     local t = type (tab[name])
@@ -20,12 +20,12 @@ local function insert_field (tab, name, value)
   end
 end
 
-local function parse_qs(qs, tab)
+local function parse_qs(qs, tab, overwrite)
   tab = tab or {}
   if type(qs) == "string" then
     local url_decode = util.url_decode
     for key, val in string.gmatch(qs, "([^&=]+)=([^&=]*)&?") do
-      insert_field(tab, url_decode(key), url_decode(val))
+      insert_field(tab, url_decode(key), url_decode(val), overwrite)
     end
   elseif qs then
     error("WSAPI Request error: invalid query string")
@@ -106,25 +106,25 @@ local function fields(input, boundary)
 	 end, state
 end
 
-local function parse_multipart_data(input, input_type, tab)
+local function parse_multipart_data(input, input_type, tab, overwrite)
   tab = tab or {}
   local boundary = get_boundary(input_type)
   for name, value in fields(input, boundary) do
-    insert_field(tab, name, value)
+    insert_field(tab, name, value, overwrite)
   end
   return tab
 end
 
-local function parse_post_data(wsapi_env, tab)
+local function parse_post_data(wsapi_env, tab, overwrite)
   tab = tab or {}
   local input_type = wsapi_env.CONTENT_TYPE
   if string.find(input_type, "x-www-form-urlencoded", 1, true) then
     local length = tonumber(wsapi_env.CONTENT_LENGTH) or 0
-    parse_qs(wsapi_env.input:read(length) or "", tab)
+    parse_qs(wsapi_env.input:read(length) or "", tab, overwrite)
   elseif string.find(input_type, "multipart/form-data", 1, true) then
     local length = tonumber(wsapi_env.CONTENT_LENGTH) or 0
     if length > 0 then
-       parse_multipart_data(wsapi_env.input:read(length) or "", input_type, tab)
+       parse_multipart_data(wsapi_env.input:read(length) or "", input_type, tab, overwrite)
     end
   else
     local length = tonumber(wsapi_env.CONTENT_LENGTH) or 0
@@ -134,19 +134,20 @@ local function parse_post_data(wsapi_env, tab)
 end
 
 function new(wsapi_env, options)
+  options = options or {}
   local req = { GET = {}, POST = {}, method = wsapi_env.REQUEST_METHOD,
     path_info = wsapi_env.PATH_INFO, query_string = wsapi_env.QUERY_STRING,
     script_name = wsapi_env.SCRIPT_NAME }
-  parse_qs(wsapi_env.QUERY_STRING, req.GET)
-  if options and options.delay_post then
+  parse_qs(wsapi_env.QUERY_STRING, req.GET, options.overwrite)
+  if options.delay_post then
     req.parse_post_data = function (self)
-		       parse_post_data(wsapi_env, self.POST)
+		       parse_post_data(wsapi_env, self.POST, options.overwrite)
 		       self.parse_post_data = function ()
 						error("POST data already processed")
 					      end
 		     end
   else
-    parse_post_data(wsapi_env, req.POST)
+    parse_post_data(wsapi_env, req.POST, options.overwrite)
     req.parse_post_data = function () 
 			    error("POST data already processed")
 			  end

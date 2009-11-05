@@ -4,22 +4,19 @@ require "rings"
 
 module("wsapi.ringer", package.seeall)
 
-local function arg(n)
-  return "(select(" .. tostring(n) .. ",...))"
-end
-
 local init = [==[
-  if arg(2) then
+  local app_name, bootstrap_code, is_file = ...
+  if bootstrap_code then
     local bootstrap, err
-    if string.match(arg(2), "%w%.lua$") then
-      bootstrap, err = loadfile(arg(2))
+    if string.match(bootstrap_code, "%w%.lua$") then
+      bootstrap, err = loadfile(bootstrap_code)
     else
-      bootstrap, err = loadstring(arg(2))
+      bootstrap, err = loadstring(bootstrap_code)
     end
     if bootstrap then
       bootstrap()
     else
-      error("could not load " .. arg(2) .. ": " .. err)
+      error("could not load " .. bootstrap_code .. ": " .. err)
     end
   else
     _, package.path = remotedostring("return package.path")
@@ -31,7 +28,7 @@ local init = [==[
   xpcall = coxpcall
   local wsapi_error = {
        write = function (self, err)
-         remotedostring("env.error:write(arg(1))", err)
+         remotedostring("env.error:write(...)", err)
        end
   }
   local wsapi_input =  {
@@ -60,17 +57,17 @@ local init = [==[
 			return v
 		      end
 		    else
-		      local  _, v = remotedostring("return env[arg(1)]", k)
+		      local  _, v = remotedostring("return env[(...)]", k)
 		      rawset(tab, k, v)
 		      return v
 		    end
 		 end,
        __newindex = function (tab, k, v)
 		       rawset(tab, k, v)
-		       remotedostring("env[arg(1)] = arg(2)", k, v)
+		       remotedostring("local k, v = ...; env[k] = v", k, v)
 		    end
   }
-  local app = common.normalize_app(arg(1), arg(3))
+  local app = common.normalize_app(app_name, is_file)
   main_func = function ()
 		 local wsapi_env = { error = wsapi_error, input = wsapi_input }
 		 setmetatable(wsapi_env, wsapi_meta)
@@ -86,15 +83,15 @@ local init = [==[
 		     res = coroutine.wrap(function () coroutine.yield(common.error_html(msg)) end)
 		   end
 		 end
-		 remotedostring("status = arg(1)", status)
+		 remotedostring("status = ...", status)
 		 for k, v in pairs(headers) do
 		   if type(v) == "table" then
-		     remotedostring("headers[arg(1)] = {}", k)
+		     remotedostring("headers[(...)] = {}", k)
 		     for _, val in ipairs(v) do
-		       remotedostring("table.insert(headers[arg(1)], arg(2))", k, val)
+		       remotedostring("local k, v = ...; table.insert(headers[k], v)", k, val)
 		     end
 		   else
-		     remotedostring("headers[arg(1)] = arg(2)", k, v)
+		     remotedostring("local k, v = ...; headers[k] = v", k, v)
 		   end
 		 end
 		 local s, v = res()
@@ -110,14 +107,13 @@ local init = [==[
 	       end
 ]==]
 
-init = string.gsub(init, "arg%((%d+)%)", arg)
-
 -- Returns a WSAPI application that runs the provided WSAPI application
 -- in an isolated Lua environment
 function new(app_name, bootstrap, is_file)
   local data = { created_at = os.time() }
   setmetatable(data, { __index = _G })
   local state = rings.new(data)
+  data.state = state
   assert(state:dostring(init, app_name, bootstrap, is_file))
   local error = function (msg)
 		   data.status, data.headers, data.env = nil
@@ -134,7 +130,7 @@ function new(app_name, bootstrap, is_file)
 	     state:dostring([[
 				main_coro = coroutine.wrap(main_func)
 				return main_coro(...)
-			  ]])
+			    ]])
 	   repeat
 	     if not ok then error(flag) end
 	     if flag == "RECEIVE" then

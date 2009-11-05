@@ -13,9 +13,9 @@ local _G = _G
 module("wsapi.common", package.seeall)
 
 -- Meta information is public even if begining with an "_"
-_G.wsapi._COPYRIGHT   = "Copyright (C) 2007 Kepler Project"
+_G.wsapi._COPYRIGHT   = "Copyright (C) 2007-2009 Kepler Project"
 _G.wsapi._DESCRIPTION = "WSAPI - the Lua Web Server API"
-_G.wsapi._VERSION     = "WSAPI 1.1"
+_G.wsapi._VERSION     = "WSAPI 1.2"
 
 -- Makes an index metamethod for the environment, from
 -- a function that returns the value of a server variable
@@ -454,6 +454,10 @@ do
 	   for _, state in ipairs(app_state.states) do
 	      if ttl and (rawget(state.data, "created_at") + ttl > os.time()) then
 		 table.insert(new_states, state)
+	      else
+		 if not rawget(state.data, "status") then
+		    rawget(state.data, "state"):close()
+		 end
 	      end
 	   end
 	   app_state.states = new_states
@@ -541,6 +545,10 @@ do
 	   for _, state in ipairs(app_state.states) do
 	      if ttl and (rawget(state.data, "created_at") + ttl > os.time()) then
 		 table.insert(new_states, state)
+	      else
+		 if not rawget(state.data, "status") then
+		    rawget(state.data, "state"):close()
+		 end
 	      end
 	   end
 	   app_state.states = new_states
