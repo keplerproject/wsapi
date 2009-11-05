@@ -108,6 +108,8 @@ local init = [==[
 
 init = string.gsub(init, "arg%((%d+)%)", arg)
 
+-- Returns a WSAPI application that runs the provided WSAPI application
+-- in an isolated Lua environment
 function new(app_name, bootstrap, is_file)
   local data = { created_at = os.time() }
   setmetatable(data, { __index = _G })

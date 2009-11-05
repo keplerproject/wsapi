@@ -142,15 +142,15 @@ local function wsapihandler (req, res, wsapi_run, app_prefix, docroot, app_path)
    end
 end
 
--------------------------------------------------------------------------------
--- Returns the WSAPI handler
--------------------------------------------------------------------------------
+-- Makes a WSAPI handler for a single WSAPI application
 function makeHandler (app_func, app_prefix, docroot, app_path)
    return function (req, res)
 	     return wsapihandler(req, res, app_func, app_prefix, docroot, app_path)
 	  end
 end
 
+-- Makes a generic WSAPI handler, that launches WSAPI application scripts
+-- See the wsapi script for the possible values of the "params" table
 function makeGenericHandler(docroot, params)
    params = params or {}
    return function (req, res)

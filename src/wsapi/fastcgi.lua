@@ -18,6 +18,8 @@ io.stdout = lfcgi.stdout
 io.stderr = lfcgi.stderr
 io.stdin = lfcgi.stdin
 
+-- Runs an WSAPI application for each FastCGI request that comes
+-- from the FastCGI pipeline
 function run(app_run)
    while lfcgi.accept() >= 0 do
      local headers

@@ -17,6 +17,12 @@ _G.wsapi._COPYRIGHT   = "Copyright (C) 2007 Kepler Project"
 _G.wsapi._DESCRIPTION = "WSAPI - the Lua Web Server API"
 _G.wsapi._VERSION     = "WSAPI 1.1"
 
+-- Makes an index metamethod for the environment, from
+-- a function that returns the value of a server variable
+-- a metamethod lets us do "on-demand" loading of the WSAPI
+-- environment, and provides the invariant the the WSAPI
+-- environment returns the empty string instead of nil for
+-- variables that do not exist
 function sv_index(func)
    return function (env, n)
 	     local v = func(n)
@@ -25,6 +31,8 @@ function sv_index(func)
 	  end
 end
 
+-- Makes an wsapi_env.input object from a low-level input
+-- object and the name of the method to read from this object
 function input_maker(obj, read_method)
    local input = {}
    read = obj[read_method or "read"]
@@ -36,11 +44,16 @@ function input_maker(obj, read_method)
    return input
 end
 
+-- Windows only: sets stdin and stdout to binary mode so
+-- sending and receiving binary data works with CGI
 function setmode()
    pcall(lfs.setmode, io.stdin, "binary")
    pcall(lfs.setmode, io.stdout, "binary")
 end
 
+-- Returns the actual WSAPI handler (a function) for the
+-- WSAPI application, whether it is a table, the name of a Lua
+-- module, a Lua script, or the function itself
 function normalize_app(app_run, is_file)
    local t = type(app_run)
    if t == "function" then
@@ -58,6 +71,9 @@ function normalize_app(app_run, is_file)
    end
 end
 
+-- Sends the respose body through the "out" pipe, using
+-- the provided write method. Gets the body from the
+-- response iterator
 function send_content(out, res_iter, write_method)
    local write = out[write_method or "write"]
    local ok, res = xpcall(res_iter, debug.traceback)
@@ -115,6 +131,8 @@ local status_codes = {
    [505] = "HTTP Version not supported",
 }
 
+-- Sends the complete response through the "out" pipe, 
+-- using the provided write method
 function send_output(out, status, headers, res_iter, write_method)
    local write = out[write_method or "write"]
    if type(status) == "number" or status:match("^%d+$") then 
@@ -134,6 +152,7 @@ function send_output(out, status, headers, res_iter, write_method)
    send_content(out, res_iter)
 end
 
+-- Formats the standard error message for WSAPI applications
 function error_html(msg)
    return string.format([[
         <html>
@@ -149,10 +168,12 @@ function error_html(msg)
       ]], tostring(msg))
 end
 
+-- Body for a 500 response
 function status_500_html(msg)
    return error_html(msg)
 end
 
+-- Body for a 404 response
 function status_404_html(msg)
    return string.format([[
         <html>
@@ -175,6 +196,9 @@ function status_200_html(msg)
       ]], tostring(msg))
 end
 
+-- Sends an error response through the "out" pipe, replicated
+-- to the "err" pipe (for logging, for example)
+-- msg is the error message
 function send_error(out, err, msg, out_method, err_method)
    local write = out[out_method or "write"]
    local write_err = err[err_method or "write"]
@@ -184,6 +208,8 @@ function send_error(out, err, msg, out_method, err_method)
    write(out, error_html(msg))
 end
 
+-- Sends a 404 response to the "out" pipe, "msg" is the error
+-- message
 function send_404(out, msg, out_method)
    local write = out[out_method or "write"]
    write(out, "Status: 404 Not Found\r\n")
@@ -191,6 +217,8 @@ function send_404(out, msg, out_method)
    write(out, status_404_html(msg))
 end
 
+-- Runs the application in the provided WSAPI environment, catching errors and
+-- returning the appropriate error repsonses
 function run_app(app, env)
    return xpcall(function () return (normalize_app(app))(env) end,
 		 function (msg)
@@ -203,6 +231,7 @@ function run_app(app, env)
 		 end)
 end
 
+-- Builds an WSAPI environment from the configuration table "t"
 function wsapi_env(t)
    local env = {}
    setmetatable(env, { __index = sv_index(t.env) })
@@ -213,6 +242,8 @@ function wsapi_env(t)
    return env
 end
 
+-- Runs an application with data from the configuration table "t",
+-- sending the WSAPI error/not found responses in case of errors
 function run(app, t)
    local env = wsapi_env(t) 
    local ok, status, headers, res_iter = 
@@ -239,6 +270,11 @@ function splitext(filename)
   return modname, ext
 end
 
+-- Gets the data for file or directory "filename" if it exists:
+-- path, actual file name, file name without extension, extension,
+-- and modification time. If "filename" is a directory it assumes
+-- that the actual file is a .lua file in this directory with
+-- the same name as the directory (for example, "/foo/bar/bar.lua")
 function find_file(filename)
    local mode = assert(lfs.attributes(filename, "mode"))
    local path, file, modname, ext
@@ -257,6 +293,8 @@ function find_file(filename)
    return path, file, modname, ext, mtime
 end
 
+-- IIS appends the PATH_INFO to PATH_TRANSLATED, this function
+-- corrects for that
 function adjust_iis_path(wsapi_env, filename)
    local script_name, ext = 
       wsapi_env.SCRIPT_NAME:match("([^/%.]+)%.([^%.]+)$")
@@ -273,6 +311,8 @@ function adjust_iis_path(wsapi_env, filename)
    end
 end
 
+-- IIS appends the PATH_INFO to the DOCUMENT_ROOT, this corrects
+-- for that and for virtual directories
 local function not_compatible(wsapi_env, filename)
   local script_name = wsapi_env.SCRIPT_NAME
   if not filename:gsub("\\","/"):find(script_name, 1, true) then
@@ -283,6 +323,12 @@ local function not_compatible(wsapi_env, filename)
   end
 end
 
+-- Find the actual script file in case of non-wrapped launchers
+-- (http://server/cgi-bin/wsapi.cgi/bar/baz.lua/foo) and for IIS,
+-- as IIS provides a wrong PATH_TRANSLATED variable
+-- Corrects PATH_INFO and SCRIPT_NAME, so SCRIPT_NAME will be
+-- /cgi-bin/wsapi.cgi/bar/baz.lua and PATH_INFO will be /foo
+-- for the previous example
 function adjust_non_wrapped(wsapi_env, filename, launcher)
   if filename == "" or not_compatible(wsapi_env, filename) or 
     (launcher and filename:match(launcher:gsub("%.", "%.") .. "$")) then
@@ -316,6 +362,9 @@ function adjust_non_wrapped(wsapi_env, filename, launcher)
   else return filename end
 end
 
+-- Tries to guess the correct path for the WSAPI application script,
+-- correcting for misbehaving web servers (IIS), non-wrapped launchers
+-- and (http://server/cgi-bin/wsapi.cgi/bar/baz.lua/foo)
 function normalize_paths(wsapi_env, filename, launcher, vars)
    vars = vars or { "SCRIPT_FILENAME", "PATH_TRANSLATED" }
    if not filename or filename == "" then
@@ -338,11 +387,13 @@ function normalize_paths(wsapi_env, filename, launcher, vars)
    end
 end
 
+-- Tries to find the correct script to launch for the WSAPI application
 function find_module(wsapi_env, filename, launcher, vars)
    normalize_paths(wsapi_env, filename, launcher, vars)
    return find_file(wsapi_env.PATH_TRANSLATED)
 end
 
+-- Version of require skips searching package.path
 function require_file(filename, modname)
   if not package.loaded[modname] then
     package.loaded[modname] = true
@@ -354,6 +405,10 @@ function require_file(filename, modname)
   end
 end
 
+-- Loads the script for a WSAPI application (require'ing in case of
+-- a .lua script and dofile'ing it in case of other extensions),
+-- returning the WSAPI handler function for this application
+-- also moves the current directory to the application's path
 function load_wsapi(path, file, modname, ext)
   lfs.chdir(path)
   local app
@@ -365,6 +420,8 @@ function load_wsapi(path, file, modname, ext)
   return normalize_app(app)
 end
 
+-- Local state and helper functions for the loader if isolated applications,
+-- used in the FastCGI and Xavante WSAPI launchers
 do
   local app_states = {}
   local last_collection = os.time()
@@ -373,6 +430,7 @@ do
 					  return tab[app]
 				       end })
 
+  -- Bootstraps a Lua state (using rings) with the provided WSAPI application
   local function bootstrap_app(path, file, modname, ext)
      local bootstrap = [=[
 	   _, package.path = remotedostring("return package.path")
@@ -388,6 +446,7 @@ do
      end
   end
 
+  -- "Garbage-collect" stale Lua states
   local function collect_states(period, ttl)
      if period and (last_collection + period < os.time()) then
 	for app, app_state in pairs(app_states) do
@@ -403,6 +462,9 @@ do
      end
   end
 
+  -- Helper for the isolated launchers: find the application path and script,
+  -- loads it in an isolated Lua state (reusing an existing state if one is free)
+  -- and runs the application in the provided WSAPI environment
   local function wsapi_loader_isolated_helper(wsapi_env, params)
      local path, file, modname, ext, mtime = 
 	find_module(wsapi_env, params.filename, params.launcher, params.vars)
@@ -415,6 +477,8 @@ do
      return app(wsapi_env)
   end
 
+  -- Loads a WSAPI application isolated in its own Lua state and returns
+  -- the application handler (reusing an existing state if one is free)
   function load_wsapi_isolated(path, file, modname, ext, mtime)
     local filename = path .. "/" .. file
     lfs.chdir(path)
@@ -438,6 +502,9 @@ do
     return app
   end
 
+  -- Makes an WSAPI application that launches isolated WSAPI applications
+  -- scripts with the provided parameters - see wsapi.fcgi for the
+  -- parameters and their descriptions
   function make_isolated_loader(params)
      params = params or {}
      return function (wsapi_env)
@@ -456,6 +523,8 @@ do
 
 end
 
+-- Local state and helper functions for the loader if isolated dedicated
+-- launchers, used in the CGILua and Orbit pages launchers
 do
   local app_states = {}
   local last_collection = os.time()
@@ -464,6 +533,7 @@ do
 					  return tab[app]
 				       end })
 
+  -- "Garbage-collect" stale Lua states
   local function collect_states(period, ttl)
      if period and (last_collection + period < os.time()) then
 	for app, app_state in pairs(app_states) do
@@ -479,6 +549,7 @@ do
      end
   end
 
+  -- Bootstraps a Lua state (using rings) with the provided launcher
   local function bootstrap_app(path, app_modname, extra)
      local bootstrap = [=[
 	   _, package.path = remotedostring("return package.path")
@@ -490,6 +561,8 @@ do
      return ringer.new(app_modname, bootstrap)
   end
 
+  -- Loads a WSAPI application isolated in its own Lua state and returns
+  -- the application handler (reusing an existing state if one is free)
   function load_isolated_launcher(filename, app_modname, bootstrap, reload)
     local app, data
     local app_state = app_states[filename]
@@ -511,6 +584,9 @@ do
     return app
   end
 
+  -- Makes an WSAPI application that launches an isolated WSAPI launcher
+  -- with the provided parameters - see op.fcgi in the Orbit sources for the
+  -- parameters and their descriptions
   function make_isolated_launcher(params)
      params = params or {}
      return function (wsapi_env)
