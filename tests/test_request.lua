@@ -132,3 +132,49 @@ assert(req.POST["foo"] == "bar\nbar")
 assert(req.POST["baz"] == "boo")
 assert(req.params["foo"] == "bar\nbar")
 assert(req.params["baz"] == "boo")
+
+print("Test POST with repeat parameters")
+local env = make_env_post("foo=bar&foo=boo")
+local req = wsapi.request.new(env)
+assert(is_empty_table(req.GET))
+assert(#req.POST["foo"] == 2)
+assert(req.POST["foo"][1] == "bar")
+assert(req.POST["foo"][2] == "boo")
+
+print("Test GET with repeat parameters")
+local env = make_env_get("foo=bar&foo=boo")
+local req = wsapi.request.new(env)
+assert(is_empty_table(req.POST))
+assert(#req.GET["foo"] == 2)
+assert(req.GET["foo"][1] == "bar")
+assert(req.GET["foo"][2] == "boo")
+
+print("Test POST with repeat parameters and overwrite enabled")
+local env = make_env_post("foo=bar&foo=boo")
+local req = wsapi.request.new(env, { overwrite = true })
+assert(is_empty_table(req.GET))
+assert(req.POST["foo"] == "boo")
+
+print("Test GET with repeat parameters and overwrite enabled")
+local env = make_env_get("foo=bar&foo=boo")
+local req = wsapi.request.new(env, { overwrite = true })
+assert(is_empty_table(req.POST))
+assert(req.GET["foo"] == "boo")
+
+print("Test multipart/form-data with repeat parameters")
+local boundary = "hello"
+local env = make_env_post(encode_multipart(boundary, { { "foo", "bar\nbar" }, { "foo", "boo" } }),
+					   "multipart/form-data; boundary=" .. boundary)
+local req = wsapi.request.new(env)
+assert(is_empty_table(req.GET))
+assert(#req.POST["foo"] == 2)
+assert(req.POST["foo"][1] == "bar\nbar")
+assert(req.POST["foo"][2] == "boo")
+
+print("Test multipart/form-data with repeat parameters and overwrite")
+local boundary = "hello"
+local env = make_env_post(encode_multipart(boundary, { { "foo", "bar\nbar" }, { "foo", "boo" } }),
+					   "multipart/form-data; boundary=" .. boundary)
+local req = wsapi.request.new(env, { overwrite = true })
+assert(is_empty_table(req.GET))
+assert(req.POST["foo"] == "boo")
