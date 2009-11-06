@@ -12,7 +12,7 @@ description = {
   homepage = "http://www.keplerproject.org/wsapi"
 }
 
-dependencies = { "wsapi cvs", "rings cvs", "coxpcall cvs", "xavante cvs" }
+dependencies = { "wsapi cvs", "rings >= 1.2.3", "coxpcall >= 1.13", "xavante >= 2.1.0" }
 
 source = {
   url = "git://github.com/keplerproject/wsapi.git"

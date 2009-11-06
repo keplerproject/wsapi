@@ -12,7 +12,7 @@ description = {
   homepage = "http://www.keplerproject.org/wsapi"
 }
 
-dependencies = { "luafilesystem cvs" }
+dependencies = { "luafilesystem >= 1.5.0" }
 
 source = {
   url = "git://github.com/keplerproject/wsapi.git"
