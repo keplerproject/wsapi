@@ -19,7 +19,7 @@ module (..., package.seeall)
 -- Implements WSAPI
 -------------------------------------------------------------------------------
 
-local function set_cgivars (req, diskpath, path_info_pat, script_name_pat)
+local function set_cgivars (req, diskpath, path_info_pat, script_name_pat, extra_vars)
    diskpath = diskpath or req.diskpath or ""
    req.cgivars = {
       SERVER_SOFTWARE = req.serversoftware,
@@ -38,6 +38,9 @@ local function set_cgivars (req, diskpath, path_info_pat, script_name_pat)
       CONTENT_LENGTH = req.headers ["content-length"],
    }
    if req.cgivars.PATH_INFO == "" then req.cgivars.PATH_INFO = "/" end
+   for n,v in ipairs(extra_vars or {}) do
+     req.cgivars[n] = v
+   end
    for n,v in pairs (req.headers) do
       req.cgivars ["HTTP_"..string.gsub (string.upper (n), "-", "_")] = v
    end
@@ -86,9 +89,9 @@ local status_codes = {
    [505] = "HTTP Version not supported",
 }
 
-local function wsapihandler (req, res, wsapi_run, app_prefix, docroot, app_path)
+local function wsapihandler (req, res, wsapi_run, app_prefix, docroot, app_path, extra_vars)
    local path_info_pat = "^" .. (app_prefix or "") .. "(.*)"
-   set_cgivars(req, docroot, path_info_pat, app_prefix)
+   set_cgivars(req, docroot, path_info_pat, app_prefix, extra_vars)
 
    local get_cgi_var = function (var) 
 			  return req.cgivars[var] or ""
@@ -143,17 +146,17 @@ local function wsapihandler (req, res, wsapi_run, app_prefix, docroot, app_path)
 end
 
 -- Makes a WSAPI handler for a single WSAPI application
-function makeHandler (app_func, app_prefix, docroot, app_path)
+function makeHandler (app_func, app_prefix, docroot, app_path, extra_vars)
    return function (req, res)
-	     return wsapihandler(req, res, app_func, app_prefix, docroot, app_path)
+	     return wsapihandler(req, res, app_func, app_prefix, docroot, app_path, extra_vars)
 	  end
 end
 
 -- Makes a generic WSAPI handler, that launches WSAPI application scripts
 -- See the wsapi script for the possible values of the "params" table
-function makeGenericHandler(docroot, params)
+function makeGenericHandler(docroot, params, extra_vars)
    params = params or { isolated = true }
    return function (req, res)
-	     return wsapihandler(req, res, common.make_loader(params), nil, docroot)
+	     return wsapihandler(req, res, common.make_loader(params), nil, docroot, nil, extra_vars)
 	  end
 end
