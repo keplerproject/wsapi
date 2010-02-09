@@ -12,10 +12,10 @@ description = {
   homepage = "http://www.keplerproject.org/wsapi"
 }
 
-dependencies = { "luafilesystem >= 1.4.2" }
+dependencies = { "luafilesystem >= 1.5.0" }
 
 source = {
-  url = "http://cloud.github.com/downloads/keplerproject/wsapi/wsapi-1.2.tar.gz"
+  url = "git://github.com/keplerproject/wsapi.git"
 }
 
 build = {
