@@ -38,7 +38,7 @@ local function set_cgivars (req, diskpath, path_info_pat, script_name_pat, extra
       CONTENT_LENGTH = req.headers ["content-length"],
    }
    if req.cgivars.PATH_INFO == "" then req.cgivars.PATH_INFO = "/" end
-   for n,v in ipairs(extra_vars or {}) do
+   for n,v in pairs(extra_vars or {}) do
      req.cgivars[n] = v
    end
    for n,v in pairs (req.headers) do
