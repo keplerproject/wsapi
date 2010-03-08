@@ -24,11 +24,19 @@ _G.wsapi._VERSION     = "WSAPI 1.2"
 -- environment returns the empty string instead of nil for
 -- variables that do not exist
 function sv_index(func)
-   return function (env, n)
+  if type(func) == "table" then
+    return function (env, n)
+	     local v = func[n]
+	     env[n] = v or ""
+	     return v or ""
+	   end
+  else
+    return function (env, n)
 	     local v = func(n)
 	     env[n] = v or ""
 	     return v or ""
-	  end
+	   end
+  end
 end
 
 -- Makes an wsapi_env.input object from a low-level input
@@ -133,12 +141,16 @@ local status_codes = {
 
 -- Sends the complete response through the "out" pipe, 
 -- using the provided write method
-function send_output(out, status, headers, res_iter, write_method)
+function send_output(out, status, headers, res_iter, write_method, res_line)
    local write = out[write_method or "write"]
    if type(status) == "number" or status:match("^%d+$") then 
      status = status .. " " .. status_codes[tonumber(status)]
    end
-   write(out, "Status: " .. (status or "500 Internal Server Error") .. "\r\n")
+   if res_line then
+     write(out, "HTTP/1.1 " .. (status or "500 Internal Server Error") .. "\r\n")
+   else
+     write(out, "Status: " .. (status or "500 Internal Server Error") .. "\r\n")
+   end
    for h, v in pairs(headers or {}) do
       if type(v) ~= "table" then
 	 write(out, h .. ": " .. tostring(v) .. "\r\n") 
@@ -149,7 +161,7 @@ function send_output(out, status, headers, res_iter, write_method)
       end 
    end
    write(out, "\r\n")
-   send_content(out, res_iter)
+   send_content(out, res_iter, write_method)
 end
 
 -- Formats the standard error message for WSAPI applications
@@ -196,25 +208,44 @@ function status_200_html(msg)
       ]], tostring(msg))
 end
 
+local function make_iterator(msg)
+  local sent = false
+  return function ()
+	   if sent then return nil
+	   else
+	     sent = true
+	     return msg
+	   end
+	 end
+end
+
 -- Sends an error response through the "out" pipe, replicated
 -- to the "err" pipe (for logging, for example)
 -- msg is the error message
-function send_error(out, err, msg, out_method, err_method)
+function send_error(out, err, msg, out_method, err_method, http_response)
    local write = out[out_method or "write"]
    local write_err = err[err_method or "write"]
    write_err(err, "WSAPI error in application: " .. tostring(msg) .. "\n")
-   write(out, "Status: 500 Internal Server Error\r\n")
-   write(out, "Content-type: text/html\r\n\r\n")
-   write(out, error_html(msg))
+   local msg = error_html(msg)
+   local status, headers, res_iter = "500 Internal Server Error", {
+        ["Content-Type"] = "text/html",
+        ["Content-Length"] = string.len(msg)
+      }, make_iterator(msg)
+   send_output(out, status, headers, res_iter, out_method, http_response)
+   return status, headers
 end
 
 -- Sends a 404 response to the "out" pipe, "msg" is the error
 -- message
-function send_404(out, msg, out_method)
+function send_404(out, msg, out_method, http_response)
    local write = out[out_method or "write"]
-   write(out, "Status: 404 Not Found\r\n")
-   write(out, "Content-type: text/html\r\n\r\n")
-   write(out, status_404_html(msg))
+   local msg = status_404_html(msg)
+   local status, headers, res_iter = "404 Not Found", {
+        ["Content-Type"] = "text/html",
+        ["Content-Length"] = string.len(msg)
+      }, make_iterator(msg)
+   send_output(out, status, headers, res_iter, out_method, http_response)
+   return status, headers
 end
 
 -- Runs the application in the provided WSAPI environment, catching errors and
@@ -249,14 +280,27 @@ function run(app, t)
    local ok, status, headers, res_iter = 
       run_app(app, env)
    if ok then
-      send_output(t.output, status, headers, res_iter)
+     if not headers["Content-Length"] then
+       headers["Transfer-Encoding"] = "chunked"
+       if t.http_response then
+	 local unchunked = res_iter
+	 res_iter = function ()
+		      local msg = unchunked()
+		      if msg then
+			return string.format("%x\r\n%s\r\n", string.len(msg), msg)
+		      end
+		    end
+       end
+     end
+     send_output(t.output, status, headers, res_iter, t.write_method, t.http_response)
    else
-      if env.STATUS == 404 then
-	 send_404(t.output, status)
-      else
-	 send_error(t.output, t.error, status)
-      end
+     if env.STATUS == 404 then
+       return send_404(t.output, status, t.write_method, t.http_response)
+     else
+       return send_error(t.output, t.error, status, t.write_method, t.err_method, t.http_response)
+     end
    end
+   return status, headers 
 end
 
 function splitpath(filename)
@@ -389,7 +433,7 @@ end
 
 -- Tries to find the correct script to launch for the WSAPI application
 function find_module(wsapi_env, filename, launcher, vars)
-   normalize_paths(wsapi_env, filename, launcher, vars)
+   normalize_paths(wsapi_env, filename or "", launcher, vars)
    return find_file(wsapi_env.PATH_TRANSLATED)
 end
 
