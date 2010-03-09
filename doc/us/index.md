@@ -38,17 +38,19 @@ the [manual](manual.html) for installation instructions.
 There is a section of wsapi-install-1.2 with the parameters that 
 control the installer: 
 
-    # Installer parameters 
-    
-    LUA_VERSION=5.1.4 
-    PACKAGE=WSAPI 
-    PACKAGE_OPT=wsapi 
-    PACKAGE_ROCK=wsapi-xavante 
-    INSTALLER_VERSION=0.6 
-    PACKAGE_VERSION=1.2 
-    LUAROCKS_REPO=http://luarocks.org/repositories/rocks
-    LUAROCKS_URL=http://www.luarocks.org/releases/luarocks-2.0.1.tar.gz
-    LUAROCKS_VERSION=2.0.1 
+<pre class="example">
+# Installer parameters 
+
+LUA_VERSION=5.1.4 
+PACKAGE=WSAPI 
+PACKAGE_OPT=wsapi 
+PACKAGE_ROCK=wsapi-xavante 
+INSTALLER_VERSION=0.6 
+PACKAGE_VERSION=1.2 
+LUAROCKS_REPO=http://luarocks.org/repositories/rocks
+LUAROCKS_URL=http://www.luarocks.org/releases/luarocks-2.0.1.tar.gz
+LUAROCKS_VERSION=2.0.1 
+</pre>
 
 To install something else change PACKAGE to the full name of the 
 package, PACKAGE\_OPT to the name of the --with-foo option that lets 
@@ -64,7 +66,9 @@ won't go into that.
 
 Now to make the tarball, put the installer script in an empty folder and run: 
 
-    bash ./your-install-script --prefix=/tmp/anything --bootstrap 
+<pre>
+bash ./your-install-script --prefix=/tmp/anything --bootstrap 
+</pre>
 
 After it finishes you will have lua-5.1.4.tar.gz, 
 luarocks-2.0.1.tar.gz, and a rocks folder with .src.rocks for all the 
