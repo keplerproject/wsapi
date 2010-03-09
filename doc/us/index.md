@@ -27,9 +27,48 @@ You can get WSAPI using [LuaRocks](http://luarocks.org):
 luarocks install wsapi-xavante
 </pre>
 
+### Unix Installer Script
+
 You can also get an installer script that installs Lua+LuaRocks+WSAPI 
 [here](http://cloud.github.com/downloads/keplerproject/wsapi-install-1.2.0.tar.gz). See
 the [manual](manual.html) for installation instructions.
+
+### Customizing the installer
+
+There is a section of wsapi-install-1.2 with the parameters that 
+control the installer: 
+
+    # Installer parameters 
+    
+    LUA_VERSION=5.1.4 
+    PACKAGE=WSAPI 
+    PACKAGE_OPT=wsapi 
+    PACKAGE_ROCK=wsapi-xavante 
+    INSTALLER_VERSION=0.6 
+    PACKAGE_VERSION=1.2 
+    LUAROCKS_REPO=http://luarocks.org/repositories/rocks
+    LUAROCKS_URL=http://www.luarocks.org/releases/luarocks-2.0.1.tar.gz
+    LUAROCKS_VERSION=2.0.1 
+
+To install something else change PACKAGE to the full name of the 
+package, PACKAGE\_OPT to the name of the --with-foo option that lets 
+the user override the version (or skip installation of the package), 
+PACKAGE\_ROCK to the name of the rock, and PACKAGE\_VERSION to the 
+version. Also change LUAROCKS\_REPO if you want to use another 
+repository (the installer uses --from, so will pull packages from 
+other repositories if the one you specified does not have them). 
+
+If there is a LuaRocks update then change LUAROCKS\_URL and 
+LUAROCKS\_VERSION. Changing Lua version is much more involved, so I 
+won't go into that. 
+
+Now to make the tarball, put the installer script in an empty folder and run: 
+
+    bash ./your-install-script --prefix=/tmp/anything --bootstrap 
+
+After it finishes you will have lua-5.1.4.tar.gz, 
+luarocks-2.0.1.tar.gz, and a rocks folder with .src.rocks for all the 
+rocks that the installer installs. 
 
 ## Latest Sources and Bug Tracker
 
