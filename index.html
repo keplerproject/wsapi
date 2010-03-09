@@ -3,7 +3,6 @@
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-
 	<title>WSAPI</title>
     <link rel="stylesheet" href="http://www.keplerproject.org/doc.css" type="text/css"/>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -74,11 +73,51 @@ clone of either of them, though, and tries to follow standard Lua idioms.</p>
 luarocks install wsapi-xavante
 </pre>
 
-<h3>Unix Installer</h3>
+
+<h3>Unix Installer Script</h3>
 
 <p>You can also get an installer script that installs Lua+LuaRocks+WSAPI 
 <a href="http://cloud.github.com/downloads/keplerproject/wsapi-install-1.2.0.tar.gz">here</a>. See
 the <a href="manual.html">manual</a> for installation instructions.</p>
+
+<h3>Customizing the installer</h3>
+
+<p>There is a section of wsapi-install-1.2 with the parameters that 
+control the installer: </p>
+
+<pre><code># Installer parameters 
+
+LUA_VERSION=5.1.4 
+PACKAGE=WSAPI 
+PACKAGE_OPT=wsapi 
+PACKAGE_ROCK=wsapi-xavante 
+INSTALLER_VERSION=0.6 
+PACKAGE_VERSION=1.2 
+LUAROCKS_REPO=http://luarocks.org/repositories/rocks
+LUAROCKS_URL=http://www.luarocks.org/releases/luarocks-2.0.1.tar.gz
+LUAROCKS_VERSION=2.0.1 
+</code></pre>
+
+<p>To install something else change PACKAGE to the full name of the 
+package, PACKAGE_OPT to the name of the --with-foo option that lets 
+the user override the version (or skip installation of the package), 
+PACKAGE_ROCK to the name of the rock, and PACKAGE_VERSION to the 
+version. Also change LUAROCKS_REPO if you want to use another 
+repository (the installer uses --from, so will pull packages from 
+other repositories if the one you specified does not have them). </p>
+
+<p>If there is a LuaRocks update then change LUAROCKS_URL and 
+LUAROCKS_VERSION. Changing Lua version is much more involved, so I 
+won't go into that. </p>
+
+<p>Now to make the tarball, put the installer script in an empty folder and run: </p>
+
+<pre><code>bash ./your-install-script --prefix=/tmp/anything --bootstrap 
+</code></pre>
+
+<p>After it finishes you will have lua-5.1.4.tar.gz, 
+luarocks-2.0.1.tar.gz, and a rocks folder with .src.rocks for all the 
+rocks that the installer installs. </p>
 
 <h2>Latest Sources and Bug Tracker</h2>
 
