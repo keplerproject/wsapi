@@ -84,5 +84,5 @@ function new(status, headers)
   if not headers["Content-Type"] then
     headers["Content-Type"] = "text/html"
   end
-  return setmetatable({ status = status, headers = headers, body = {}, cookies = {}, length = 0 }, methods)
+  return setmetatable({ status = status, headers = headers, body = {}, length = 0 }, methods)
 end
