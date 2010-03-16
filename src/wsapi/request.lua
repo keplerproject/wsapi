@@ -206,13 +206,14 @@ function new(wsapi_env, options)
     script_name = wsapi_env.SCRIPT_NAME, env = wsapi_env, mk_app = options.mk_app }
   parse_qs(wsapi_env.QUERY_STRING, req.GET, options.overwrite)
   if options.delay_post then
-    setmetatable(req.POST, { __index = function (tab, name)
-					 parse_post_data(wsapi_env, tab, options.overwrite)
-					 setmetatable(tab, nil)
-					 return rawget(tab, name)
-				       end })
+    req.parse_post = function (self)
+		       parse_post_data(wsapi_env, self.POST, options.overwrite)
+		       self.parse_post = function () return nil, "postdata already parsed" end
+		       return self.POST
+		     end
   else
     parse_post_data(wsapi_env, req.POST, options.overwrite)
+    req.parse_post = function () return nil, "postdata already parsed" end
   end
   req.params = {}
   setmetatable(req.params, { __index = function (tab, name)
