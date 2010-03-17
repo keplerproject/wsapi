@@ -164,8 +164,13 @@ function methods:qs_encode(query)
 end
 
 function methods:route_link(route, query, ...)
-  local uri = self.mk_app["link_" .. route](self.mk_app, self.env, ...)
-  return uri .. self:qs_encode(query)
+  local builder = self.mk_app["link_" .. route]
+  if builder then
+    local uri = builder(self.mk_app, self.env, ...)
+    return uri .. self:qs_encode(query)
+  else
+    error("there is no route named " .. route)
+  end
 end
 
 function methods:link(url, query)
@@ -203,7 +208,8 @@ function new(wsapi_env, options)
   options = options or {}
   local req = { GET = {}, POST = {}, method = wsapi_env.REQUEST_METHOD,
     path_info = wsapi_env.PATH_INFO, query_string = wsapi_env.QUERY_STRING,
-    script_name = wsapi_env.SCRIPT_NAME, env = wsapi_env, mk_app = options.mk_app }
+    script_name = wsapi_env.SCRIPT_NAME, env = wsapi_env, mk_app = options.mk_app,
+    doc_root = wsapi_env.DOCUMENT_ROOT, app_path = wsapi_env.APP_PATH }
   parse_qs(wsapi_env.QUERY_STRING, req.GET, options.overwrite)
   if options.delay_post then
     req.parse_post = function (self)
