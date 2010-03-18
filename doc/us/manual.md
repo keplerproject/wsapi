@@ -10,7 +10,7 @@ The WSAPI rock copies samples, docs and support files to it's path inside your
 local Rocks repository.
 
 There is an all-in-one installer script that installs Lua, LuaRocks, and `wsapi-xavante` in
-a single step. Download the [tarball](http://cloud.github.com/downloads/keplerproject/wsapi-install-1.2.0.tar.gz),
+a single step. Download the [tarball](http://github.com/downloads/keplerproject/wsapi/wsapi-install-1.3.0.tar.gz),
 unpack it, then run the provided `wsapi-install` script in its path. Run `wsapi-install --help` for
 installation options.
 

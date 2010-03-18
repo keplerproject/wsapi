@@ -17,7 +17,7 @@ WSAPI is free software and uses the same license as Lua 5.1
 
 ## Status
 
-Current version is 1.2. It was developed for Lua 5.1.
+Current version is 1.3. It was developed for Lua 5.1.
 
 ## Download
 
@@ -27,15 +27,75 @@ You can get WSAPI using [LuaRocks](http://luarocks.org):
 luarocks install wsapi-xavante
 </pre>
 
+### Unix Installer Script
+
 You can also get an installer script that installs Lua+LuaRocks+WSAPI 
-[here](http://cloud.github.com/downloads/keplerproject/wsapi-install-1.2.0.tar.gz). See
+[here](http://github.com/downloads/keplerproject/wsapi/wsapi-install-1.3.0.tar.gz). See
 the [manual](manual.html) for installation instructions.
+
+### Customizing the installer
+
+There is a section of wsapi-install-1.3 with the parameters that 
+control the installer: 
+
+<pre class="example">
+# Installer parameters 
+
+LUA_VERSION=5.1.4 
+PACKAGE=WSAPI 
+PACKAGE_OPT=wsapi 
+PACKAGE_ROCK=wsapi-xavante 
+INSTALLER_VERSION=0.6 
+PACKAGE_VERSION=1.3 
+LUAROCKS_REPO=http://luarocks.org/repositories/rocks
+LUAROCKS_URL=http://www.luarocks.org/releases/luarocks-2.0.1.tar.gz
+LUAROCKS_VERSION=2.0.1 
+</pre>
+
+To install something else change PACKAGE to the full name of the 
+package, PACKAGE\_OPT to the name of the --with-foo option that lets 
+the user override the version (or skip installation of the package), 
+PACKAGE\_ROCK to the name of the rock, and PACKAGE\_VERSION to the 
+version. Also change LUAROCKS\_REPO if you want to use another 
+repository (the installer uses --from, so will pull packages from 
+other repositories if the one you specified does not have them). 
+
+If there is a LuaRocks update then change LUAROCKS\_URL and 
+LUAROCKS\_VERSION. Changing Lua version is much more involved, so I 
+won't go into that. 
+
+Now to make the tarball, put the installer script in an empty folder and run: 
+
+<pre class = "example">
+bash ./your-install-script --prefix=/tmp/anything --bootstrap 
+</pre>
+
+After it finishes you will have lua-5.1.4.tar.gz, 
+luarocks-2.0.1.tar.gz, and a rocks folder with .src.rocks for all the 
+rocks that the installer installs. 
 
 ## Latest Sources and Bug Tracker
 
 WSAPI sources and bug tracker are available at its [Github](http://github.com/keplerproject/wsapi/) page.
 
 ## History
+
+**WSAPI 1.3** [18/Mar/2010]
+
+* Fixed segmentation fault when non-string is provided to lfcgi.getenv() (thanks to mkottman@github)
+* Added CGILua bootstrap to wsapi.sapi, so CGILua can run without a kepler_init module present
+* Added an `extra_vars` paremeter to wsapi.xavante.makeHandler and wsapi.xavante.makeGenericHandler, to
+  let you pass extra variables in the WSAPI environment
+* Added `overwrite` option to wsapi.request that tells the parameter parser to overwrite repeated parameters
+  instead of collecting them in a list    
+* Added a parameter `isolated` to the persistent generic loaders that controls whether you isolate
+  each script in a Lua state or not
+* Added parameters to the persistent generic loaders that let the user control the life cycle of Lua
+  states: `period` sets how long WSAPI should wait between collecting stale states, and `ttl` sets the
+  period after which a state becomes stale
+* Fixed bug in wsapi.ringer that didn't let you use wsapi.input:read inside the response iterator
+* Parameter `vars` for the WSAPI generic loaders that which variables WSAPI should check to get the physical
+  path of the script, and in which order. Defaults tro trying SCRIPT\_FILENAME first and PATH\_TRANSLATED second
 
 **WSAPI 1.2** [27/Oct/2009]
 
