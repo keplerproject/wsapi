@@ -6,8 +6,8 @@ To use these libraries just `require` them in your application or framework.
 ## Request
 
 **wsapi.request.new(*wsapi_env*, [*options*])** - creates a new request object wrapping *wsapi_env*; *options* is an (optional) table of extra options
-for the request, the only option currently supported is *delay_post*, if set
-this won't process the POST data on creation of the request
+for the request; the *delay_post* option tells wsapi.request to not process POST data on creation, and the *overwrite*
+option tells WSAPI to overwrite input parameters with the same name instead of collecting them in a list
 
 **req:parse_post_data()** - processed the POST data in case the processing
 was delayed by passing *delay_post = true* on creation of the request

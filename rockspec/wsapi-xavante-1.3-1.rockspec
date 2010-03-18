@@ -1,6 +1,6 @@
 package = "WSAPI-Xavante"
 
-version = "1.2-1"
+version = "cvs-1"
 
 description = {
   summary = "Lua Web Server API - Xavante Handler",
@@ -12,14 +12,14 @@ description = {
   homepage = "http://www.keplerproject.org/wsapi"
 }
 
-dependencies = { "wsapi >= 1.2", "rings >= 1.2.3", "coxpcall >= 1.13", "xavante >= 2.1.0" }
+dependencies = { "wsapi >= 1.3", "rings >= 1.2.3", "coxpcall >= 1.13", "xavante >= 2.1.0" }
 
 source = {
-  url = "http://github.com/downloads/keplerproject/wsapi/wsapi-1.2.tar.gz"
+  url = "http://github.com/downloads/keplerproject/wsapi/wsapi-1.3.tar.gz"
 }
 
 build = {
-    type = "module",
+    type = "builtin",
     modules = {
 	  ["wsapi.xavante"] = "src/wsapi/xavante.lua"
     },
