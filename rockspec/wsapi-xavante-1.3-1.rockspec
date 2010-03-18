@@ -1,6 +1,6 @@
 package = "WSAPI-Xavante"
 
-version = "cvs-1"
+version = "1.3-1"
 
 description = {
   summary = "Lua Web Server API - Xavante Handler",

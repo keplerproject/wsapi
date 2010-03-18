@@ -1,6 +1,6 @@
 package = "WSAPI-FCGI"
 
-version = "cvs-2"
+version = "1.3-1"
 
 description = {
   summary = "Lua Web Server API FastCGI Adapter",
