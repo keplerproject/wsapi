@@ -19,7 +19,7 @@ source = {
 }
 
 build = {
-    type = "module",
+    type = "builtin",
     modules = {
 	  ["wsapi.xavante"] = "src/wsapi/xavante.lua"
     },
