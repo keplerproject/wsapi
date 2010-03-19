@@ -80,6 +80,10 @@ WSAPI sources and bug tracker are available at its [Github](http://github.com/ke
 
 ## History
 
+**WSAPI 1.3.1** [19/Mar/2010]
+
+* Bugfix release, fix the unknown symbol in lfcgi.getenv()
+
 **WSAPI 1.3** [18/Mar/2010]
 
 * Fixed segmentation fault when non-string is provided to lfcgi.getenv() (thanks to mkottman@github)
