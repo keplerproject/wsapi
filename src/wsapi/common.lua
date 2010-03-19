@@ -281,8 +281,8 @@ function run(app, t)
       run_app(app, env)
    if ok then
      if not headers["Content-Length"] then
-       headers["Transfer-Encoding"] = "chunked"
        if t.http_response then
+	 headers["Transfer-Encoding"] = "chunked"
 	 local unchunked = res_iter
 	 res_iter = function ()
 		      local msg = unchunked()
