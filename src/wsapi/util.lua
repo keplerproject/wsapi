@@ -18,7 +18,7 @@ function url_encode(str)
   if not str then return nil end
   str = string.gsub (str, "\n", "\r\n")
   str = string.gsub (str, "([^%w ])",
-	function (c) return string.format ("%%%02X", string.byte(c)) end)
+        function (c) return string.format ("%%%02X", string.byte(c)) end)
   str = string.gsub (str, " ", "+")
   return str
 end
@@ -37,12 +37,12 @@ function make_rewindable(wsapi_env)
       local left = #self.contents - self.position + 1
       local s
       if left < size then
-	 self.contents = self.contents .. wsapi_env.input:read(size - left)
-	 s = self.contents:sub(self.position)
-	 self.position = #self.contents + 1
+         self.contents = self.contents .. wsapi_env.input:read(size - left)
+         s = self.contents:sub(self.position)
+         self.position = #self.contents + 1
       else
-	 s = self.contents:sub(self.position, self.position + size)
-	 self.position = self.position + size
+         s = self.contents:sub(self.position, self.position + size)
+         self.position = self.position + size
       end
       if s == "" then return nil else return s end
    end
@@ -78,7 +78,7 @@ function getopt( arg, options )
       k = k + 1
     elseif string.sub( v, 1, 1 ) == "-" then
       local y = 2
-      local l = string.len(v)
+      local l = #v
       local jopt
       local next = 1
       while ( y <= l ) do
@@ -89,7 +89,7 @@ function getopt( arg, options )
             y = l
           else
             tab[ jopt ] = arg[ k + 1 ]
-	    next = 2
+            next = 2
           end
         else
           tab[ jopt ] = true

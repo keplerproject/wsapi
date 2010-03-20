@@ -26,16 +26,16 @@ _G.wsapi._VERSION     = "WSAPI 1.3.1"
 function sv_index(func)
   if type(func) == "table" then
     return function (env, n)
-	     local v = func[n]
-	     env[n] = v or ""
-	     return v or ""
-	   end
+             local v = func[n]
+             env[n] = v or ""
+             return v or ""
+           end
   else
     return function (env, n)
-	     local v = func(n)
-	     env[n] = v or ""
-	     return v or ""
-	   end
+             local v = func(n)
+             env[n] = v or ""
+             return v or ""
+           end
   end
 end
 
@@ -70,9 +70,9 @@ function normalize_app(app_run, is_file)
       return app_run.run
    elseif t == "string" then
       if is_file then
-	 return normalize_app(dofile(app_run))
+         return normalize_app(dofile(app_run))
       else
-	 return normalize_app(require(app_run))
+         return normalize_app(require(app_run))
       end
    else
       error("not a valid WSAPI application")
@@ -91,8 +91,8 @@ function send_content(out, res_iter, write_method)
    end
    if not ok then
       write(out, 
-	    "======== WSAPI ERROR DURING RESPONSE PROCESSING: \n<pre>" ..
-	      tostring(res) .. "\n</pre>")
+            "======== WSAPI ERROR DURING RESPONSE PROCESSING: \n<pre>" ..
+              tostring(res) .. "\n</pre>")
    end
 end
 
@@ -153,11 +153,11 @@ function send_output(out, status, headers, res_iter, write_method, res_line)
    end
    for h, v in pairs(headers or {}) do
       if type(v) ~= "table" then
-	 write(out, h .. ": " .. tostring(v) .. "\r\n") 
+         write(out, h .. ": " .. tostring(v) .. "\r\n") 
       else
-	 for _, v in ipairs(v) do
-	    write(out, h .. ": " .. tostring(v) .. "\r\n")
-	 end
+         for _, v in ipairs(v) do
+            write(out, h .. ": " .. tostring(v) .. "\r\n")
+         end
       end 
    end
    write(out, "\r\n")
@@ -211,12 +211,12 @@ end
 local function make_iterator(msg)
   local sent = false
   return function ()
-	   if sent then return nil
-	   else
-	     sent = true
-	     return msg
-	   end
-	 end
+           if sent then return nil
+           else
+             sent = true
+             return msg
+           end
+         end
 end
 
 -- Sends an error response through the "out" pipe, replicated
@@ -229,7 +229,7 @@ function send_error(out, err, msg, out_method, err_method, http_response)
    local msg = error_html(msg)
    local status, headers, res_iter = "500 Internal Server Error", {
         ["Content-Type"] = "text/html",
-        ["Content-Length"] = string.len(msg)
+        ["Content-Length"] = #msg
       }, make_iterator(msg)
    send_output(out, status, headers, res_iter, out_method, http_response)
    return status, headers
@@ -242,7 +242,7 @@ function send_404(out, msg, out_method, http_response)
    local msg = status_404_html(msg)
    local status, headers, res_iter = "404 Not Found", {
         ["Content-Type"] = "text/html",
-        ["Content-Length"] = string.len(msg)
+        ["Content-Length"] = #msg
       }, make_iterator(msg)
    send_output(out, status, headers, res_iter, out_method, http_response)
    return status, headers
@@ -252,14 +252,14 @@ end
 -- returning the appropriate error repsonses
 function run_app(app, env)
    return xpcall(function () return (normalize_app(app))(env) end,
-		 function (msg)
-		    if type(msg) == "table" then
-		       env.STATUS = msg[1]
-		       return _M["status_" .. msg[1] .. "_html"](msg[2]) 
-		    else
-		       return debug.traceback(msg, 2)
-		    end
-		 end)
+                 function (msg)
+                    if type(msg) == "table" then
+                       env.STATUS = msg[1]
+                       return _M["status_" .. msg[1] .. "_html"](msg[2]) 
+                    else
+                       return debug.traceback(msg, 2)
+                    end
+                 end)
 end
 
 -- Builds an WSAPI environment from the configuration table "t"
@@ -282,14 +282,14 @@ function run(app, t)
    if ok then
      if not headers["Content-Length"] then
        if t.http_response then
-	 headers["Transfer-Encoding"] = "chunked"
-	 local unchunked = res_iter
-	 res_iter = function ()
-		      local msg = unchunked()
-		      if msg then
-			return string.format("%x\r\n%s\r\n", string.len(msg), msg)
-		      end
-		    end
+         headers["Transfer-Encoding"] = "chunked"
+         local unchunked = res_iter
+         res_iter = function ()
+                      local msg = unchunked()
+                      if msg then
+                        return string.format("%x\r\n%s\r\n", #msg, msg)
+                      end
+                    end
        end
      end
      send_output(t.output, status, headers, res_iter, t.write_method, t.http_response)
@@ -344,11 +344,11 @@ function adjust_iis_path(wsapi_env, filename)
       wsapi_env.SCRIPT_NAME:match("([^/%.]+)%.([^%.]+)$")
    if script_name then
       local path = 
-	 filename:match("^(.+)" .. script_name .. "%." .. ext .. "[/\\]")
+         filename:match("^(.+)" .. script_name .. "%." .. ext .. "[/\\]")
       if path then 
-	 return path .. script_name .. "." .. ext 
+         return path .. script_name .. "." .. ext 
       else 
-	 return filename 
+         return filename 
       end
    else
       return filename
@@ -384,21 +384,21 @@ function adjust_non_wrapped(wsapi_env, filename, launcher)
     local s, e = path_info:find("[^/%.]+%.[^/%.]+", 1)
     while s do
       local filepath = path_info:sub(2, e)
-	local filename
-	if docroot:find("\\", 1, true) then
+        local filename
+        if docroot:find("\\", 1, true) then
         filename = docroot .. filepath:gsub("/","\\")
       else
         filename = docroot .. filepath
       end
       local mode = lfs.attributes(filename, "mode")
       if not mode then
-	error({ 404, "Resource " .. wsapi_env.SCRIPT_NAME .. "/" .. filepath
-		 .. " not found!" }, 0)
+        error({ 404, "Resource " .. wsapi_env.SCRIPT_NAME .. "/" .. filepath
+                 .. " not found!" }, 0)
       elseif lfs.attributes(filename, "mode") == "file" then
-	wsapi_env.PATH_INFO = path_info:sub(e + 1)
-	if wsapi_env.PATH_INFO == "" then wsapi_env.PATH_INFO = "/" end    
-	wsapi_env.SCRIPT_NAME = wsapi_env.SCRIPT_NAME .. "/" .. filepath
-	return filename
+        wsapi_env.PATH_INFO = path_info:sub(e + 1)
+        if wsapi_env.PATH_INFO == "" then wsapi_env.PATH_INFO = "/" end    
+        wsapi_env.SCRIPT_NAME = wsapi_env.SCRIPT_NAME .. "/" .. filepath
+        return filename
       end
       s, e = path_info:find("[^/%.]+%.[^/%.]+", e + 1)
     end
@@ -413,8 +413,8 @@ function normalize_paths(wsapi_env, filename, launcher, vars)
    vars = vars or { "SCRIPT_FILENAME", "PATH_TRANSLATED" }
    if not filename or filename == "" then
      for _, var in ipairs(vars) do
-	filename = wsapi_env[var]
-	if filename ~= "" then break end
+        filename = wsapi_env[var]
+        if filename ~= "" then break end
      end
      filename = adjust_non_wrapped(wsapi_env, filename, launcher)
      filename = adjust_iis_path(wsapi_env, filename)
@@ -470,43 +470,43 @@ do
   local app_states = {}
   local last_collection = os.time()
   setmetatable(app_states, { __index = function (tab, app)
-					  tab[app] = { states = {} }
-					  return tab[app]
-				       end })
+                                          tab[app] = { states = {} }
+                                          return tab[app]
+                                       end })
 
   -- Bootstraps a Lua state (using rings) with the provided WSAPI application
   local function bootstrap_app(path, file, modname, ext)
      local bootstrap = [=[
-	   _, package.path = remotedostring("return package.path")
-	   _, package.cpath = remotedostring("return package.cpath")
-	   pcall(require, "luarocks.require")
-	   wsapi = {}
-	   wsapi.app_path = [[]=] .. path .. [=[]]
+           _, package.path = remotedostring("return package.path")
+           _, package.cpath = remotedostring("return package.cpath")
+           pcall(require, "luarocks.require")
+           wsapi = {}
+           wsapi.app_path = [[]=] .. path .. [=[]]
      ]=]
      if ext == "lua" then
-	return ringer.new(modname, bootstrap)
+        return ringer.new(modname, bootstrap)
      else
-	return ringer.new(file, bootstrap, true)
+        return ringer.new(file, bootstrap, true)
      end
   end
 
   -- "Garbage-collect" stale Lua states
   local function collect_states(period, ttl)
      if period and (last_collection + period < os.time()) then
-	for app, app_state in pairs(app_states) do
-	   local new_states = {}
-	   for _, state in ipairs(app_state.states) do
-	      if ttl and (rawget(state.data, "created_at") + ttl > os.time()) then
-		 table.insert(new_states, state)
-	      else
-		 if not rawget(state.data, "status") then
-		    rawget(state.data, "state"):close()
-		 end
-	      end
-	   end
-	   app_state.states = new_states
-	end
-	last_collection = os.time()
+        for app, app_state in pairs(app_states) do
+           local new_states = {}
+           for _, state in ipairs(app_state.states) do
+              if ttl and (rawget(state.data, "created_at") + ttl > os.time()) then
+                 table.insert(new_states, state)
+              else
+                 if not rawget(state.data, "status") then
+                    rawget(state.data, "state"):close()
+                 end
+              end
+           end
+           app_state.states = new_states
+        end
+        last_collection = os.time()
      end
   end
 
@@ -515,10 +515,10 @@ do
   -- and runs the application in the provided WSAPI environment
   local function wsapi_loader_isolated_helper(wsapi_env, params)
      local path, file, modname, ext, mtime = 
-	find_module(wsapi_env, params.filename, params.launcher, params.vars)
+        find_module(wsapi_env, params.filename, params.launcher, params.vars)
      if params.reload then mtime = nil end
      if not path then
-	error({ 404, "Resource " .. wsapi_env.SCRIPT_NAME .. " not found"})
+        error({ 404, "Resource " .. wsapi_env.SCRIPT_NAME .. " not found"})
      end
      local app = load_wsapi_isolated(path, file, modname, ext, mtime)
      wsapi_env.APP_PATH = path
@@ -534,17 +534,17 @@ do
     local app_state = app_states[filename]
     if mtime and app_state.mtime == mtime then
       for i, state in ipairs(app_state.states) do
-	 if not rawget(state.data, "status") then
-	    return state.app
-	 end
+         if not rawget(state.data, "status") then
+            return state.app
+         end
       end
       app, data = bootstrap_app(path, file, modname, ext)
       table.insert(app_state.states, { app = app, data = data })
     else
       app, data = bootstrap_app(path, file, modname, ext)
       if mtime then
-	app_states[filename] = { states = { { app = app, data = data } }, 
-				 mtime = mtime }
+        app_states[filename] = { states = { { app = app, data = data } }, 
+                                 mtime = mtime }
       end
     end
     return app
@@ -556,9 +556,9 @@ do
   function make_isolated_loader(params)
      params = params or {}
      return function (wsapi_env)
-	       collect_states(params.period, params.ttl)
-	       return wsapi_loader_isolated_helper(wsapi_env, params)
-	    end
+               collect_states(params.period, params.ttl)
+               return wsapi_loader_isolated_helper(wsapi_env, params)
+            end
   end
 
   function wsapi_loader_isolated(wsapi_env)
@@ -577,38 +577,38 @@ do
   local app_states = {}
   local last_collection = os.time()
   setmetatable(app_states, { __index = function (tab, app)
-					  tab[app] = { states = {} }
-					  return tab[app]
-				       end })
+                                          tab[app] = { states = {} }
+                                          return tab[app]
+                                       end })
 
   -- "Garbage-collect" stale Lua states
   local function collect_states(period, ttl)
      if period and (last_collection + period < os.time()) then
-	for app, app_state in pairs(app_states) do
-	   local new_states = {}
-	   for _, state in ipairs(app_state.states) do
-	      if ttl and (rawget(state.data, "created_at") + ttl > os.time()) then
-		 table.insert(new_states, state)
-	      else
-		 if not rawget(state.data, "status") then
-		    rawget(state.data, "state"):close()
-		 end
-	      end
-	   end
-	   app_state.states = new_states
-	end
-	last_collection = os.time()
+        for app, app_state in pairs(app_states) do
+           local new_states = {}
+           for _, state in ipairs(app_state.states) do
+              if ttl and (rawget(state.data, "created_at") + ttl > os.time()) then
+                 table.insert(new_states, state)
+              else
+                 if not rawget(state.data, "status") then
+                    rawget(state.data, "state"):close()
+                 end
+              end
+           end
+           app_state.states = new_states
+        end
+        last_collection = os.time()
      end
   end
 
   -- Bootstraps a Lua state (using rings) with the provided launcher
   local function bootstrap_app(path, app_modname, extra)
      local bootstrap = [=[
-	   _, package.path = remotedostring("return package.path")
-	   _, package.cpath = remotedostring("return package.cpath")
-	   pcall(require, "luarocks.require")
-	   wsapi = {}
-	   wsapi.app_path = [[]=] .. path .. [=[]]
+           _, package.path = remotedostring("return package.path")
+           _, package.cpath = remotedostring("return package.cpath")
+           pcall(require, "luarocks.require")
+           wsapi = {}
+           wsapi.app_path = [[]=] .. path .. [=[]]
      ]=] .. (extra or "")
      return ringer.new(app_modname, bootstrap)
   end
@@ -622,16 +622,16 @@ do
     local mtime = lfs.attributes(filename, "modification")
     if not reload and app_state.mtime == mtime then
        for _, state in ipairs(app_state.states) do
-	  if not rawget(state.data, "status") then
-	     return state.app
-	  end
+          if not rawget(state.data, "status") then
+             return state.app
+          end
        end
        app, data = bootstrap_app(path, app_modname, bootstrap)
        table.insert(app_state.states, { app = app, data = data })
     else
        app, data = bootstrap_app(path, app_modname, bootstrap)
        app_states[filename] = { states = { { app = app, data = data } }, 
-				mtime = mtime }
+                                mtime = mtime }
     end
     return app
   end
@@ -642,11 +642,11 @@ do
   function make_isolated_launcher(params)
      params = params or {}
      return function (wsapi_env)
-	       collect_states(params.period, params.ttl)
-	       normalize_paths(wsapi_env, params.filename, params.launcher, params.vars)
-	       local app = load_isolated_launcher(wsapi_env.PATH_TRANSLATED, params.modname, params.bootstrap, params.reload)
-	       return app(wsapi_env)
-	    end 
+               collect_states(params.period, params.ttl)
+               normalize_paths(wsapi_env, params.filename, params.launcher, params.vars)
+               local app = load_isolated_launcher(wsapi_env.PATH_TRANSLATED, params.modname, params.bootstrap, params.reload)
+               return app(wsapi_env)
+            end 
   end
 end
 
@@ -656,9 +656,9 @@ do
   local apps = {}
   local last_collection = os.time()
   setmetatable(apps, { __index = function (tab, app)
-					  tab[app] = { created_at = os.time() }
-					  return tab[app]
-				       end })
+                                          tab[app] = { created_at = os.time() }
+                                          return tab[app]
+                                       end })
 
   -- Bootstraps a Lua state (using rings) with the provided WSAPI application
   local function bootstrap_app(path, file, modname, ext)
@@ -668,14 +668,14 @@ do
   -- "Garbage-collect" stale Lua states
   local function collect_states(period, ttl)
      if period and (last_collection + period < os.time()) then
-	for app_name, app_data in pairs(apps) do
-	   local new_data = { created_at = os.time() }
-	   if ttl and app_data.created_at + ttl > os.time() then
-	      new_data.app = app_data.app
-	   end
-	   apps[app_name] = new_data
-	end
-	last_collection = os.time()
+        for app_name, app_data in pairs(apps) do
+           local new_data = { created_at = os.time() }
+           if ttl and app_data.created_at + ttl > os.time() then
+              new_data.app = app_data.app
+           end
+           apps[app_name] = new_data
+        end
+        last_collection = os.time()
      end
   end
 
@@ -691,8 +691,8 @@ do
     else
       app = bootstrap_app(path, file, modname, ext)
       if mtime then
-	apps[filename].app = app
-	apps[filename].mtime = mtime
+        apps[filename].app = app
+        apps[filename].mtime = mtime
       end
       return app
     end
@@ -702,10 +702,10 @@ do
   -- loads and runs the application in the provided WSAPI environment
   local function wsapi_loader_persistent_helper(wsapi_env, params)
      local path, file, modname, ext, mtime = 
-	find_module(wsapi_env, params.filename, params.launcher, params.vars)
+        find_module(wsapi_env, params.filename, params.launcher, params.vars)
      if params.reload then mtime = nil end
      if not path then
-	error({ 404, "Resource " .. wsapi_env.SCRIPT_NAME .. " not found"})
+        error({ 404, "Resource " .. wsapi_env.SCRIPT_NAME .. " not found"})
      end
      local app = load_wsapi_persistent(path, file, modname, ext, mtime)
      wsapi_env.APP_PATH = path
@@ -718,9 +718,9 @@ do
   function make_persistent_loader(params)
      params = params or {}
      return function (wsapi_env)
-	       collect_states(params.period, params.ttl)
-	       return wsapi_loader_persistent_helper(wsapi_env, params)
-	    end
+               collect_states(params.period, params.ttl)
+               return wsapi_loader_persistent_helper(wsapi_env, params)
+            end
   end
 end
 
