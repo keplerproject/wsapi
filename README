@@ -19,7 +19,7 @@ tries to follow standard Lua idioms.
 WSAPI is free software and uses the same license as Lua 5.1
 
 Status
-Current version is 1.3.2. It was developed for Lua 5.1.
+Current version is 1.3.3. It was developed for Lua 5.1.
 
 Download
 WSAPI can be downloaded from its LuaForge page. You can also get WSAPI using LuaRocks:
@@ -29,6 +29,9 @@ Latest Sources and Bug Tracker
 WSAPI CVS and bug tracker are available at its Github page.
 
 History
+
+WSAPI 1.3.3 [22/Mar/2010]
+    * Bugfix release, fix memory leak with reload option for persistent loaders
 
 WSAPI 1.3.2 [19/Mar/2010]
     * Bugfix release, do not send Transfer-Encoding header unless it is

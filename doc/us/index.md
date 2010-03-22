@@ -17,7 +17,7 @@ WSAPI is free software and uses the same license as Lua 5.1
 
 ## Status
 
-Current version is 1.3.2. It was developed for Lua 5.1.
+Current version is 1.3.3. It was developed for Lua 5.1.
 
 ## Download
 
@@ -46,10 +46,10 @@ PACKAGE=WSAPI
 PACKAGE_OPT=wsapi 
 PACKAGE_ROCK=wsapi-xavante 
 INSTALLER_VERSION=0.6 
-PACKAGE_VERSION=1.3.2 
+PACKAGE_VERSION=1.3.3
 LUAROCKS_REPO=http://luarocks.org/repositories/rocks
-LUAROCKS_URL=http://www.luarocks.org/releases/luarocks-2.0.1.tar.gz
-LUAROCKS_VERSION=2.0.1 
+LUAROCKS_URL=http://www.luarocks.org/releases/luarocks-2.0.2.tar.gz
+LUAROCKS_VERSION=2.0.2 
 </pre>
 
 To install something else change PACKAGE to the full name of the 
@@ -79,6 +79,10 @@ rocks that the installer installs.
 WSAPI sources and bug tracker are available at its [Github](http://github.com/keplerproject/wsapi/) page.
 
 ## History
+
+**WSAPI 1.3.3** [22/Mar/2010]
+
+* Bugfix release, fix memory leak with reload option for persistent loaders
 
 **WSAPI 1.3.2** [19/Mar/2010]
 
