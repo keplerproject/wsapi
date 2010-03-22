@@ -500,8 +500,10 @@ do
                  table.insert(new_states, state)
               else
                  if not rawget(state.data, "status") then
-                    rawget(state.data, "state"):close()
-                 end
+		   state.app("close")
+                 else
+		   rawset(state.data, "cleanup", true)
+		 end
               end
            end
            app_state.states = new_states
@@ -536,11 +538,20 @@ do
       for i, state in ipairs(app_state.states) do
          if not rawget(state.data, "status") then
             return state.app
+	 else
+	    rawset(state.data, "cleanup", true)
          end
       end
       app, data = bootstrap_app(path, file, modname, ext)
       table.insert(app_state.states, { app = app, data = data })
     else
+      for _, state in ipairs(app_state.states) do
+	if not rawget(state.data, "status") then
+	  state.app("close")
+	else
+	  rawset(state.data, "cleanup", true)
+	end
+      end
       app, data = bootstrap_app(path, file, modname, ext)
       if mtime then
         app_states[filename] = { states = { { app = app, data = data } }, 
@@ -588,11 +599,13 @@ do
            local new_states = {}
            for _, state in ipairs(app_state.states) do
               if ttl and (rawget(state.data, "created_at") + ttl > os.time()) then
-                 table.insert(new_states, state)
+		table.insert(new_states, state)
               else
-                 if not rawget(state.data, "status") then
-                    rawget(state.data, "state"):close()
-                 end
+		if not rawget(state.data, "status") then
+		  state.app("close")
+		else
+		  rawset(state.data, "cleanup", true)
+		end
               end
            end
            app_state.states = new_states
@@ -624,11 +637,20 @@ do
        for _, state in ipairs(app_state.states) do
           if not rawget(state.data, "status") then
              return state.app
+	  else
+	     rawset(state.data, "cleanup", true)
           end
        end
        app, data = bootstrap_app(path, app_modname, bootstrap)
        table.insert(app_state.states, { app = app, data = data })
     else
+       for _, state in ipairs(app_state.states) do
+	 if not rawget(state.data, "status") then
+	   state.app("close")
+	 else
+	   rawset(state.data, "cleanup", true)
+	 end
+       end
        app, data = bootstrap_app(path, app_modname, bootstrap)
        app_states[filename] = { states = { { app = app, data = data } }, 
                                 mtime = mtime }
