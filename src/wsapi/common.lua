@@ -538,8 +538,6 @@ do
       for i, state in ipairs(app_state.states) do
          if not rawget(state.data, "status") then
             return state.app
-	 else
-	    rawset(state.data, "cleanup", true)
          end
       end
       app, data = bootstrap_app(path, file, modname, ext)
@@ -637,8 +635,6 @@ do
        for _, state in ipairs(app_state.states) do
           if not rawget(state.data, "status") then
              return state.app
-	  else
-	     rawset(state.data, "cleanup", true)
           end
        end
        app, data = bootstrap_app(path, app_modname, bootstrap)
