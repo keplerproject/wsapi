@@ -17,7 +17,7 @@ WSAPI is free software and uses the same license as Lua 5.1
 
 ## Status
 
-Current version is 1.3.3. It was developed for Lua 5.1.
+Current version is 1.3.4. It was developed for Lua 5.1.
 
 ## Download
 
@@ -30,12 +30,12 @@ luarocks install wsapi-xavante
 ### Unix Installer Script
 
 You can also get an installer script that installs Lua+LuaRocks+WSAPI 
-[here](http://github.com/downloads/keplerproject/wsapi/wsapi-install-1.3.0.tar.gz). See
+[here](http://github.com/downloads/keplerproject/wsapi/wsapi-install-1.3.4.tar.gz). See
 the [manual](manual.html) for installation instructions.
 
 ### Customizing the installer
 
-There is a section of wsapi-install-1.3 with the parameters that 
+There is a section of wsapi-install-1.3.4 with the parameters that 
 control the installer: 
 
 <pre class="example">
@@ -46,7 +46,7 @@ PACKAGE=WSAPI
 PACKAGE_OPT=wsapi 
 PACKAGE_ROCK=wsapi-xavante 
 INSTALLER_VERSION=0.6 
-PACKAGE_VERSION=1.3.3
+PACKAGE_VERSION=1.3.4
 LUAROCKS_REPO=http://luarocks.org/repositories/rocks
 LUAROCKS_URL=http://www.luarocks.org/releases/luarocks-2.0.2.tar.gz
 LUAROCKS_VERSION=2.0.2 
@@ -71,7 +71,7 @@ bash ./your-install-script --prefix=/tmp/anything --bootstrap
 </pre>
 
 After it finishes you will have lua-5.1.4.tar.gz, 
-luarocks-2.0.1.tar.gz, and a rocks folder with .src.rocks for all the 
+luarocks-2.0.2.tar.gz, and a rocks folder with .src.rocks for all the 
 rocks that the installer installs. 
 
 ## Latest Sources and Bug Tracker
@@ -79,6 +79,10 @@ rocks that the installer installs.
 WSAPI sources and bug tracker are available at its [Github](http://github.com/keplerproject/wsapi/) page.
 
 ## History
+
+**WSAPI 1.3.4** [23/Mar/2010]
+
+* Bugfix release, fix bug introduced by previous fix :-)
 
 **WSAPI 1.3.3** [22/Mar/2010]
 
