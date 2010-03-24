@@ -29,6 +29,8 @@ source = {
 }
 
 build = {
+ platforms = {
+   unix = {
     type = "builtin",
 	modules = {
 	  ["wsapi.fastcgi"] = "src/wsapi/fastcgi.lua",
@@ -40,4 +42,19 @@ build = {
           }
         },
        install = { bin = { "src/launcher/wsapi.fcgi" } }
+   },
+   windows = {
+    type = "builtin",
+	modules = {
+	  ["wsapi.fastcgi"] = "src/wsapi/fastcgi.lua",
+	  lfcgi = {
+            sources = "src/fastcgi/lfcgi.c",
+            libraries = { "libfcgi", "ws2_32" },
+	    incdirs = "$(FASTCGI_INCDIR)",
+	    libdirs = "$(FASTCGI_LIBDIR)"
+          }
+        },
+       install = { bin = { "src/launcher/wsapi.fcgi" } }
+   }
+ }
 }
