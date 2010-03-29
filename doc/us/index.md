@@ -13,7 +13,7 @@ WSAPI's main influence is Ruby's [Rack](http://rack.rubyforge.org/) framework, b
 also influenced by Python's [WSGI](http://wsgi.org/wsgi) (PEP 333). It's not a direct
 clone of either of them, though, and tries to follow standard Lua idioms.
 
-WSAPI is free software and uses the same license as Lua 5.1
+WSAPI is free software and uses the same license as Lua 5.1.
 
 ## Status
 
@@ -79,6 +79,20 @@ rocks that the installer installs.
 WSAPI sources and bug tracker are available at its [Github](http://github.com/keplerproject/wsapi/) page.
 
 ## History
+
+**WSAPI 1.4** [TBR]
+
+* Refactoring of request, response, and util modules, to work with [mk](http://github.com/keplerproject/mk)
+* New methods for `wsapi.request`: qs_encode (encodes a table as a query string), route_link (makes a link to
+  a mk route, link (makes an internal app link), absolute_link (makes an absolute link), static_link (makes
+  an external link), empty (checks if a string is just blanks or nil), empty_param (checks if a request param
+  is empty), and renamed parse_post_data method to parse_post
+* New methods for `wsapi.response`: forward (sets path_info and returns an mk "keep parsing" code), content_type
+  (sets Content-Type header), redirect (sets Location header and returns redirect WSAPI response), changed
+  write to take multiple parameters and flatten nested tables
+* New functions in `wsapi.util`: make_env_get (makes a mock WSAPI environment for a GET request from a query
+  string), make_env_post (makes a mock WSAPI environment for a POST request from a postdata string, a postdata
+  type, default x-www-form-urlencoded, and a query string)
 
 **WSAPI 1.3.4** [23/Mar/2010]
 

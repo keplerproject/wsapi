@@ -196,7 +196,8 @@ The other helper is *wsapi.response*, which offers a simpler interface (along wi
 buffering) for output instead of the inversion of control of the iterator. It also
 lets you easily send cookies back to the browser.
 
-Finally there is *wsapi.util*, which provides URI encoding/decoding functions.
+Finally there is *wsapi.util*, which provides URI encoding/decoding and other utility
+functions.
 
 ## WSAPI frameworks
 
