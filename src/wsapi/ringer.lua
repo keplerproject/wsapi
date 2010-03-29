@@ -119,7 +119,7 @@ function new(app_name, bootstrap, is_file)
 		   error(msg)
 		end
   return function (wsapi_env)
-	   if wsapi_env == "close" then
+	   if state and wsapi_env == "close" then
 	     state:close()
 	     state = nil
 	   end
