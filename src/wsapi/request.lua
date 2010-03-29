@@ -199,11 +199,6 @@ function methods:empty_param(param)
   return self:empty(self.params[param])
 end
 
-function methods:forward(url)
-  self.env.PATH_INFO = url or self.env.PATH_INFO
-  return "MK_FORWARD"
-end
-
 function new(wsapi_env, options)
   options = options or {}
   local req = { GET = {}, POST = {}, method = wsapi_env.REQUEST_METHOD,

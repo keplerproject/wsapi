@@ -8,14 +8,21 @@ module("wsapi.response", package.seeall)
 methods = {}
 methods.__index = methods
 
-function methods:write(s)
-  if type(s) == "string" then
-    table.insert(self.body, s)
-  else
-    s = table.concat(s)
-    table.insert(self.body, s)
+function methods:write(...)
+  for _, s in ipairs{ ... } do
+    if type(s) == "table" then
+      self:write(unpack(s))
+    elseif s then
+      local s = tostring(s)
+      self.body[#self.body+1] = s
+      self.length = self.length + #s
+    end
   end
-  self.length = self.length + #s
+end
+
+function methods:forward(url)
+  self.env.PATH_INFO = url or self.env.PATH_INFO
+  return "MK_FORWARD"
 end
 
 function methods:finish()
