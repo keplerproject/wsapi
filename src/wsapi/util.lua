@@ -23,14 +23,24 @@ function url_encode(str)
   return str
 end
 
+----------------------------------------------------------------------------
+-- Sanitizes all HTML tags
+----------------------------------------------------------------------------
 function sanitize(text)
    return text:gsub(">", "&gt;"):gsub("<", "&lt;")
 end
 
-function is_empty(s)
+----------------------------------------------------------------------------
+-- Checks whether s is not nil or the empty string
+----------------------------------------------------------------------------
+function not_empty(s)
   if s and s ~= "" then return s else return nil end
 end
 
+----------------------------------------------------------------------------
+-- Wraps the WSAPI environment to make the input rewindable, so you
+-- can parse postdata more than once, call wsapi_env.input:rewind()
+----------------------------------------------------------------------------
 function make_rewindable(wsapi_env)
    local new_env = { input = { position = 1, contents = "" } }
    function new_env.input:read(size)
@@ -52,6 +62,7 @@ function make_rewindable(wsapi_env)
    return setmetatable(new_env, { __index = wsapi_env, __newindex = wsapi_env })
 end
 
+----------------------------------------------------------------------------
 -- getopt, POSIX style command line argument parser
 -- param arg contains the command line arguments in a standard table.
 -- param options is a string with the letters that expect string values.
@@ -64,7 +75,7 @@ end
 --   -cdaone ==> opts["c"]==true opts["d"]==true opts["a"]=="one"
 -- note POSIX demands the parser ends at the first non option
 --      this behavior isn't implemented.
-
+----------------------------------------------------------------------------
 function getopt( arg, options )
   local tab, args = {}, {}
   local k = 1
@@ -103,4 +114,60 @@ function getopt( arg, options )
     end
   end
   return tab, args
+end
+
+----------------------------------------------------------------------------
+-- Makes a mock WSAPI environment with GET method and the provided
+-- query string
+----------------------------------------------------------------------------
+function make_env_get(qs)
+  return {
+    REQUEST_METHOD = "GET",
+    QUERY_STRING = qs or "",
+    CONTENT_LENGTH = 0,
+    PATH_INFO = "/",
+    SCRIPT_NAME = "",
+    CONTENT_TYPE = "x-www-form-urlencoded",
+    input = {
+      read = function () return nil end
+    },
+    error = {
+      messages = {},
+      write = function (self, msg)
+		self.messages[#self.messages+1] = msg
+	      end
+    }
+  }
+end
+
+----------------------------------------------------------------------------
+-- Makes a mock WSAPI environment with POST method and the provided
+-- postdata, type (x-www-form-urlenconded default) and query string
+----------------------------------------------------------------------------
+function make_env_post(pd, type, qs)
+  pd = pd or ""
+  return {
+    REQUEST_METHOD = "POST",
+    QUERY_STRING = qs or "",
+    CONTENT_LENGTH = #pd,
+    PATH_INFO = "/",
+    CONTENT_TYPE = type or "x-www-form-urlencoded",
+    SCRIPT_NAME = "",
+    input = {
+      post_data = pd,
+      current = 1,
+      read = function (self, len)
+	       if self.current > #self.post_data then return nil end
+	       local s = self.post_data:sub(self.current, len)
+	       self.current = self.current + len
+	       return s
+	     end
+    },
+    error = {
+      messages = {},
+      write = function (self, msg)
+		self.messages[#self.messages+1] = msg
+	      end
+    }
+  }
 end
