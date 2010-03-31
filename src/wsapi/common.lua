@@ -445,8 +445,8 @@ function require_file(filename, modname)
     if res then
       package.loaded[modname] = res
     end
-    return package.loaded[modname]
   end
+  return package.loaded[modname]
 end
 
 -- Loads the script for a WSAPI application (require'ing in case of
