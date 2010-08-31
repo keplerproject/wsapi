@@ -84,9 +84,11 @@ end
 -- response iterator
 function send_content(out, res_iter, write_method)
    local write = out[write_method or "write"]
+   local flush = out.flush
    local ok, res = xpcall(res_iter, debug.traceback)
    while ok and res do
       write(out, res)
+      if flush then flush(out) end
       ok, res = xpcall(res_iter, debug.traceback)
    end
    if not ok then

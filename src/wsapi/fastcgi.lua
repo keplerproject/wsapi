@@ -37,7 +37,9 @@ function run(app_run)
 	 return lfcgi.getenv(n) or os.getenv(n)
        end
      end
-     common.run(app_run, { input = lfcgi.stdin, output = lfcgi.stdout,
-			   error = lfcgi.stderr, env = getenv })
+     common.run(app_run, { input = lfcgi.stdin, 
+                           output = lfcgi.stdout,
+			   error = lfcgi.stderr, 
+                           env = getenv })
    end
 end
