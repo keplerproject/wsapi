@@ -100,7 +100,7 @@ local function build_get(path, params, headers)
     env    = req,
     input  = make_io_object(),
     output = make_io_object(),
-    error  = make_io_object()
+    error  = io.stderr
   }
 end
 
@@ -110,11 +110,10 @@ local function build_post(path, params, headers)
   req.REQUEST_URI  = "http://" .. req.HTTP_HOST .. req.PATH_INFO
   req.CONTENT_TYPE = "x-www-form-urlencoded"
   req.CONTENT_LENGTH = #body
-  local input = make_io_object(body)
 
   return {
     env    = req,
-    input  = input,
+    input  = make_io_object(body),
     output = make_io_object(),
     error  = make_io_object()
   }
