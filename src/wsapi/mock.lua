@@ -60,20 +60,30 @@ end
 
 -- Mock IO objects
 local function make_io_object(content)
-  local buffer = {}
-  local receiver = {}
+  local receiver = { buffer = content or "", bytes_read = 0 }
+
   function receiver:write(content)
-    table.insert(buffer, content)
+    self.buffer = self.buffer .. content
   end
 
-  function receiver:read()
-    return table.concat(buffer)
+  function receiver:read(len)
+    len = len or (#self.buffer - self.bytes_read)
+    if self.bytes_read >= #self.buffer then return nil end
+    local s = self.buffer:sub(self.bytes_read + 1, len)
+    self.bytes_read = self.bytes_read + len
+    if self.bytes_read > #self.buffer then self.bytes_read = #self.buffer end
+    return s
   end
 
   function receiver:clear()
-    buffer = {}
+    self.buffer = ""
+    self.bytes_read = 0
   end
-  if content then receiver:write(content) end
+
+  function receiver:reset()
+    self.bytes_read = 0
+  end
+
   return receiver
 end
 
