@@ -127,22 +127,6 @@ local function post(self, path, params, headers)
 end
 
 --- Creates a WSAPI handler for testing.
--- <p>
--- The resulting handler will be a table with three fields:
--- </p>
--- <ul>
--- <li>app: The app itself.</li>
--- <li>get: A function to perform GET requests.</li>
--- <li>post: A function to perform POST requests.</li>
--- </ul>
--- <p>
--- The get and post functions both accept the following arguments:
--- </p>
--- <ul>
--- <li>path (required): The URI path to request. Do not include the query.</li>
--- <li>params (optional): A table of query or form data params.</li>
--- <li>headers (optional): Any request headers you wish to specify.</li>
--- </ul>
 -- @param app The WSAPI application you want to test.
 function make_handler(app)
   return {
