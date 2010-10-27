@@ -1,4 +1,3 @@
-#!/usr/bin/env wsapi.cgi
 
 require "wsapi.response"
 
