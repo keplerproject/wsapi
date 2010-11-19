@@ -15,7 +15,7 @@ description = {
 dependencies = { "wsapi >= 1.4", "rings >= 1.2.3", "coxpcall >= 1.13", "xavante >= 2.2.0" }
 
 source = {
-  url = "http://github.com/downloads/keplerproject/wsapi/wsapi-1.4.tar.gz"
+  url = "http://cloud.github.com/downloads/keplerproject/wsapi/wsapi-1.4.tar.gz"
 }
 
 build = {

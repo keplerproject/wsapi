@@ -15,7 +15,7 @@ description = {
 dependencies = { "luafilesystem >= 1.5.0" }
 
 source = {
-  url = "http://github.com/downloads/keplerproject/wsapi/wsapi-1.4.tar.gz"
+  url = "http://cloud.github.com/downloads/keplerproject/wsapi/wsapi-1.4.tar.gz"
 }
 
 build = {
