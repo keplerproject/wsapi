@@ -63,7 +63,9 @@ local function make_io_object(content)
   local receiver = { buffer = content or "", bytes_read = 0 }
 
   function receiver:write(content)
-    self.buffer = self.buffer .. content
+    if content then
+      self.buffer = self.buffer .. content
+    end
   end
 
   function receiver:read(len)
