@@ -19,7 +19,7 @@ tries to follow standard Lua idioms.
 WSAPI is free software and uses the same license as Lua 5.1
 
 Status
-Current version is 1.4. It was developed for Lua 5.1.
+Current version is 1.5. It was developed for Lua 5.1.
 
 Download
 WSAPI can be downloaded from its LuaForge page. You can also get WSAPI using
@@ -31,6 +31,13 @@ Latest Sources and Bug Tracker
 WSAPI CVS and bug tracker are available at its Github page.
 
 History
+
+WSAPI 1.5 [21/Apr/2011]
+    * Add lfcgi.finish() to lfcgi, to close the current FastCGI request
+      in case the application does not want to call lfcgi.accept() right away
+    * Fix response headers in sapi.lua
+    * Fix reloading in non-isolated launchers
+    * Errors in mock handler now go in response.wsapi_errors
 
 WSAPI 1.4 [19/Nov/2010]
     * Remove unecessary !# from sapi.lua
@@ -90,6 +97,7 @@ WSAPI 1.2 [27/Oct/2009]
     * Fixed bug with empty bodies in wsapi.xavante, and added full http status codes to responses 
     * Changing order of evaluating PATH_TRANSLATED and SCRIPT_FILENAME, to make non-wrapped launchers work in OSX Apache
     * Reload support for load_isolated_launcher
+
 WSAPI 1.1 [04/Feb/2009]
     * Adds options table to wsapi.request.new, *delay_post* option delays POST processing until req:parsepostdata() is called
     * Moves call to lfs.setmode from wsapi.common to wsapi.cgi

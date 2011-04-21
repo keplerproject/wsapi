@@ -17,7 +17,7 @@ WSAPI is free software and uses the same license as Lua 5.1.
 
 ## Status
 
-Current version is 1.4. It was developed for Lua 5.1.
+Current version is 1.5. It was developed for Lua 5.1.
 
 ## Download
 
@@ -30,12 +30,12 @@ luarocks install wsapi-xavante
 ### Unix Installer Script
 
 You can also get an installer script that installs Lua+LuaRocks+WSAPI 
-[here](http://github.com/downloads/keplerproject/wsapi/wsapi-install-1.4.tar.gz). See
+[here](http://github.com/downloads/keplerproject/wsapi/wsapi-install-1.5.tar.gz). See
 the [manual](manual.html) for installation instructions.
 
 ### Customizing the installer
 
-There is a section of wsapi-install-1.4 with the parameters that 
+There is a section of wsapi-install-1.5 with the parameters that 
 control the installer: 
 
 <pre class="example">
@@ -46,10 +46,10 @@ PACKAGE=WSAPI
 PACKAGE_OPT=wsapi 
 PACKAGE_ROCK=wsapi-xavante 
 INSTALLER_VERSION=0.6 
-PACKAGE_VERSION=1.4
+PACKAGE_VERSION=1.5
 LUAROCKS_REPO=http://luarocks.org/repositories/rocks
-LUAROCKS_URL=http://www.luarocks.org/releases/luarocks-2.0.3.tar.gz
-LUAROCKS_VERSION=2.0.3 
+LUAROCKS_URL=http://www.luarocks.org/releases/luarocks-2.0.4.1.tar.gz
+LUAROCKS_VERSION=2.0.4.1 
 </pre>
 
 To install something else change PACKAGE to the full name of the 
@@ -71,7 +71,7 @@ bash ./your-install-script --prefix=/tmp/anything --bootstrap
 </pre>
 
 After it finishes you will have lua-5.1.4.tar.gz, 
-luarocks-2.0.3.tar.gz, and a rocks folder with .src.rocks for all the 
+luarocks-2.0.4.1.tar.gz, and a rocks folder with .src.rocks for all the 
 rocks that the installer installs. 
 
 ## Latest Sources and Bug Tracker
@@ -79,6 +79,14 @@ rocks that the installer installs.
 WSAPI sources and bug tracker are available at its [Github](http://github.com/keplerproject/wsapi/) page.
 
 ## History
+
+**WSAPI 1.5** [21/Apr/2011]
+
+* Add lfcgi.finish() to lfcgi, to close the current FastCGI request
+  in case the application does not want to call lfcgi.accept() right away
+* Fix response headers in sapi.lua
+* Fix reloading in non-isolated launchers
+* Errors in mock handler now go in response.wsapi_errors
 
 **WSAPI 1.4** [19/Nov/2010]
 
