@@ -62,7 +62,7 @@ clone of either of them, though, and tries to follow standard Lua idioms.</p>
 
 <h2>Status</h2>
 
-<p>Current version is 1.4. It was developed for Lua 5.1.</p>
+<p>Current version is 1.5. It was developed for Lua 5.1.</p>
 
 <h2>Download</h2>
 
@@ -77,12 +77,12 @@ luarocks install wsapi-xavante
 <h3>Unix Installer Script</h3>
 
 <p>You can also get an installer script that installs Lua+LuaRocks+WSAPI 
-<a href="http://github.com/downloads/keplerproject/wsapi/wsapi-install-1.4.tar.gz">here</a>. See
+<a href="http://github.com/downloads/keplerproject/wsapi/wsapi-install-1.5.tar.gz">here</a>. See
 the <a href="manual.html">manual</a> for installation instructions.</p>
 
 <h3>Customizing the installer</h3>
 
-<p>There is a section of wsapi-install-1.4 with the parameters that 
+<p>There is a section of wsapi-install-1.5 with the parameters that 
 control the installer: </p>
 
 
@@ -94,10 +94,10 @@ PACKAGE=WSAPI
 PACKAGE_OPT=wsapi 
 PACKAGE_ROCK=wsapi-xavante 
 INSTALLER_VERSION=0.6 
-PACKAGE_VERSION=1.4
+PACKAGE_VERSION=1.5
 LUAROCKS_REPO=http://luarocks.org/repositories/rocks
-LUAROCKS_URL=http://www.luarocks.org/releases/luarocks-2.0.3.tar.gz
-LUAROCKS_VERSION=2.0.3 
+LUAROCKS_URL=http://www.luarocks.org/releases/luarocks-2.0.4.1.tar.gz
+LUAROCKS_VERSION=2.0.4.1 
 </pre>
 
 
@@ -122,7 +122,7 @@ bash ./your-install-script --prefix=/tmp/anything --bootstrap
 
 
 <p>After it finishes you will have lua-5.1.4.tar.gz, 
-luarocks-2.0.3.tar.gz, and a rocks folder with .src.rocks for all the 
+luarocks-2.0.4.1.tar.gz, and a rocks folder with .src.rocks for all the 
 rocks that the installer installs. </p>
 
 <h2>Latest Sources and Bug Tracker</h2>
@@ -130,6 +130,16 @@ rocks that the installer installs. </p>
 <p>WSAPI sources and bug tracker are available at its <a href="http://github.com/keplerproject/wsapi/">Github</a> page.</p>
 
 <h2>History</h2>
+
+<p><strong>WSAPI 1.5</strong> [21/Apr/2011]</p>
+
+<ul>
+    <li>Add lfcgi.finish() to lfcgi, to close the current FastCGI request
+    in case the application does not want to call lfcgi.accept() right away</li>
+    <li>Fix response headers in sapi.lua</li>
+    <li>Fix reloading in non-isolated launchers</li>
+    <li>Errors in mock handler now go in response.wsapi_errors</li>
+</ul>
 
 <p><strong>WSAPI 1.4</strong> [19/Nov/2010]</p>
 
