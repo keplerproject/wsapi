@@ -558,8 +558,9 @@ static int lfcgi_environ(lua_State *L) {
 	}
 	return 1;
 }
+
 static int lfcgi_iscgi(lua_State *L) {
-  lua_pushboolean(L, old_env == environ);
+  lua_pushboolean(L, FCGX_IsCGI());
   return 1;
 }
 
