@@ -57,7 +57,7 @@ local config = {
   isolated = true
 }
 
-local config_file = opts.c or opts.config
+local config_file = opts.c or opts.config or os.getenv('WSAPI_CONFIG')
 
 if config_file then
   local f, err = loadfile(config_file)
