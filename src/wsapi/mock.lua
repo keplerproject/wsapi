@@ -108,9 +108,16 @@ end
 
 local function build_post(path, params, headers)
   local req          = build_request("POST", path, headers)
-  local body         = request.methods.qs_encode(nil, params):gsub("^?", "")
   req.REQUEST_URI    = "http://" .. req.HTTP_HOST .. req.PATH_INFO
-  req.CONTENT_TYPE   = "x-www-form-urlencoded"
+
+  local body
+  if headers["Content-Type"] then
+    body = params
+  else
+    body = request.methods.qs_encode(nil, params):gsub("^?", "")
+    req.CONTENT_TYPE   = "x-www-form-urlencoded"
+  end
+
   req.CONTENT_LENGTH = #body
 
   return {
