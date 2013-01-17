@@ -134,6 +134,8 @@ end
 
 _M.methods = {}
 
+local methods = _M.methods
+
 function methods.__index(tab, name)
   local func
   if methods[name] then
@@ -153,7 +155,7 @@ end
 function methods:qs_encode(query)
   local parts = {}
   for k, v in pairs(query or {}) do
-    parts[#parts+1] = k .. "=" .. wsapi.util.url_encode(v)
+    parts[#parts+1] = k .. "=" .. util.url_encode(v)
   end
   if #parts > 0 then
     return "?" .. table.concat(parts, "&")

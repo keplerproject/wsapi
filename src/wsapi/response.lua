@@ -8,6 +8,8 @@ local _M = {}
 _M.methods = {}
 _M.methods.__index = methods
 
+local methods = _M.methods
+
 local unpack = table.unpack or unpack
 
 function methods:write(...)

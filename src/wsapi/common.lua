@@ -6,16 +6,12 @@
 --
 -----------------------------------------------------------------------------
 
+local wsapi = require "wsapi"
 local lfs = require "lfs"
 local _, ringer = pcall(require, "wsapi.ringer")
 local _G = _G
 
 _ENV = setmetatable({}, { __index = _G })
-
--- Meta information is public even if begining with an "_"
-_G.wsapi._COPYRIGHT   = "Copyright (C) 2007-2010 Kepler Project"
-_G.wsapi._DESCRIPTION = "WSAPI - the Lua Web Server API"
-_G.wsapi._VERSION     = "WSAPI 1.3.4"
 
 -- HTTP status codes
 status_codes = {

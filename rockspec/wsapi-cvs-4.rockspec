@@ -21,6 +21,7 @@ source = {
 build = {
   type = "builtin",
   modules = {
+    ["wsapi"] = "src/wsapi.lua",
     ["wsapi.common"] = "src/wsapi/common.lua",
     ["wsapi.request"] = "src/wsapi/request.lua",
     ["wsapi.response"] = "src/wsapi/response.lua",

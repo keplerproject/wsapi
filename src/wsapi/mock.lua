@@ -131,7 +131,7 @@ end
 local function make_request(request_builder, app, path, params, headers)
   local wsapi_env = request_builder(path, params, headers)
   local response = {}
-  response.code, response.headers = wsapi.common.run(app, wsapi_env)
+  response.code, response.headers = common.run(app, wsapi_env)
   response.body = wsapi_env.output:read()
   response.wsapi_errors = wsapi_env.error:read()
   return response, wsapi_env.env
