@@ -6,7 +6,7 @@
 --
 -----------------------------------------------------------------------------
 
-module(..., package.seeall)
+local _M = {}
 
 local common  = require "wsapi.common"
 local request = require "wsapi.request"
@@ -147,10 +147,12 @@ end
 
 --- Creates a WSAPI handler for testing.
 -- @param app The WSAPI application you want to test.
-function make_handler(app)
+function _M.make_handler(app)
   return {
     app  = app,
     get  = get,
     post = post
   }
 end
+
+return _M

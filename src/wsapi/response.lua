@@ -3,10 +3,12 @@ local util = require "wsapi.util"
 local date = os.date
 local format = string.format
 
-module("wsapi.response", package.seeall)
+local _M = {}
 
-methods = {}
-methods.__index = methods
+_M.methods = {}
+_M.methods.__index = methods
+
+local unpack = table.unpack or unpack
 
 function methods:write(...)
   for _, s in ipairs{ ... } do
@@ -85,7 +87,7 @@ function methods:content_type(type)
   self.headers["Content-Type"] = type
 end
 
-function new(status, headers)
+function _M.new(status, headers)
   status = status or 200
   headers = headers or {}
   if not headers["Content-Type"] then
@@ -93,3 +95,5 @@ function new(status, headers)
   end
   return setmetatable({ status = status, headers = headers, body = {}, length = 0 }, methods)
 end
+
+return _M

@@ -1,6 +1,6 @@
 local util = require"wsapi.util"
 
-module("wsapi.request", package.seeall)
+local _M = {}
 
 local function split_filename(path)
   local name_patt = "[/\\]?([^/\\]+)$"
@@ -132,7 +132,7 @@ local function parse_post_data(wsapi_env, tab, overwrite)
   return tab
 end
 
-methods = {}
+_M.methods = {}
 
 function methods.__index(tab, name)
   local func
@@ -198,7 +198,7 @@ function methods:empty_param(param)
   return self:empty(self.params[param])
 end
 
-function new(wsapi_env, options)
+function _M.new(wsapi_env, options)
   options = options or {}
   local req = {
     GET          = {},
@@ -243,3 +243,5 @@ function new(wsapi_env, options)
   end})
   return setmetatable(req, methods)
 end
+
+return _M

@@ -19,7 +19,7 @@ tries to follow standard Lua idioms.
 WSAPI is free software and uses the same license as Lua 5.1
 
 Status
-Current version is 1.5. It was developed for Lua 5.1.
+Current version is 1.6. It supports both Lua 5.1 and Lua 5.2.
 
 Download
 WSAPI can be downloaded from its LuaForge page. You can also get WSAPI using
@@ -31,6 +31,9 @@ Latest Sources and Bug Tracker
 WSAPI CVS and bug tracker are available at its Github page.
 
 History
+
+WSAPI 1.6 [30/Jan/2013]
+    * Lua 5.2 compatibility
 
 WSAPI 1.5 [21/Apr/2011]
     * Add lfcgi.finish() to lfcgi, to close the current FastCGI request

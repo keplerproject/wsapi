@@ -1,5 +1,3 @@
-pcall(require, "luarocks.require")
-require "wsapi.mock"
 
 local connector = require "wsapi.mock"
 

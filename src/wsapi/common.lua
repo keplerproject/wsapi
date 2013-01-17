@@ -10,7 +10,7 @@ local lfs = require "lfs"
 local _, ringer = pcall(require, "wsapi.ringer")
 local _G = _G
 
-module("wsapi.common", package.seeall)
+_ENV = setmetatable({}, { __index = _G })
 
 -- Meta information is public even if begining with an "_"
 _G.wsapi._COPYRIGHT   = "Copyright (C) 2007-2010 Kepler Project"
@@ -751,3 +751,5 @@ function make_loader(params)
       return make_persistent_loader(params)
    end
 end
+
+return _ENV

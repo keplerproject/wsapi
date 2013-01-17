@@ -17,7 +17,7 @@ WSAPI is free software and uses the same license as Lua 5.1.
 
 ## Status
 
-Current version is 1.5. It was developed for Lua 5.1.
+Current version is 1.6. It supports both Lua 5.1 and Lua 5.2.
 
 ## Download
 
@@ -30,26 +30,26 @@ luarocks install wsapi-xavante
 ### Unix Installer Script
 
 You can also get an installer script that installs Lua+LuaRocks+WSAPI 
-[here](http://github.com/downloads/keplerproject/wsapi/wsapi-install-1.5.tar.gz). See
+[here](http://www.keplerproject.org/files/wsapi-install-1.6.tar.gz). See
 the [manual](manual.html) for installation instructions.
 
 ### Customizing the installer
 
-There is a section of wsapi-install-1.5 with the parameters that 
+There is a section of wsapi-install-1.6 with the parameters that 
 control the installer: 
 
 <pre class="example">
 # Installer parameters 
 
-LUA_VERSION=5.1.4 
+LUA_VERSION=5.2.1 
 PACKAGE=WSAPI 
 PACKAGE_OPT=wsapi 
 PACKAGE_ROCK=wsapi-xavante 
-INSTALLER_VERSION=0.6 
-PACKAGE_VERSION=1.5
+INSTALLER_VERSION=0.7 
+PACKAGE_VERSION=1.6
 LUAROCKS_REPO=http://luarocks.org/repositories/rocks
-LUAROCKS_URL=http://www.luarocks.org/releases/luarocks-2.0.4.1.tar.gz
-LUAROCKS_VERSION=2.0.4.1 
+LUAROCKS_URL=http://www.luarocks.org/releases/luarocks-2.0.12.tar.gz
+LUAROCKS_VERSION=2.0.12 
 </pre>
 
 To install something else change PACKAGE to the full name of the 
@@ -70,8 +70,8 @@ Now to make the tarball, put the installer script in an empty folder and run:
 bash ./your-install-script --prefix=/tmp/anything --bootstrap 
 </pre>
 
-After it finishes you will have lua-5.1.4.tar.gz, 
-luarocks-2.0.4.1.tar.gz, and a rocks folder with .src.rocks for all the 
+After it finishes you will have lua-5.2.1.tar.gz, 
+luarocks-2.0.12.tar.gz, and a rocks folder with .src.rocks for all the 
 rocks that the installer installs. 
 
 ## Latest Sources and Bug Tracker
@@ -79,6 +79,10 @@ rocks that the installer installs.
 WSAPI sources and bug tracker are available at its [Github](http://github.com/keplerproject/wsapi/) page.
 
 ## History
+
+**WSAPI 1.6** [30/Jan/2013]
+
+* Lua 5.2 compatibility
 
 **WSAPI 1.5** [21/Apr/2011]
 
