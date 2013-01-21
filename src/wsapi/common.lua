@@ -11,7 +11,12 @@ local lfs = require "lfs"
 local _, ringer = pcall(require, "wsapi.ringer")
 local _G = _G
 
-_ENV = setmetatable({}, { __index = _G })
+if _VERSION == "Lua 5.2" then
+  _ENV = setmetatable({}, { __index = _G })
+else
+  module(..., package.seeall)
+  _ENV = _M
+end
 
 -- HTTP status codes
 status_codes = {
