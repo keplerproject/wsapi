@@ -5,10 +5,10 @@ local format = string.format
 
 local _M = {}
 
-_M.methods = {}
-_M.methods.__index = methods
+local methods = {}
+methods.__index = methods
 
-local methods = _M.methods
+_M.methods = methods
 
 local unpack = table.unpack or unpack
 
