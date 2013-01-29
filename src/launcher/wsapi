@@ -123,17 +123,17 @@ addrule{ -- wsapihandler example
 }
 
 if opts.cgilua then
-  require "xavante.cgiluahandler"
+  local hcgi = require "xavante.cgiluahandler"
   addrule{
     match = {"%.lp$", "%.lp/.*$", "%.cgi$", "%.cgi/.*$" },
-    with = xavante.cgiluahandler.makeHandler (config.docroot, launcher_params)
+    with = hcgi.makeHandler (config.docroot, launcher_params)
   }
 end
 if opts.op then
-  require "orbit.ophandler"
+  local hop = require "orbit.ophandler"
   addrule{
     match = {"%.op$", "%.op/.*$" },
-    with = orbit.ophandler.makeHandler (config.docroot, launcher_params)
+    with = hop.makeHandler (config.docroot, launcher_params)
   }
 end
 
