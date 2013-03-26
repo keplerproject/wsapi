@@ -46,20 +46,33 @@ local function optional (what, name)
   end
 end
 
+local function optional_flag(what, isset)
+  if isset then
+    return format("; %s", what)
+  end
+  return ""
+end
+
 local function make_cookie(name, value)
   local options = {}
+  local t
   if type(value) == "table" then
     options = value
     value = value.value
   end
   local cookie = name .. "=" .. util.url_encode(value)
   if options.expires then
-    local t = date("!%A, %d-%b-%Y %H:%M:%S GMT", options.expires)
+    t = date("!%A, %d-%b-%Y %H:%M:%S GMT", options.expires)
     cookie = cookie .. optional("expires", t)
+  end
+  if options.max_age then
+    t = date("!%A, %d-%b-%Y %H:%M:%S GMT", options.max_age)
+    cookie = cookie .. optional("Max-Age", t)
   end
   cookie = cookie .. optional("path", options.path)
   cookie = cookie .. optional("domain", options.domain)
-  cookie = cookie .. optional("secure", options.secure)
+  cookie = cookie .. optional_flag("secure", options.secure)
+  cookie = cookie .. optional_flag("HttpOnly", options.httponly)
   return cookie
 end
 
