@@ -87,6 +87,7 @@ extern char **environ;
 #endif
 
 static char **old_env;
+static char **old_envp;
 
 static int pushresult (lua_State *L, int i, const char *filename) {
   if (i) {
@@ -521,6 +522,63 @@ static int f_flush (lua_State *L) {
   return pushresult(L, fflush(tofile(L, 1)) == 0, NULL);
 }
 
+/*
+** {======================================================
+** environ
+** =======================================================
+*/
+
+static char *lf_getenv(char **env, const char *name)
+{
+	char   **ep;
+	size_t   len;
+
+	if (name == NULL || *name == '\0')
+		return NULL;
+
+	len = strlen(name);
+	for (ep = env; *ep != NULL; ep++) {
+		if (strncmp(*ep, name, len) == 0 && (*ep)[len] == '=') {
+			return &(*ep)[len+1];
+		}
+	}
+
+	return NULL;
+}
+
+static char **lf_copy_environ()
+{
+	char   **env = NULL;
+	char   **ep;
+	size_t   i   = 0;
+
+	/* Get the total number of elements in the array. */
+	for (ep = environ; *ep != NULL; ep++) {
+		i++;
+	}
+
+	if (i == 0)
+		return NULL;
+
+	/* Allocate the space to hold the elements. */
+	env = malloc((i+1)*sizeof(*env));
+
+	/* Copy the elements into the new array. */
+	i = 0;
+	for (ep = environ; *ep != NULL; ep++) {
+		env[i++] = strdup(*ep);
+	}
+	env[i] = NULL;
+
+	return env;
+}
+
+/*
+** {======================================================
+** lfcgi
+** =======================================================
+*/
+
 static int lfcgi_accept (lua_State *L) {
         lua_pushnumber( L, FCGI_Accept() );
         return 1;
@@ -537,21 +595,17 @@ static int lfcgi_finish (lua_State *L) {
 }
 
 static int lfcgi_getenv (lua_State *L) {
-        const char* envVar = luaL_checkstring(L, 1);
-        char* val = getenv(envVar);
+        const char *envVar = luaL_checkstring(L, 1);
+        char       *val    = getenv(envVar);
 
-        if(val != NULL) {
-                lua_pushstring(L, val);
-        }
-        else {
-                if (old_env != environ) {
-                        char **env = environ;
-                        environ = old_env;
-                        val = getenv(envVar);
-                        environ = env;
-                }
-                if (val != NULL) lua_pushstring(L, val);
-                else lua_pushnil(L);
+		if (val == NULL) {
+			val = lf_getenv(old_env, envVar);
+		}
+
+        if (val != NULL) {
+            lua_pushstring(L, val);
+        } else {
+			lua_pushnil(L);
         }
         return 1;
 }
@@ -565,7 +619,7 @@ static int lfcgi_environ(lua_State *L) {
                 lua_pushstring(L, *envp);
                 lua_settable(L, -3);
         }
-        if (old_env != environ) {
+        if (old_envp != environ) {
                 for ( envp = environ; *envp != NULL; envp++, i++) {
                         lua_pushnumber(L, i);
                         lua_pushstring(L, *envp);
@@ -633,7 +687,8 @@ static void createmeta (lua_State *L) {
 
 
 LUALIB_API int luaopen_lfcgi (lua_State *L) {
-  old_env = environ;
+  old_envp = environ;
+  old_env  = lf_copy_environ();
   createmeta(L);
   lua_pushvalue(L, -1);
   lua_newtable(L);
