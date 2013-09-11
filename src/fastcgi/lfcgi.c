@@ -561,7 +561,7 @@ static char **lf_copy_environ()
 		return NULL;
 
 	/* Allocate the space to hold the elements. */
-	env = malloc(i*sizeof(*env));
+	env = malloc((i+1)*sizeof(*env));
 
 	/* Copy the elements into the new array. */
 	i = 0;
