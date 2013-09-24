@@ -152,15 +152,15 @@ function methods.__index(tab, name)
   return func
 end
 
-function methods:qs_encode(query)
+function methods:qs_encode(query, url)
   local parts = {}
   for k, v in pairs(query or {}) do
     parts[#parts+1] = k .. "=" .. util.url_encode(v)
   end
   if #parts > 0 then
-    return "?" .. table.concat(parts, "&")
+    return (url and (url .. "?") or "") .. table.concat(parts, "&")
   else
-    return ""
+    return (url and url or "")
   end
 end
 
