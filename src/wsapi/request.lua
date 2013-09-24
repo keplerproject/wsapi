@@ -168,7 +168,8 @@ function methods:route_link(route, query, ...)
   local builder = self.mk_app["link_" .. route]
   if builder then
     local uri = builder(self.mk_app, self.env, ...)
-    return uri .. self:qs_encode(query)
+    local qs = self:qs_encode(query)
+    return uri .. (qs ~= "" and ("?"..qs) or "")
   else
     error("there is no route named " .. route)
   end
@@ -177,11 +178,13 @@ end
 function methods:link(url, query)
   local prefix = (self.mk_app and self.mk_app.prefix) or self.script_name
   local uri = prefix .. url
-  return prefix .. url .. self:qs_encode(query)
+  local qs = self:qs_encode(query)
+  return prefix .. url .. (qs ~= "" and ("?"..qs) or "")
 end
 
 function methods:absolute_link(url, query)
-  return url .. self:qs_encode(query)
+  local qs = self:qs_encode(query)
+  return url .. (qs ~= "" and ("?"..qs) or "")
 end
 
 function methods:static_link(url)
