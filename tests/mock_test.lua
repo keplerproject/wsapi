@@ -15,7 +15,7 @@ do
   local response, request = app:get("/", {hello = "world"})
   assert(response.code                    == 200)
   assert(request.request_method           == "GET")
-  assert(request.query_string             == "?hello=world")
+  assert(request.query_string             == "hello=world")
   assert(response.headers["Content-type"] == "text/html")
   assert(response.body                    == "hello world!")
 end
