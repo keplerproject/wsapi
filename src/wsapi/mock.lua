@@ -118,6 +118,12 @@ local function build_post(path, params, headers)
     req.CONTENT_TYPE   = "x-www-form-urlencoded"
   end
 
+  -- if the path includes a query string, store it in the appropiate header
+  local qs = path:match("?(.+)$")
+  if qs then
+    req.QUERY_STRING = qs
+  end
+
   req.CONTENT_LENGTH = #body
 
   return {
