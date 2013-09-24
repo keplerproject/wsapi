@@ -385,7 +385,7 @@ end
 -- for the previous example
 function _M.adjust_non_wrapped(wsapi_env, filename, launcher)
   if filename == "" or not_compatible(wsapi_env, filename) or
-    (launcher and filename:match(launcher:gsub("%.", "%.") .. "$")) then
+    (launcher and filename:match(launcher:gsub("%.", ".") .. "$")) then
     local path_info = wsapi_env.PATH_INFO
     local docroot = wsapi_env.DOCUMENT_ROOT
     if docroot:sub(#docroot) ~= "/" and docroot:sub(#docroot) ~= "\\" then
