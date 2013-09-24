@@ -71,7 +71,7 @@ local function make_io_object(content)
   function receiver:read(len)
     len = len or (#self.buffer - self.bytes_read)
     if self.bytes_read >= #self.buffer then return nil end
-    local s = self.buffer:sub(self.bytes_read + 1, len)
+    local s = self.buffer:sub(self.bytes_read + 1, self.bytes_read + len)
     self.bytes_read = self.bytes_read + len
     if self.bytes_read > #self.buffer then self.bytes_read = #self.buffer end
     return s
