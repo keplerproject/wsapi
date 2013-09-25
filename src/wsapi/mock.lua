@@ -124,7 +124,7 @@ local function build_post(path, params, headers)
     req.QUERY_STRING = qs
   end
 
-  req.CONTENT_LENGTH = #body
+  req.CONTENT_LENGTH = headers["Content-Length"] or #body
 
   return {
     env    = req,
