@@ -18,6 +18,12 @@ local lfs = require "lfs"
 local tostring, tonumber, pairs, ipairs, error, type, pcall, xpcall, setmetatable, dofile, rawget, rawset, assert, loadfile =
   tostring, tonumber, pairs, ipairs, error, type, pcall, xpcall, setmetatable, dofile, rawget, rawset, assert, loadfile
 
+if _VERSION < "Lua 5.2" then
+	local coxpcall = require "coxpcall"
+	pcall = coxpcall.pcall
+	xpcall = coxpcall.xpcall
+end
+
 local package = package
 
 local _, ringer = pcall(require, "wsapi.ringer")
