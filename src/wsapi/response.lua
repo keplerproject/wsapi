@@ -87,8 +87,8 @@ function methods:set_cookie(name, value)
   end
 end
 
-function methods:delete_cookie(name, path)
-  self:set_cookie(name, { value =  "xxx", expires = 1, path = path })
+function methods:delete_cookie(name, path, domain)
+  self:set_cookie(name, { value =  "xxx", expires = 1, path = path, domain = domain })
 end
 
 function methods:redirect(url)
