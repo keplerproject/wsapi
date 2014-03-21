@@ -23,9 +23,10 @@ local init = [==[
     _, package.cpath = remotedostring("return package.cpath")
   end
   local common = require"wsapi.common"
-  require"coxpcall"
-  pcall = copcall
-  xpcall = coxpcall
+  local coxpcall = require "coxpcall"
+  pcall = coxpcall.pcall
+  xpcall = coxpcall.xpcall
+  
   local wsapi_error = {
        write = function (self, err)
          remotedostring("env.error:write(...)", err)
