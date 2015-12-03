@@ -174,7 +174,7 @@ function _M.make_env_post(pd, type, qs)
 end
 
 function _M.loadfile(filename, env)
-  if _VERSION == "Lua 5.2" then
+  if _VERSION ~= "Lua 5.1" then
     return loadfile(filename, "bt", env)
   else
     local f, err = loadfile(filename)
