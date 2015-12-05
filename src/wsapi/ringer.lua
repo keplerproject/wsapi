@@ -5,6 +5,7 @@ local rings = require "rings"
 local _M = {}
 
 local init = [==[
+  local loadstring = loadstring or load
   local app_name, bootstrap_code, is_file = ...
   if bootstrap_code then
     local bootstrap, err
