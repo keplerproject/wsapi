@@ -501,7 +501,7 @@ static int f_seek (lua_State *L) {
   static const char *const modenames[] = {"set", "cur", "end", NULL};
   FILE *f = tofile(L, 1);
   int op = luaL_checkoption(L, 2, "cur", modenames);
-  long offset = luaL_optlong(L, 3, 0);
+  long offset = (long) luaL_optinteger(L, 3, 0);
   luaL_argcheck(L, op != -1, 2, "invalid mode");
   op = fseek(f, offset, mode[op]);
   if (op)
