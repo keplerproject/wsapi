@@ -1,6 +1,6 @@
-# WSAPI#
+# WSAPI
 
-##Overview#
+## Overview
 
 WSAPI is an API that abstracts the web server from Lua web applications.
 By coding against WSAPI your application can run on any of the supported
@@ -13,109 +13,111 @@ provide some kind of service to other applications, such as authentication,
 file uploads, request isolation, or multiplexing.
 
 WSAPI's main influence is Ruby's Rack framework, but it was also influenced
-by Python's WSGI (PEP 333). It's not a direct clone of either of them, though, and tries to follow standard Lua idioms.
+by Python's WSGI (PEP 333). It's not a direct clone of either of them, though, 
+and tries to follow standard Lua idioms.
 
 WSAPI is free software and uses the same license as Lua 5.1
 
-## Status#
+## Status
 Current version is 1.6.1. It supports both Lua 5.1 and Lua 5.2.
 
-## Download#
+## Download
 WSAPI can be downloaded from its LuaForge page. You can also get WSAPI using
 LuaRocks:
 
     luarocks install wsapi
 
-## Latest Sources and Bug Tracker#
+## Latest Sources and Bug Tracker
 WSAPI CVS and bug tracker are available at its Github page.
 
 # History
 
-WSAPI 1.6.1 [21/Mar/2014]
-    * Restores Lua 5.1 compatibility (incorrect usage of coxpcall)
-    * Improvements to wsapi.mock
-    * wsapi.request.qs_encode produces proper querystrings
-    * FastCGI fixes
-    * Additional options for cookies such as httponly and max age.
+## WSAPI 1.6.1 [21/Mar/2014]
+* Restores Lua 5.1 compatibility (incorrect usage of coxpcall)
+* Improvements to wsapi.mock
+* wsapi.request.qs_encode produces proper querystrings
+* FastCGI fixes
+* Additional options for cookies such as httponly and max age.
 
-WSAPI 1.6 [30/Jan/2013]
-    * Lua 5.2 compatibility
+## WSAPI 1.6 [30/Jan/2013]
+* Lua 5.2 compatibility
 
-WSAPI 1.5 [21/Apr/2011]
-    * Add lfcgi.finish() to lfcgi, to close the current FastCGI request
-      in case the application does not want to call lfcgi.accept() right away
-    * Fix response headers in sapi.lua
-    * Fix reloading in non-isolated launchers
-    * Errors in mock handler now go in response.wsapi_errors
+## WSAPI 1.5 [21/Apr/2011]
+* Add lfcgi.finish() to lfcgi, to close the current FastCGI request
+  in case the application does not want to call lfcgi.accept() right away
+* Fix response headers in sapi.lua
+* Fix reloading in non-isolated launchers
+* Errors in mock handler now go in response.wsapi_errors
 
-WSAPI 1.4 [19/Nov/2010]
-    * Remove unecessary !# from sapi.lua
-    * Added mock WSAPI handler (by Norman Clarke)
-    * Flush output pipe after writing content
-    * Respect rules specified in config file for "wsapi" launcher
-    * Fix bug where common.load_wsapi would not return the module
-      if it was already require'd
-    * Fix bug where wsapi.ringer would try to close an already closed
-      state
-    * Refactoring of request, response, and util modules, to work with mk (http://github.com/keplerproject/mk)
-    * New methods for wsapi.request: qs_encode (encodes a table as a query string), route_link (makes a link to
-      a mk route, link (makes an internal app link), absolute_link (makes an absolute link), static_link (makes
-      an external link), empty (checks if a string is just blanks or nil), empty_param (checks if a request param
-      is empty), and renamed parse_post_data method to parse_post
-    * New methods for wsapi.response: forward (sets path_info and returns an mk "keep parsing" code), content_type
-      (sets Content-Type header), redirect (sets Location header and returns redirect WSAPI response), changed
-      write to take multiple parameters and flatten nested tables
-    * New functions in wsapi.util: make_env_get (makes a mock WSAPI environment for a GET request from a query
-      string), make_env_post (makes a mock WSAPI environment for a POST request from a postdata string, a postdata
-      type, default x-www-form-urlencoded, and a query string)
+## WSAPI 1.4 [19/Nov/2010]
+* Remove unecessary !# from sapi.lua
+* Added mock WSAPI handler (by Norman Clarke)
+* Flush output pipe after writing content
+* Respect rules specified in config file for "wsapi" launcher
+* Fix bug where common.load_wsapi would not return the module
+  if it was already require'd
+* Fix bug where wsapi.ringer would try to close an already closed
+  state
+* Refactoring of request, response, and util modules, to work with mk (http://github.com/keplerproject/mk)
+* New methods for wsapi.request: qs_encode (encodes a table as a query string), route_link (makes a link to
+  a mk route, link (makes an internal app link), absolute_link (makes an absolute link), static_link (makes
+  an external link), empty (checks if a string is just blanks or nil), empty_param (checks if a request param
+  is empty), and renamed parse_post_data method to parse_post
+* New methods for wsapi.response: forward (sets path_info and returns an mk "keep parsing" code), content_type
+  (sets Content-Type header), redirect (sets Location header and returns redirect WSAPI response), changed
+  write to take multiple parameters and flatten nested tables
+* New functions in wsapi.util: make_env_get (makes a mock WSAPI environment for a GET request from a query
+  string), make_env_post (makes a mock WSAPI environment for a POST request from a postdata string, a postdata
+  type, default x-www-form-urlencoded, and a query string)
 
-WSAPI 1.3.4 [23/Mar/2010]
-    * Bugfix release, fix bug introduced by previous fix :-)
+## WSAPI 1.3.4 [23/Mar/2010]
+* Bugfix release, fix bug introduced by previous fix :-)
 
-WSAPI 1.3.3 [22/Mar/2010]
-    * Bugfix release, fix memory leak with reload option for persistent loaders
+## WSAPI 1.3.3 [22/Mar/2010]
+* Bugfix release, fix memory leak with reload option for persistent loaders
 
-WSAPI 1.3.2 [19/Mar/2010]
-    * Bugfix release, do not send Transfer-Encoding header unless it is
-      raw HTTP response
+## WSAPI 1.3.2 [19/Mar/2010]
+* Bugfix release, do not send Transfer-Encoding header unless it is
+  raw HTTP response
 
-WSAPI 1.3.1 [19/Mar/2010]
-    * Bugfix release, fix the unknown symbol in lfcgi.getenv()
+## WSAPI 1.3.1 [19/Mar/2010]
+* Bugfix release, fix the unknown symbol in lfcgi.getenv()
 
-WSAPI 1.3 [18/Mar/2010]
-    * Fixed segmentation fault when non-string is provided to lfcgi.getenv() (thanks to mkottman@github)
-    * Added CGILua bootstrap to wsapi.sapi, so CGILua can run without a kepler_init module present
-    * Added an `extra_vars` paremeter to wsapi.xavante.makeHandler and wsapi.xavante.makeGenericHandler, to
-      let you pass extra variables in the WSAPI environment
-    * Added `overwrite` option to wsapi.request that tells the parameter parser to overwrite repeated parameters
-      instead of collecting them in a list
-    * Added a parameter `isolated` to the persistent generic loaders that controls whether you isolate
-      each script in a Lua state or not
-    * Added parameters to the persistent generic loaders that let the user control the life cycle of Lua
-      states: `period` sets how long WSAPI should wait between collecting stale states, and `ttl` sets the
-      period after which a state becomes stale
-    * Fixed bug in wsapi.ringer that didn't let you use wsapi.input:read inside the response iterator
-    * Parameter `vars` for the WSAPI generic loaders that which variables WSAPI should check to get the physical
-      path of the script, and in which order. Defaults tro trying SCRIPT_FILENAME first and PATH_TRANSLATED second
+## WSAPI 1.3 [18/Mar/2010]
+* Fixed segmentation fault when non-string is provided to lfcgi.getenv() (thanks to mkottman@github)
+* Added CGILua bootstrap to wsapi.sapi, so CGILua can run without a kepler_init module present
+* Added an `extra_vars` paremeter to wsapi.xavante.makeHandler and wsapi.xavante.makeGenericHandler, to
+  let you pass extra variables in the WSAPI environment
+* Added `overwrite` option to wsapi.request that tells the parameter parser to overwrite repeated parameters
+  instead of collecting them in a list
+* Added a parameter `isolated` to the persistent generic loaders that controls whether you isolate
+  each script in a Lua state or not
+* Added parameters to the persistent generic loaders that let the user control the life cycle of Lua
+  states: `period` sets how long WSAPI should wait between collecting stale states, and `ttl` sets the
+  period after which a state becomes stale
+* Fixed bug in wsapi.ringer that didn't let you use wsapi.input:read inside the response iterator
+* Parameter `vars` for the WSAPI generic loaders that which variables WSAPI should check to get the physical
+  path of the script, and in which order. Defaults to trying SCRIPT_FILENAME first and PATH_TRANSLATED second
 
-WSAPI 1.2 [27/Oct/2009]
-    * Adds time-based collection of Lua states to FCGI and Xavante launchers
-    * Adds "wsapi" laucher script, to start a Xavante WSAPI server
-    * Fixed "undefined media type" error
-    * Added is_empty utility function to check if a string is nil or ''
-    * Fixed bug with empty bodies in wsapi.xavante, and added full http status codes to responses
-    * Changing order of evaluating PATH_TRANSLATED and SCRIPT_FILENAME, to make non-wrapped launchers work in OSX Apache
-    * Reload support for load_isolated_launcher
+## WSAPI 1.2 [27/Oct/2009]
+* Adds time-based collection of Lua states to FCGI and Xavante launchers
+* Adds "wsapi" laucher script, to start a Xavante WSAPI server
+* Fixed "undefined media type" error
+* Added is_empty utility function to check if a string is nil or ''
+* Fixed bug with empty bodies in wsapi.xavante, and added full http status codes to responses
+* Changing order of evaluating PATH_TRANSLATED and SCRIPT_FILENAME, to make non-wrapped launchers work in OSX Apache
+* Reload support for load_isolated_launcher
 
-WSAPI 1.1 [04/Feb/2009]
-    * Adds options table to wsapi.request.new, *delay_post* option delays POST processing until req:parsepostdata() is called
-    * Moves call to lfs.setmode from wsapi.common to wsapi.cgi
-    * Adds wsapi.util.make_rewindable(wsapi_env) method - wraps wsapi_env in a new environment that lets you process the POST data more than once.
-    * Correctly handles PATH_TRANSLATED and SCRIPT_FILENAME in case the web server gets creative
-    * Statically links the FastCGI version on Windows
-WSAPI 1.0 [18/May/2008]
-    * First public version.
-    * Includes CGI, FastCGI and Xavante WSAPI connectors.
+## WSAPI 1.1 [04/Feb/2009]
+* Adds options table to wsapi.request.new, *delay_post* option delays POST processing until req:parsepostdata() is called
+* Moves call to lfs.setmode from wsapi.common to wsapi.cgi
+* Adds wsapi.util.make_rewindable(wsapi_env) method - wraps wsapi_env in a new environment that lets you process the POST data more than once.tr
+* Correctly handles PATH_TRANSLATED and SCRIPT_FILENAME in case the web server gets creative
+* Statically links the FastCGI version on Windows
+
+## WSAPI 1.0 [18/May/2008]
+* First public version.
+* Includes CGI, FastCGI and Xavante WSAPI connectors.
 
 # Credits#
 
