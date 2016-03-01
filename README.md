@@ -1,6 +1,6 @@
-WSAPI ( http://keplerproject.github.com/wsapi )
+# WSAPI#
 
-Overview
+##Overview#
 
 WSAPI is an API that abstracts the web server from Lua web applications.
 By coding against WSAPI your application can run on any of the supported
@@ -13,24 +13,23 @@ provide some kind of service to other applications, such as authentication,
 file uploads, request isolation, or multiplexing.
 
 WSAPI's main influence is Ruby's Rack framework, but it was also influenced
-by Python's WSGI (PEP 333). It's not a direct clone of either of them, though, and
-tries to follow standard Lua idioms.
+by Python's WSGI (PEP 333). It's not a direct clone of either of them, though, and tries to follow standard Lua idioms.
 
 WSAPI is free software and uses the same license as Lua 5.1
 
-Status
+## Status#
 Current version is 1.6.1. It supports both Lua 5.1 and Lua 5.2.
 
-Download
+## Download#
 WSAPI can be downloaded from its LuaForge page. You can also get WSAPI using
 LuaRocks:
 
-luarocks install wsapi
+    luarocks install wsapi
 
-Latest Sources and Bug Tracker
+## Latest Sources and Bug Tracker#
 WSAPI CVS and bug tracker are available at its Github page.
 
-History
+# History
 
 WSAPI 1.6.1 [21/Mar/2014]
     * Restores Lua 5.1 compatibility (incorrect usage of coxpcall)
@@ -118,7 +117,7 @@ WSAPI 1.0 [18/May/2008]
     * First public version.
     * Includes CGI, FastCGI and Xavante WSAPI connectors.
 
-Credits
+# Credits#
 
 WSAPI was designed and developed by Fabio Mascarenhas and Andre Carregal,
 and is maintained by Fabio Mascarenhas.
