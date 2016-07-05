@@ -63,9 +63,14 @@ local function wsapihandler (req, res, wsapi_run, app_prefix, docroot, app_path,
   wsapi_env.APP_PATH = app_path
 
   local function set_status(status)
-    if type(status) == "number" or status:match("^%d+$") then
-      status = status .. " " .. common.status_codes[tonumber(status)]
+    if type(status) == "string" and status:match("^%d+$") then
+      status = tonumber(status)
     end
+
+    if type(status) == "number" then
+      status = ("%d %s"):format(status, common.status_codes[status])
+    end
+
     res.statusline = "HTTP/1.1 " .. (status or "500 Internal Server Error")
   end
 
