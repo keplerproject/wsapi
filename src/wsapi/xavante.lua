@@ -6,11 +6,6 @@
 --
 -----------------------------------------------------------------------------
 
-local coxpcall = require "coxpcall"
-
-pcall = coxpcall.pcall
-xpcall = coxpcall.xpcall
-
 local common = require"wsapi.common"
 
 local _M = {}
