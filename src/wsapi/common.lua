@@ -15,7 +15,7 @@ local debug = require "debug"
 local wsapi = require "wsapi"
 local lfs = require "lfs"
 
-if _VERSION < "Lua 5.2" then
+if _VERSION=="Lua 5.1" and not jit then     -- obsolete: only for Lua 5.1 compatibility
 	local coxpcall = require "coxpcall"
 	pcall = coxpcall.pcall
 	xpcall = coxpcall.xpcall
