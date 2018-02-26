@@ -32,6 +32,11 @@ WSAPI CVS and bug tracker are available at its Github page.
 
 # History
 
+## WSAPI 1.7 [26/Feb/2018]
+
+* Lua 5.3 compatibility
+* Refactor coxpcall dependency
+
 ## WSAPI 1.6.1 [21/Mar/2014]
 * Restores Lua 5.1 compatibility (incorrect usage of coxpcall)
 * Improvements to wsapi.mock

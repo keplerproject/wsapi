@@ -30,7 +30,7 @@ luarocks install wsapi-xavante
 ### Unix Installer Script
 
 You can also get an installer script that installs Lua+LuaRocks+WSAPI
-[here](http://www.keplerproject.org/files/wsapi-install-1.6.1.tar.gz). See
+[here](https://github.com/keplerproject/wsapi/blob/master/wsapi-install-1.7). See
 the [manual](manual.html) for installation instructions.
 
 ### Customizing the installer
@@ -41,15 +41,15 @@ control the installer:
 <pre class="example">
 # Installer parameters
 
-LUA_VERSION=5.2.1
+LUA_VERSION=5.3.4
 PACKAGE=WSAPI
 PACKAGE_OPT=wsapi
 PACKAGE_ROCK=wsapi-xavante
-INSTALLER_VERSION=0.7
-PACKAGE_VERSION=1.6
+INSTALLER_VERSION=0.8
+PACKAGE_VERSION=1.7
 LUAROCKS_REPO=http://luarocks.org/repositories/rocks
-LUAROCKS_URL=http://www.luarocks.org/releases/luarocks-2.0.12.tar.gz
-LUAROCKS_VERSION=2.0.12
+LUAROCKS_URL=http://www.luarocks.org/releases/luarocks-2.4.3.tar.gz
+LUAROCKS_VERSION=2.4.3
 </pre>
 
 To install something else change PACKAGE to the full name of the
@@ -79,6 +79,12 @@ rocks that the installer installs.
 WSAPI sources and bug tracker are available at its [Github](http://github.com/keplerproject/wsapi/) page.
 
 ## History
+
+**WSAPI 1.7** [26/Feb/2018]
+
+* Lua 5.3 compatibility
+* Refactor coxpcall dependency
+* Format status code as integer when building status line
 
 **WSAPI 1.6.1** [21/Mar/2014]
 
