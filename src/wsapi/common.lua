@@ -15,14 +15,14 @@ local debug = require "debug"
 local wsapi = require "wsapi"
 local lfs = require "lfs"
 
-local tostring, tonumber, pairs, ipairs, error, type, pcall, xpcall, setmetatable, dofile, rawget, rawset, assert, loadfile =
-  tostring, tonumber, pairs, ipairs, error, type, pcall, xpcall, setmetatable, dofile, rawget, rawset, assert, loadfile
-
-if _VERSION < "Lua 5.2" then
+if _VERSION=="Lua 5.1" and not jit then     -- obsolete: only for Lua 5.1 compatibility
 	local coxpcall = require "coxpcall"
 	pcall = coxpcall.pcall
 	xpcall = coxpcall.xpcall
 end
+
+local tostring, tonumber, pairs, ipairs, error, type, pcall, xpcall, setmetatable, dofile, rawget, rawset, assert, loadfile =
+  tostring, tonumber, pairs, ipairs, error, type, pcall, xpcall, setmetatable, dofile, rawget, rawset, assert, loadfile
 
 local package = package
 
