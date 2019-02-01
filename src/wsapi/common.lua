@@ -243,7 +243,7 @@ function _M.send_error(out, err, msg, out_method, err_method, http_response)
    local write_err = err[err_method or "write"]
    write_err(err, "WSAPI error in application: " .. tostring(msg) .. "\n")
    local msg = _M.error_html(msg)
-   local status, headers, res_iter = "500 Internal Server Error", {
+   local status, headers, res_iter = 500, {
         ["Content-Type"] = "text/html",
         ["Content-Length"] = #msg
       }, make_iterator(msg)
@@ -256,7 +256,7 @@ end
 function _M.send_404(out, msg, out_method, http_response)
    local write = out[out_method or "write"]
    local msg = _M.status_404_html(msg)
-   local status, headers, res_iter = "404 Not Found", {
+   local status, headers, res_iter = 404, {
         ["Content-Type"] = "text/html",
         ["Content-Length"] = #msg
       }, make_iterator(msg)
