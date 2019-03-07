@@ -24,6 +24,8 @@ end
 local tostring, tonumber, pairs, ipairs, error, type, pcall, xpcall, setmetatable, dofile, rawget, rawset, assert, loadfile =
   tostring, tonumber, pairs, ipairs, error, type, pcall, xpcall, setmetatable, dofile, rawget, rawset, assert, loadfile
 
+local coroutine_status, coroutine_resume = coroutine.status, coroutine.resume
+
 local package = package
 
 local _, ringer = pcall(require, "wsapi.ringer")
@@ -136,22 +138,70 @@ function _M.normalize_app(app_run, is_file)
    end
 end
 
--- Sends the respose body through the "out" pipe, using
--- the provided write method. Gets the body from the
--- response iterator
-function _M.send_content(out, res_iter, write_method)
-   local write = out[write_method or "write"]
-   local flush = out.flush
-   local ok, res = xpcall(res_iter, debug.traceback)
-   while ok and res do
-      write(out, res)
-      if flush then flush(out) end
-      ok, res = xpcall(res_iter, debug.traceback)
-   end
-   if not ok then
-      write(out,
-            "======== WSAPI ERROR DURING RESPONSE PROCESSING: \n<pre>" ..
-              tostring(res) .. "\n</pre>")
+do
+   local send_content_funcs = {
+      ["function"] = function(res_iter, send)
+         local ok, res = xpcall(res_iter, debug.traceback)
+         while ok and type(res) == "string" do
+            send(res)
+            ok, res = xpcall(res_iter, debug.traceback)
+         end
+         return ok
+      end;
+      ["thread"] = function(res_iter, send)
+         local ok = false
+         while coroutine_status(res_iter) ~= "dead" do
+            local res
+            ok, res = coroutine_resume(res_iter)
+            if not ok or type(res) ~= "string" then
+               break
+            end
+            send(res)
+         end
+         return ok
+      end;
+      ["table"] = function(res_iter, send)
+         local ok = true
+         for i = 1, #res_iter do
+            local res = res_iter[i]
+            if type(res) ~= "string" then
+               ok = false
+               break
+            end
+            send(res)
+         end
+         return ok
+      end;
+      ["string"] = function(res_iter, send)
+         local ok = true
+         send(res_iter)
+         return ok
+      end;
+   }
+
+   -- Sends the respose body through the "out" pipe, using
+   -- the provided write method. Gets the body from the
+   -- response iterator
+   function _M.send_content(out, res_iter, write_method)
+      local write = out[write_method or "write"]
+      local flush = out.flush
+      local ok
+      local send_content = send_content_funcs[type(res_iter)]
+      if send_content then
+         local send = function(res)
+            -- "out", "flush" and "write" are upvalues here
+            write(out, res)
+            if flush then flush(out) end
+         end
+         ok = send_content(res_iter, send)
+      else
+         ok = false
+      end
+      if not ok then
+         write(out,
+               "======== WSAPI ERROR DURING RESPONSE PROCESSING: \n<pre>" ..
+                 tostring(res) .. "\n</pre>")
+      end
    end
 end
 
