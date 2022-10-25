@@ -49,8 +49,8 @@ function _M.run(wsapi_env)
       end,
     },
   }
-  local cgilua = require "cgilua"
-  cgilua.main()
+  local cgilua = require "cgilua.main"
+  cgilua.main(wsapi_env, res)
   return res:finish()
 end
 
