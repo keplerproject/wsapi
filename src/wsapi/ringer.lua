@@ -90,7 +90,7 @@ local init = [==[
            remotedostring("local k, v = ...; table.insert(headers[k], v)", k, val)
          end
        else
-         remotedostring("local k, v = ...; headers[k] = v", k, v)
+         remotedostring("local k, v = ...; rawset(headers, k, v)", k, v)
        end
      end
      local s, v = res()
