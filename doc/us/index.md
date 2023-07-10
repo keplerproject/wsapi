@@ -9,7 +9,7 @@ and output buffering. You can also write applications that act as filters that
 provide some kind of service to other applications, such as authentication,
 file uploads, request isolation, or multiplexing.
 
-WSAPI's main influence is Ruby's [Rack](http://rack.rubyforge.org/) framework, but it was
+WSAPI's main influence is Ruby's [Rack](https://github.com/rack/rack) framework, but it was
 also influenced by Python's [WSGI](http://wsgi.org/wsgi) (PEP 333). It's not a direct
 clone of either of them, though, and tries to follow standard Lua idioms.
 
